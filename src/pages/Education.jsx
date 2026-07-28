@@ -10,16 +10,16 @@ const Education = () => {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.2 }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 15 },
     show: { 
       opacity: 1, 
       y: 0, 
-      transition: { type: "spring", stiffness: 100, damping: 20 } 
+      transition: { type: "tween", ease: "easeOut", duration: 0.3 } 
     }
   };
 
