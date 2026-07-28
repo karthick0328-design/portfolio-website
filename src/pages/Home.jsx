@@ -107,7 +107,7 @@ const Home = () => {
               className="relative w-72 h-72 md:w-[400px] md:h-[400px]"
             >
               {/* Outer Glow */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-full blur-[80px] opacity-30 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-full blur-[80px] opacity-30"></div>
               
               {/* Image Container with Border Gradient */}
               <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-tr from-blue-500 via-purple-500 to-cyan-400 shadow-2xl">
