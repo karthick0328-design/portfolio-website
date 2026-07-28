@@ -30,10 +30,17 @@ const Education = () => {
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-4xl">
         <SectionHeading title="Education" subtitle="My academic background." />
         
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <motion.div 
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.1 }}
+          className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8"
+        >
           {education.map((edu) => (
-            <div 
+            <motion.div 
               key={edu.id} 
+              variants={item}
               className="glass-card p-8 relative overflow-hidden group border border-zinc-200 dark:border-white/10 bg-white/40 dark:bg-zinc-900/40 hover:border-purple-500/50 dark:hover:border-purple-500/50 transition-colors h-full flex flex-col"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -57,9 +64,9 @@ const Education = () => {
                   </h4>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
