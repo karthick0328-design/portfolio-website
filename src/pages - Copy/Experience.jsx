@@ -15,17 +15,18 @@ const Experience = () => {
   };
 
   const item = {
-    hidden: { opacity: 0, x: -30 },
+    hidden: { opacity: 0, x: -30, filter: "blur(10px)" },
     show: { 
       opacity: 1, 
       x: 0, 
+      filter: "blur(0px)",
       transition: { type: "spring", stiffness: 100, damping: 20 } 
     }
   };
 
   return (
     <div className="min-h-screen pt-24 pb-24 relative overflow-hidden">
-      <div className="hidden md:block absolute top-1/3 left-0 w-1/3 h-1/3 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
+      <div className="absolute top-1/3 left-0 w-1/3 h-1/3 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
 
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-4xl">
         <SectionHeading title="Work Experience" subtitle="My professional journey and impact." />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiFolder } from 'react-icons/fi';
+import { FiGithub, FiExternalLink, FiFolder } from 'react-icons/fi';
 
 const ProjectCard = ({ project }) => {
   return (

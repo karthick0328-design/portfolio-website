@@ -9,8 +9,8 @@ const Skills = () => {
   return (
     <div className="min-h-screen pt-24 pb-12 relative overflow-hidden">
       {/* Background Decorators */}
-      <div className="hidden md:block absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="hidden md:block absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="container mx-auto px-6 md:px-12 relative z-10">
         <SectionHeading title="My Skills" subtitle="Technologies and tools I work with." />

@@ -36,7 +36,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen pt-24 pb-24 relative overflow-hidden">
       {/* Background Decorators */}
-      <div className="hidden md:block absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
       
       <div className="container mx-auto px-6 md:px-12 relative z-10">
         <SectionHeading title="Let's Connect" subtitle="Have a question or want to work together?" />
@@ -44,8 +44,8 @@ const Contact = () => {
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-16 mt-16">
           
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -50, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
             className="w-full lg:w-5/12"
@@ -99,8 +99,8 @@ const Contact = () => {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: 50, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 100 }}
             className="w-full lg:w-7/12"
