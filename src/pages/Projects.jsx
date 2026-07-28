@@ -30,8 +30,8 @@ const Projects = () => {
   return (
     <div className="min-h-screen pt-24 pb-24 relative overflow-hidden">
       {/* Background Decorators */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
+      <div className="hidden md:block absolute top-0 right-0 w-1/3 h-1/3 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
+      <div className="hidden md:block absolute bottom-0 left-0 w-1/3 h-1/3 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
 
       <div className="container mx-auto px-6 md:px-12 relative z-10">
         <SectionHeading title="Featured Projects" subtitle="Selected works that showcase my skills and problem-solving." />

@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 
 const MouseGlow = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Only run on devices with a mouse/fine pointer
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
     const updateMousePosition = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
+      if (!isVisible) setIsVisible(true);
     };
 
     window.addEventListener('mousemove', updateMousePosition);
@@ -13,7 +18,9 @@ const MouseGlow = () => {
     return () => {
       window.removeEventListener('mousemove', updateMousePosition);
     };
-  }, []);
+  }, [isVisible]);
+
+  if (!isVisible) return null;
 
   return (
     <div

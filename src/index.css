@@ -58,6 +58,12 @@
     z-index: 50;
   }
 
+  @media (max-width: 768px), (pointer: coarse) {
+    .bg-noise {
+      display: none;
+    }
+  }
+
   .fade-edges {
     mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);

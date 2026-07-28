@@ -14,7 +14,7 @@ const Home = () => {
     <div className="min-h-screen pt-24 pb-12 flex items-center relative overflow-hidden">
       
       {/* Aurora Background Effect */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[40%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-500/20 mix-blend-screen filter blur-[120px] animate-blob"></div>
         <div className="absolute top-[20%] -right-[20%] w-[60%] h-[60%] rounded-full bg-cyan-500/20 mix-blend-screen filter blur-[120px] animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-[20%] left-[20%] w-[80%] h-[80%] rounded-full bg-purple-500/20 mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>

@@ -36,7 +36,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen pt-24 pb-24 relative overflow-hidden">
       {/* Background Decorators */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
+      <div className="hidden md:block absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
       
       <div className="container mx-auto px-6 md:px-12 relative z-10">
         <SectionHeading title="Let's Connect" subtitle="Have a question or want to work together?" />

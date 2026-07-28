@@ -20,7 +20,7 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="lg:w-2/3 glass-card p-8 md:p-10 relative overflow-hidden group"
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full mix-blend-screen filter blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+            <div className="hidden md:block absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full mix-blend-screen filter blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
             
             <h3 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-white flex items-center gap-2">
               <span className="w-8 h-1 bg-blue-500 rounded-full"></span>
