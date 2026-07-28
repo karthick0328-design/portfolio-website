@@ -33,8 +33,7 @@ const Education = () => {
         <motion.div 
           variants={container}
           initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.1 }}
+          animate="show"
           className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8"
         >
           {education.map((edu) => (
