@@ -15,18 +15,17 @@ const Education = () => {
   };
 
   const item = {
-    hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+    hidden: { opacity: 0, y: 30 },
     show: { 
       opacity: 1, 
       y: 0, 
-      filter: "blur(0px)",
       transition: { type: "spring", stiffness: 100, damping: 20 } 
     }
   };
 
   return (
     <div className="min-h-screen pt-24 pb-24 relative overflow-hidden">
-      <div className="absolute top-1/4 right-0 w-1/3 h-1/3 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
+      <div className="hidden md:block absolute top-1/4 right-0 w-1/3 h-1/3 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
 
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-4xl">
         <SectionHeading title="Education" subtitle="My academic background." />
