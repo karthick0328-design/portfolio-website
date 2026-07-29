@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
 
 import Home from '../../pages/Home';
 import About from '../../pages/About';
@@ -10,7 +9,6 @@ import Projects from '../../pages/Projects';
 import Education from '../../pages/Education';
 import Resume from '../../pages/Resume';
 import Contact from '../../pages/Contact';
-import PageTransition from './PageTransition';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
