@@ -32,17 +32,19 @@ const Resume = () => {
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none"></div>
 
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-6xl">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-10">
-          <div>
+        <div className="md:flex md:justify-between md:items-end mb-16 gap-8 border-b border-zinc-200 dark:border-zinc-800 pb-10">
+          <div className="w-full">
             <SectionHeading title="Interactive Resume" subtitle="A quick overview of my qualifications." />
           </div>
           
-          <a href={resumePdf} download="Karthick_Pandi_Resume.pdf" className="shrink-0 w-full md:w-auto">
-            <MagneticButton className="w-full md:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold tracking-wide flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
-              <span>Download PDF</span>
-              <FiDownload size={20} />
-            </MagneticButton>
-          </a>
+          <div className="flex justify-center md:justify-end w-full md:w-auto mt-[-2rem] md:mt-0">
+            <a href={resumePdf} download="Karthick_Pandi_Resume.pdf" className="shrink-0 w-full sm:w-auto">
+              <MagneticButton className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold tracking-wide flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                <span>Download PDF</span>
+                <FiDownload size={20} />
+              </MagneticButton>
+            </a>
+          </div>
         </div>
         
         <motion.div 
