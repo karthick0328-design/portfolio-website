@@ -141,6 +141,7 @@ const Home = () => {
 
         </div>
       </div>
+    </div>
       
       {/* Additional Sections */}
       <About />
