@@ -12,7 +12,7 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
-        <div className="flex flex-col min-h-screen relative overflow-hidden bg-background">
+        <div className="flex flex-col min-h-screen relative overflow-x-hidden bg-background">
           <div className="bg-noise" />
           <div className="bg-grid absolute inset-0 z-0 opacity-40 pointer-events-none" />
           <MouseGlow />
