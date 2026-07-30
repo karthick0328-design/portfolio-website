@@ -6,12 +6,22 @@ import { FiDownload, FiArrowRight, FiGithub, FiLinkedin, FiMail } from 'react-ic
 import MagneticButton from '../components/ui/MagneticButton';
 import Typewriter from '../components/ui/Typewriter';
 
+import About from './About';
+import Skills from './Skills';
+import Experience from './Experience';
+import Education from './Education';
+import Projects from './Projects';
+import Resume from './Resume';
+import Contact from './Contact';
+
 const Home = () => {
   const { personalInfo } = portfolioData;
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen pt-24 pb-12 flex items-center relative overflow-hidden">
+    <>
+      {/* Hero Section */}
+      <div className="min-h-screen pt-24 pb-12 flex items-center relative overflow-hidden">
       
       {/* Aurora Background Effect */}
       <div className="hidden md:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -131,7 +141,16 @@ const Home = () => {
 
         </div>
       </div>
-    </div>
+      
+      {/* Additional Sections */}
+      <About />
+      <Skills />
+      <Experience />
+      <Education />
+      <Projects />
+      <Resume />
+      <Contact />
+    </>
   );
 };
 
