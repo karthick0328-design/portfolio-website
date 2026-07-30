@@ -63,9 +63,9 @@ const Contact = () => {
                   <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
                     <FiMail size={20} />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wider mb-1">Email</p>
-                    <a href={`mailto:${portfolioData.personalInfo.email}`} className="text-lg font-medium text-zinc-900 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                    <a href={`mailto:${portfolioData.personalInfo.email}`} className="text-base sm:text-lg font-medium text-zinc-900 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors break-all">
                       {portfolioData.personalInfo.email}
                     </a>
                   </div>
@@ -75,9 +75,9 @@ const Contact = () => {
                   <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 shrink-0">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wider mb-1">Location</p>
-                    <p className="text-lg font-medium text-zinc-900 dark:text-white">
+                    <p className="text-base sm:text-lg font-medium text-zinc-900 dark:text-white break-words">
                       {portfolioData.personalInfo.location}
                     </p>
                   </div>
