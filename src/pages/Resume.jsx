@@ -32,7 +32,7 @@ const Resume = () => {
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none"></div>
 
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-6xl">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-10">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-10">
           <div>
             <SectionHeading title="Interactive Resume" subtitle="A quick overview of my qualifications." />
           </div>
@@ -149,7 +149,7 @@ const Resume = () => {
               <ul className="space-y-4">
                 <li>
                   <span className="block text-xs uppercase tracking-wider text-zinc-500 mb-1">Email</span>
-                  <a href={`mailto:${personalInfo.email}`} className="text-zinc-900 dark:text-white font-medium hover:text-blue-500 transition-colors">{personalInfo.email}</a>
+                  <a href={`mailto:${personalInfo.email}`} className="text-zinc-900 dark:text-white font-medium hover:text-blue-500 transition-colors break-all">{personalInfo.email}</a>
                 </li>
                 <li>
                   <span className="block text-xs uppercase tracking-wider text-zinc-500 mb-1">Location</span>
