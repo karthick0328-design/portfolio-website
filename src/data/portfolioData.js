@@ -11,8 +11,8 @@ export const portfolioData = {
     availability: "Available for new opportunities"
   },
   about: {
-    introduction: "Motivated Full Stack Developer with a Master's in Computer Applications and hands-on experience in ReactJS, Node.js, and modern web technologies. Skilled in building responsive web applications and integrating AI-driven solutions.",
-    objective: "Seeking an entry-level developer role to contribute technical expertise, enhance user experiences, and grow through continuous learning and collaboration.",
+    introduction: "Motivated Full Stack Developer with a Master's in Computer Applications and hands-on experience in React.js, Node.js, MongoDB, and modern web technologies. Proficient in Figma and passionate about UI/UX design, responsive interfaces, and user-centered experiences.",
+    objective: "Currently expanding expertise in UI/UX design while building scalable, high-performance web applications. Seeking opportunities to contribute both development and design skills.",
     stats: [
       { label: "Projects Completed", value: "5+" },
       { label: "Technologies Mastered", value: "10+" },

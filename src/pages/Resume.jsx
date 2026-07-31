@@ -4,7 +4,7 @@ import SectionHeading from '../components/SectionHeading';
 import { FiDownload, FiBriefcase, FiBookOpen, FiCode } from 'react-icons/fi';
 import MagneticButton from '../components/ui/MagneticButton';
 import { portfolioData } from '../data/portfolioData';
-import resumePdf from '../assets/my-resume.pdf';
+import resumePdf from '../assets/resume.pdf';
 
 const Resume = () => {
   const { experience, education, skills, personalInfo } = portfolioData;
@@ -38,7 +38,7 @@ const Resume = () => {
           </div>
           
           <div className="flex justify-center md:justify-end w-full md:w-auto mt-[-2rem] md:mt-0">
-            <a href={resumePdf} download="Karthick_Pandi_Resume.pdf" className="shrink-0 w-full sm:w-auto">
+            <a href={resumePdf} download="A.Karthick_Pandi_Resume.pdf" className="shrink-0 w-full sm:w-auto">
               <MagneticButton className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold tracking-wide flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
                 <span>Download PDF</span>
                 <FiDownload size={20} />
