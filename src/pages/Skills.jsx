@@ -35,6 +35,11 @@ const Skills = () => {
             <h3 className="text-xl font-bold text-zinc-900 dark:text-white pl-4 border-l-4 border-green-400">Tools & Platforms</h3>
             <InfiniteMarquee items={skills.tools} direction="right" speed={25} />
           </div>
+
+          <div className="flex flex-col gap-4">
+            <h3 className="text-xl font-bold text-zinc-900 dark:text-white pl-4 border-l-4 border-pink-500">UI/UX Design</h3>
+            <InfiniteMarquee items={skills.uiux} direction="left" speed={30} />
+          </div>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ export const portfolioData = {
     location: "Madurai, Tamil Nadu, India",
     github: "https://github.com/karthick0328-design",
     linkedin: "https://linkedin.com/in/karthick-pandi-006156279", // Updated with actual LinkedIn
+    availability: "Available for new opportunities"
   },
   about: {
     introduction: "Motivated Full Stack Developer with a Master's in Computer Applications and hands-on experience in ReactJS, Node.js, and modern web technologies. Skilled in building responsive web applications and integrating AI-driven solutions.",
@@ -22,7 +23,8 @@ export const portfolioData = {
     frontend: ["React.js", "JavaScript", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
     backend: ["Node.js", "Express.js", "Python"],
     database: ["MongoDB", "SQLite"],
-    tools: ["Git", "GitHub", "Docker", "VS Code", "Postman", "Chart.js"]
+    tools: ["Git", "GitHub", "Docker", "VS Code", "Postman", "Chart.js"],
+    uiux: ["Figma", "Prototyping", "Components & Variants", "Wireframing"]
   },
   experience: [
     {
@@ -93,6 +95,41 @@ export const portfolioData = {
       degree: "Bachelor of Computer Science",
       institution: "The American College",
       year: "2020 - 2023"
+    }
+  ],
+  caseStudies: [
+    {
+      id: 1,
+      title: "Digital Marketing Platform Dashboard",
+      role: "UI/UX Designer",
+      description: "Designed an intuitive dashboard for SEO analysts to track metrics, analyze competitors, and generate content effortlessly.",
+      image: "/projects/as_photography-digital-marketing-1725340.jpg",
+      link: "#"
+    },
+    {
+      id: 2,
+      title: "E-Commerce User Flow Optimization",
+      role: "Product Designer",
+      description: "Revamped the checkout process for an e-commerce site, reducing cart abandonment and improving overall user experience.",
+      image: "/projects/andrespradagarcia-online-6817350.jpg",
+      link: "#"
+    }
+  ],
+  faq: [
+    {
+      id: 1,
+      question: "What services do you offer?",
+      answer: "I specialize in Full Stack Web Development, UI/UX Design, and integrating AI into modern web applications."
+    },
+    {
+      id: 2,
+      question: "Are you available for freelance projects?",
+      answer: "Yes, I am currently available for freelance projects as well as full-time opportunities."
+    },
+    {
+      id: 3,
+      question: "What is your design process?",
+      answer: "My design process involves understanding user needs, wireframing, creating high-fidelity prototypes in Figma, and iterating based on feedback before handing off for development."
     }
   ]
 };
