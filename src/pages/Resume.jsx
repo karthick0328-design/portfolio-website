@@ -143,6 +143,14 @@ const Resume = () => {
                     ))}
                   </div>
                 </div>
+                <div>
+                  <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">UI/UX Design</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {skills.uiux.map(skill => (
+                      <span key={skill} className="px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">{skill}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
 
