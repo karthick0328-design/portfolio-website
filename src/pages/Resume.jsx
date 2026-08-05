@@ -4,6 +4,7 @@ import SectionHeading from '../components/SectionHeading';
 import { FiDownload, FiBriefcase, FiBookOpen, FiCode } from 'react-icons/fi';
 import MagneticButton from '../components/ui/MagneticButton';
 import { portfolioData } from '../data/portfolioData';
+import { skillIcons } from '../data/skillIcons';
 import resumePdf from '../assets/resume.pdf';
 
 const Resume = () => {
@@ -111,46 +112,26 @@ const Resume = () => {
               </h4>
               
               <div className="space-y-6 relative z-10">
-                <div>
-                  <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">Frontend</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.frontend.map(skill => (
-                      <span key={skill} className="px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">{skill}</span>
-                    ))}
+                {Object.entries(skills).map(([category, skillList]) => (
+                  <div key={category}>
+                    <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">
+                      {category === 'uiux' ? 'UI/UX Design' : category}
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {skillList.map(skill => {
+                        const iconData = skillIcons[skill];
+                        const IconComponent = iconData ? iconData.icon : null;
+                        
+                        return (
+                          <span key={skill} className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">
+                            {IconComponent && <IconComponent style={{ color: iconData.color }} />}
+                            {skill}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">Backend</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.backend.map(skill => (
-                      <span key={skill} className="px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">Database</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.database.map(skill => (
-                      <span key={skill} className="px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">Tools</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.tools.map(skill => (
-                      <span key={skill} className="px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h5 className="text-sm text-zinc-400 uppercase tracking-wider mb-3">UI/UX Design</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.uiux.map(skill => (
-                      <span key={skill} className="px-3 py-1 bg-white/10 rounded-md text-sm font-medium text-zinc-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </motion.div>
 

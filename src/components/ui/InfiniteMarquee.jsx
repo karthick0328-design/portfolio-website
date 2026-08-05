@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { skillIcons } from '../../data/skillIcons';
 
 const InfiniteMarquee = ({ items, direction = 'left', speed = 40 }) => {
   // Duplicate items to ensure smooth infinite scrolling
@@ -18,14 +19,20 @@ const InfiniteMarquee = ({ items, direction = 'left', speed = 40 }) => {
           repeat: Infinity 
         }}
       >
-        {marqueeItems.map((item, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-center px-6 py-3 bg-white/5 border border-zinc-200 dark:border-white/10 rounded-full text-zinc-800 dark:text-zinc-200 font-medium whitespace-nowrap hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors backdrop-blur-sm"
-          >
-            {item}
-          </div>
-        ))}
+        {marqueeItems.map((item, index) => {
+          const iconData = skillIcons[item];
+          const IconComponent = iconData ? iconData.icon : null;
+
+          return (
+            <div
+              key={index}
+              className="flex items-center gap-2 justify-center px-6 py-3 bg-white/5 border border-zinc-200 dark:border-white/10 rounded-full text-zinc-800 dark:text-zinc-200 font-medium whitespace-nowrap hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors backdrop-blur-sm"
+            >
+              {IconComponent && <IconComponent style={{ color: iconData.color }} className="text-xl" />}
+              <span>{item}</span>
+            </div>
+          );
+        })}
       </motion.div>
     </div>
   );
