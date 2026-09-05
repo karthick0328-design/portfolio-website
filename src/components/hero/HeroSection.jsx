@@ -5,45 +5,46 @@ import HeroAvatarCanvas from './HeroAvatarCanvas';
 const HeroSection = () => {
   const { scrollY } = useScroll();
 
-  // Subtle parallax on scroll
-  const leftColY = useTransform(scrollY, [0, 500], [0, 80]);
-  const rightColY = useTransform(scrollY, [0, 500], [0, 80]);
-  const avatarY = useTransform(scrollY, [0, 500], [0, -30]);
-  const heroOpacity = useTransform(scrollY, [0, 450], [1, 0.1]);
+  // Subtle parallax effect on scroll
+  const contentY = useTransform(scrollY, [0, 500], [0, 60]);
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.15]);
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden bg-background pt-20 sm:pt-24 lg:pt-0">
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-background select-none">
       
-      {/* 1. Subtle Atmospheric Background Lighting */}
+      {/* 1. Subtle Atmospheric Background Ambient Flares */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {/* Soft Center Halo behind 3D Character */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-cyan-500/[0.07] dark:bg-cyan-500/[0.09] filter blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-purple-600/[0.05] dark:bg-purple-600/[0.07] filter blur-[150px] pointer-events-none" />
+        {/* Soft atmospheric gradient behind the scene */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-cyan-500/[0.06] filter blur-[150px]" />
+        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[500px] h-[500px] rounded-full bg-indigo-600/[0.05] filter blur-[140px]" />
         
-        {/* Very subtle grid/depth line */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_40%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
+        {/* Radial vignette mask */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,rgba(120,119,198,0.06),rgba(0,0,0,0))]" />
       </div>
 
-      {/* 2. Main Hero Grid: LEFT CONTENT ← 3D CHARACTER → RIGHT CONTENT */}
+      {/* 2. Fullscreen 3D Character Canvas Layer (Centerpiece) */}
+      <HeroAvatarCanvas />
+
+      {/* 3. Integrated Hero Typography & Portfolio Info Layer */}
       <motion.div 
-        style={{ opacity: heroOpacity }}
-        className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 flex-grow flex items-center relative z-10 w-full"
+        style={{ y: contentY, opacity: heroOpacity }}
+        className="w-full h-full min-h-screen max-w-7xl mx-auto px-6 sm:px-10 md:px-14 lg:px-16 flex flex-col justify-between py-24 lg:py-0 relative z-20 pointer-events-none"
       >
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center min-h-[calc(100vh-8rem)] py-8 lg:py-0">
+        {/* Main Grid / Layout Wrapper */}
+        <div className="w-full flex-grow flex flex-col lg:flex-row items-center lg:items-center justify-between gap-8 lg:gap-0 my-auto">
           
-          {/* LEFT CONTENT: Introduction & Name */}
+          {/* LEFT SIDE: Name & Intro */}
           <motion.div 
-            style={{ y: leftColY }}
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-3 xl:col-span-3 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1 select-none z-20"
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto"
           >
             <motion.p 
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-base sm:text-lg md:text-xl font-mono text-zinc-500 dark:text-zinc-400 mb-2 tracking-widest uppercase font-light"
+              transition={{ delay: 0.25, duration: 0.8 }}
+              className="text-sm sm:text-base md:text-lg font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-2 font-normal"
             >
               Hello! I'm
             </motion.p>
@@ -52,74 +53,73 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-black tracking-tight text-zinc-900 dark:text-white uppercase leading-[1.05]"
+              className="text-4xl sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black tracking-tight text-zinc-900 dark:text-white uppercase leading-[0.92]"
             >
-              <span className="block bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-600 dark:from-white dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+              <span className="block text-zinc-900 dark:text-white">
                 KARTHICK
               </span>
-              <span className="block bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent mt-1">
+              <span className="block bg-gradient-to-r from-zinc-600 via-zinc-500 to-zinc-400 dark:from-zinc-200 dark:via-zinc-400 dark:to-zinc-500 bg-clip-text text-transparent mt-1">
                 PANDI
               </span>
             </motion.h1>
           </motion.div>
 
-          {/* CENTER: Full-Height 3D Human Avatar */}
-          <motion.div 
-            style={{ y: avatarY }}
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-6 xl:col-span-6 h-[460px] sm:h-[540px] md:h-[620px] lg:h-[calc(100vh-8rem)] w-full flex items-center justify-center relative order-1 lg:order-2 z-10"
-          >
-            <HeroAvatarCanvas />
-          </motion.div>
+          {/* Spacer for Center 3D Character on Desktop */}
+          <div className="hidden lg:block w-72 xl:w-96 h-1 pointer-events-none" />
 
-          {/* RIGHT CONTENT: Professional Role & Description */}
+          {/* RIGHT SIDE: Professional Role & Description */}
           <motion.div 
-            style={{ y: rightColY }}
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.0, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-3 xl:col-span-3 flex flex-col items-center lg:items-end text-center lg:text-right order-3 lg:order-3 select-none z-20"
+            transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-sm"
           >
+            <motion.p 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="text-lg sm:text-xl md:text-2xl font-light text-cyan-500 dark:text-cyan-400 tracking-wide mb-1"
+            >
+              Full Stack &
+            </motion.p>
+
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-extrabold text-zinc-900 dark:text-white leading-tight mb-4 tracking-tight"
+              transition={{ delay: 0.5, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-zinc-900 dark:text-white uppercase leading-[0.95] tracking-tight mb-4"
             >
-              <span className="block text-cyan-500 dark:text-cyan-400">Full Stack</span>
-              <span className="block text-zinc-800 dark:text-zinc-200">Developer</span>
+              DEVELOPER
             </motion.h2>
 
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.8 }}
-              className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal max-w-xs lg:max-w-none"
+              transition={{ delay: 0.65, duration: 0.8 }}
+              className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal"
             >
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
             </motion.p>
           </motion.div>
 
         </div>
-      </motion.div>
 
-      {/* 3. Bottom Minimal Scroll Indicator */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.0, duration: 0.8 }}
-        className="w-full pb-8 flex flex-col items-center justify-center relative z-20 pointer-events-none"
-      >
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-[10px] font-mono tracking-[0.25em] uppercase text-zinc-400 dark:text-zinc-500">
-            Scroll
-          </span>
-          <div className="w-[1px] h-6 bg-gradient-to-b from-cyan-400/60 to-transparent animate-pulse" />
-        </div>
-      </motion.div>
+        {/* 4. Minimal Elegant Bottom Scroll Indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.8 }}
+          className="w-full pb-8 flex flex-col items-center justify-center pointer-events-none"
+        >
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500">
+              SCROLL
+            </span>
+            <div className="w-[1px] h-6 bg-gradient-to-b from-cyan-400/70 to-transparent animate-pulse" />
+          </div>
+        </motion.div>
 
+      </motion.div>
     </section>
   );
 };
