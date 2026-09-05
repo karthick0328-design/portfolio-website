@@ -7,65 +7,23 @@ import HeroAvatarCanvas from './HeroAvatarCanvas';
 import { useVoiceAssistant } from '../../features/voice';
 import { visemeEngine } from '../../features/voice/services/visemeEngine';
 
-const INTRO_WORDS = [
-  { word: "Hello", time: 0.1, dur: 380 },
-  { word: "I'm", time: 0.7, dur: 220 },
-  { word: "Karthick", time: 1.0, dur: 360 },
-  { word: "Pandi", time: 1.5, dur: 360 },
-  { word: "I'm", time: 2.2, dur: 220 },
-  { word: "a", time: 2.5, dur: 150 },
-  { word: "Full", time: 2.7, dur: 250 },
-  { word: "Stack", time: 3.0, dur: 320 },
-  { word: "Developer", time: 3.5, dur: 450 },
-  { word: "building", time: 4.2, dur: 350 },
-  { word: "modern", time: 4.7, dur: 300 },
-  { word: "scalable", time: 5.2, dur: 380 },
-  { word: "and", time: 5.7, dur: 180 },
-  { word: "interactive", time: 6.0, dur: 420 },
-  { word: "web", time: 6.6, dur: 250 },
-  { word: "applications", time: 7.0, dur: 500 },
-  { word: "with", time: 7.7, dur: 200 },
-  { word: "React", time: 8.0, dur: 350 },
-  { word: "Nextjs", time: 8.6, dur: 380 },
-  { word: "Nodejs", time: 9.2, dur: 380 },
-  { word: "Python", time: 9.8, dur: 380 },
-  { word: "Threejs", time: 10.4, dur: 380 },
-  { word: "and", time: 11.0, dur: 180 },
-  { word: "AI", time: 11.3, dur: 280 },
-  { word: "technologies", time: 11.7, dur: 550 },
-  { word: "Welcome", time: 12.6, dur: 350 },
-  { word: "to", time: 13.0, dur: 180 },
-  { word: "my", time: 13.3, dur: 200 },
-  { word: "portfolio", time: 13.6, dur: 450 }
-];
+const INTRO_TEXT = "Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!";
 
 const HeroSection = () => {
   const { personalInfo } = portfolioData;
   const { scrollY } = useScroll();
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [audioLevel, setAudioLevel] = useState(0);
 
   const { 
     isSpeaking: isVoiceSpeaking, 
-    audioLevel: voiceAudioLevel, 
     toggleListening, 
     isListening: isVoiceListening,
     stopSpeaking: stopVoiceSpeaking 
   } = useVoiceAssistant();
 
   const activeIsSpeaking = isSpeaking || isVoiceSpeaking;
-  const activeAudioLevel = isVoiceSpeaking ? voiceAudioLevel : audioLevel;
 
   const audioRef = useRef(null);
-  const audioContextRef = useRef(null);
-  const analyserRef = useRef(null);
-  const animFrameRef = useRef(null);
-  const isSpeakingRef = useRef(false);
-  const lastWordRef = useRef('');
-
-  useEffect(() => {
-    isSpeakingRef.current = isSpeaking;
-  }, [isSpeaking]);
 
   // Initialize audio
   useEffect(() => {
@@ -74,10 +32,7 @@ const HeroSection = () => {
 
     const handleEnded = () => {
       setIsSpeaking(false);
-      setAudioLevel(0);
-      lastWordRef.current = '';
-      visemeEngine.reset();
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      visemeEngine.stopSpeech();
     };
 
     audio.addEventListener('ended', handleEnded);
@@ -90,31 +45,9 @@ const HeroSection = () => {
     return () => {
       audio.pause();
       audio.removeEventListener('ended', handleEnded);
-      visemeEngine.reset();
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        audioContextRef.current.close();
-      }
+      visemeEngine.stopSpeech();
     };
   }, []);
-
-  const updateAudioMeter = () => {
-    const audio = audioRef.current;
-    if (audio && !audio.paused) {
-      const curTime = audio.currentTime;
-      const activeItem = INTRO_WORDS.find(w => curTime >= w.time && curTime <= w.time + w.dur / 1000 + 0.05);
-      if (activeItem && activeItem.word !== lastWordRef.current) {
-        lastWordRef.current = activeItem.word;
-        visemeEngine.processWordBoundary(activeItem.word, activeItem.dur);
-      }
-
-      setAudioLevel(0.7);
-      animFrameRef.current = requestAnimationFrame(updateAudioMeter);
-    } else {
-      setAudioLevel(0);
-      visemeEngine.reset();
-    }
-  };
 
   // Toggle studio voice narration
   const toggleSpeak = async () => {
@@ -128,64 +61,32 @@ const HeroSection = () => {
       audio.pause();
       audio.currentTime = 0;
       setIsSpeaking(false);
-      setAudioLevel(0);
       visemeEngine.stopSpeech();
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     } else {
       try {
-        const introText = "Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!";
-        visemeEngine.startSpeech(introText, 1.0);
-
-        if (!audioContextRef.current) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (AudioContext) {
-            const ctx = new AudioContext();
-            const analyser = ctx.createAnalyser();
-            analyser.fftSize = 128;
-            analyser.smoothingTimeConstant = 0.6;
-
-            try {
-              const source = ctx.createMediaElementSource(audio);
-              source.connect(analyser);
-              analyser.connect(ctx.destination);
-              analyserRef.current = analyser;
-            } catch (mediaErr) {
-              console.warn('MediaElementSource fallback:', mediaErr);
-            }
-
-            audioContextRef.current = ctx;
-          }
-        }
-
-        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-          await audioContextRef.current.resume();
-        }
-
+        visemeEngine.startSpeech(INTRO_TEXT, 1.0);
         audio.currentTime = 0;
         setIsSpeaking(true);
         await audio.play();
-        animFrameRef.current = requestAnimationFrame(updateAudioMeter);
       } catch (err) {
         console.warn('MP3 playback fallback to speech synthesis:', err);
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
-          const introText = `Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!`;
-          const utterance = new SpeechSynthesisUtterance(introText);
+          const utterance = new SpeechSynthesisUtterance(INTRO_TEXT);
           utterance.rate = 1.0;
           utterance.pitch = 1.0;
           utterance.onstart = () => {
+            visemeEngine.startSpeech(INTRO_TEXT, 1.0);
             setIsSpeaking(true);
-            setAudioLevel(0.5);
           };
           utterance.onend = () => {
             setIsSpeaking(false);
-            setAudioLevel(0);
+            visemeEngine.stopSpeech();
           };
           utterance.onerror = () => {
             setIsSpeaking(false);
-            setAudioLevel(0);
+            visemeEngine.stopSpeech();
           };
-          window.speechSynthesis.speak(utterance);
         }
       }
     }
@@ -210,7 +111,7 @@ const HeroSection = () => {
       </div>
 
       {/* 2. 3D Human Avatar (Centered, Close-Up, Real Voice Lip-Sync) */}
-      <HeroAvatarCanvas isSpeaking={activeIsSpeaking} audioLevel={activeAudioLevel} onToggleSpeak={toggleSpeak} />
+      <HeroAvatarCanvas isSpeaking={activeIsSpeaking} onToggleSpeak={toggleSpeak} />
 
       {/* 3. Floating Left Social Icons (Vertical Stack) */}
       <motion.div 
@@ -367,7 +268,7 @@ const HeroSection = () => {
                   if (isSpeaking && audioRef.current) {
                     audioRef.current.pause();
                     setIsSpeaking(false);
-                    setAudioLevel(0);
+                    visemeEngine.stopSpeech();
                   }
                   toggleListening();
                 }}

@@ -62,7 +62,6 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
 
     let eyelidMat = null;
     let eyelidMesh = null;
-    let mouthPivotGroup = null;
     let mouthMesh = null;
     let mouthMat = null;
 
@@ -111,7 +110,7 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
           }
         );
 
-        // Load Open Mouth Layer with Pivot at Lip Seam
+        // Load Open Mouth Layer Directly
         textureLoader.load(
           '/models/karthick_mouth_open.png?v=7',
           (mouthTex) => {
@@ -127,14 +126,10 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
               side: THREE.DoubleSide,
             });
 
-            mouthPivotGroup = new THREE.Group();
-            mouthPivotGroup.position.set(0, -0.38, 0.02);
-
             mouthMesh = new THREE.Mesh(planeGeom, mouthMat);
-            mouthMesh.position.set(0, 0.18, 0);
-            mouthPivotGroup.add(mouthMesh);
-            mouthPivotGroup.visible = false;
-            characterGroup.add(mouthPivotGroup);
+            mouthMesh.position.set(0, -0.2, 0.02);
+            mouthMesh.visible = false;
+            characterGroup.add(mouthMesh);
 
             setIsLoading(false);
           },
@@ -240,26 +235,23 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         }
       }
 
-      // 2. Real Human Lip-Sync Controller (Phoneme/Viseme Driven Shapes)
-      const currentViseme = visemeEngine.update(0.32);
+      // 2. Real Human Lip-Sync Controller (Single Source of Truth)
+      const currentViseme = visemeEngine.update(0.35);
 
-      if (mouthMat && mouthPivotGroup) {
-        if (isSpeakingRef.current && currentViseme.opacity > 0.08) {
-          mouthPivotGroup.visible = true;
-          mouthMat.opacity = Math.min(1.0, currentViseme.opacity * 1.8);
-
-          // Apply phoneme-driven natural shapes (vertical jaw drop + horizontal stretch/pucker)
-          const scaleY = currentViseme.scaleY * (1.0 + currentViseme.openY * 0.35);
+      if (mouthMat && mouthMesh) {
+        if (isSpeakingRef.current && currentViseme.opacity > 0.05) {
+          mouthMesh.visible = true;
+          // Smooth blend replacing the closed mouth seamlessly
+          mouthMat.opacity = Math.min(1.0, currentViseme.opacity * 1.5);
+          
+          // Subtle natural viseme shapes without displacing the face
+          const scaleY = currentViseme.scaleY * (1.0 + currentViseme.openY * 0.15);
           const scaleX = currentViseme.scaleX;
-          mouthPivotGroup.scale.set(scaleX, scaleY, 1.0);
-
-          // Natural anatomical jaw drop position
-          mouthPivotGroup.position.y = -0.38 - currentViseme.openY * 0.035;
+          mouthMesh.scale.set(scaleX, scaleY, 1.0);
         } else {
-          mouthPivotGroup.visible = false;
+          mouthMesh.visible = false;
           mouthMat.opacity = 0.0;
-          mouthPivotGroup.scale.set(1.0, 1.0, 1.0);
-          mouthPivotGroup.position.y = -0.38;
+          mouthMesh.scale.set(1.0, 1.0, 1.0);
         }
       }
 
