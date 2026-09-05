@@ -57,7 +57,7 @@ const HeroAvatarCanvas = () => {
 
     // Load Body Texture (Stationary)
     textureLoader.load(
-      '/models/karthick_straight_body.png',
+      '/models/karthick_straight_body.png?v=3',
       (bodyTex) => {
         bodyTex.colorSpace = THREE.SRGBColorSpace;
         bodyTex.generateMipmaps = true;
@@ -77,7 +77,7 @@ const HeroAvatarCanvas = () => {
 
         // Load Head Texture (Interactive Mouse Tracking)
         textureLoader.load(
-          '/models/karthick_straight_head.png',
+          '/models/karthick_straight_head.png?v=3',
           (headTex) => {
             headTex.colorSpace = THREE.SRGBColorSpace;
             headTex.generateMipmaps = true;
