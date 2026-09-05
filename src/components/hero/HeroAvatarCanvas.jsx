@@ -60,14 +60,17 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
     scene.add(characterGroup);
 
     let eyelidMat = null;
+    let eyelidMesh = null;
+    let mouthPivotGroup = null;
     let mouthMesh = null;
     let mouthMat = null;
+    let currentMouthOpen = 0.0;
 
     const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
 
     // Load Base Character (Open Eyes & Neutral Mouth)
     textureLoader.load(
-      '/models/karthick_straight_open.png?v=6',
+      '/models/karthick_straight_open.png?v=7',
       (baseTex) => {
         baseTex.colorSpace = THREE.SRGBColorSpace;
         baseTex.generateMipmaps = true;
@@ -85,9 +88,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         baseMesh.position.set(0, -0.2, 0);
         characterGroup.add(baseMesh);
 
-        // Load Eyelids Layer (For Natural Eye Blinking)
+        // Load Eyelids Layer (For Natural Solid Eye Blinking)
         textureLoader.load(
-          '/models/karthick_eyelids.png?v=6',
+          '/models/karthick_eyelids.png?v=7',
           (eyelidTex) => {
             eyelidTex.colorSpace = THREE.SRGBColorSpace;
             eyelidTex.generateMipmaps = true;
@@ -101,15 +104,16 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
               side: THREE.DoubleSide,
             });
 
-            const eyelidMesh = new THREE.Mesh(planeGeom, eyelidMat);
+            eyelidMesh = new THREE.Mesh(planeGeom, eyelidMat);
             eyelidMesh.position.set(0, -0.2, 0.01);
+            eyelidMesh.visible = false;
             characterGroup.add(eyelidMesh);
           }
         );
 
-        // Load Open Mouth Layer (For Real Human Speaking Lip-Sync)
+        // Load Open Mouth Layer with Pivot Centered on Mouth Line
         textureLoader.load(
-          '/models/karthick_mouth_open.png?v=6',
+          '/models/karthick_mouth_open.png?v=7',
           (mouthTex) => {
             mouthTex.colorSpace = THREE.SRGBColorSpace;
             mouthTex.generateMipmaps = true;
@@ -123,9 +127,14 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
               side: THREE.DoubleSide,
             });
 
+            mouthPivotGroup = new THREE.Group();
+            mouthPivotGroup.position.set(-0.052, 0.0746, 0.02);
+
             mouthMesh = new THREE.Mesh(planeGeom, mouthMat);
-            mouthMesh.position.set(0, -0.2, 0.02);
-            characterGroup.add(mouthMesh);
+            mouthMesh.position.set(0.052, -0.2746, 0);
+            mouthPivotGroup.add(mouthMesh);
+            mouthPivotGroup.visible = false;
+            characterGroup.add(mouthPivotGroup);
 
             setIsLoading(false);
           },
@@ -170,10 +179,10 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
     resizeObserver.observe(container);
 
     // 6. Realistic Periodic Eye Blinking State
-    let nextBlinkTime = 2.5;
+    let nextBlinkTime = 2.2;
     let isBlinking = false;
     let blinkStartTime = 0;
-    const blinkDuration = 0.16; // 160ms natural human blink
+    const blinkDuration = 0.13; // 130ms natural human blink
 
     // 7. Animation Loop: Real Human Audio Lip-Sync + Eye Blinking
     let animationFrameId;
@@ -200,46 +209,78 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         characterGroup.rotation.set(0, 0, 0);
       }
 
-      // 1. Natural Eye Blinking Controller
-      if (eyelidMat) {
+      // 1. Natural Eye Blinking Controller (Fast, snappy, solid eyelids without ghosting)
+      if (eyelidMat && eyelidMesh) {
         if (!isBlinking && elapsedTime >= nextBlinkTime) {
           isBlinking = true;
           blinkStartTime = elapsedTime;
+          eyelidMesh.visible = true;
         }
 
         if (isBlinking) {
           const progress = (elapsedTime - blinkStartTime) / blinkDuration;
           if (progress >= 1.0) {
             eyelidMat.opacity = 0.0;
+            eyelidMesh.visible = false;
             isBlinking = false;
-            const isDoubleBlink = Math.random() < 0.22;
-            nextBlinkTime = elapsedTime + (isDoubleBlink ? 0.22 : 3.2 + Math.random() * 2.2);
+            const isDoubleBlink = Math.random() < 0.2;
+            nextBlinkTime = elapsedTime + (isDoubleBlink ? 0.25 : 3.0 + Math.random() * 2.5);
           } else {
-            eyelidMat.opacity = Math.sin(progress * Math.PI);
+            eyelidMesh.visible = true;
+            let eyeAlpha = 1.0;
+            if (progress < 0.25) {
+              eyeAlpha = progress / 0.25;
+            } else if (progress > 0.75) {
+              eyeAlpha = (1.0 - progress) / 0.25;
+            } else {
+              eyeAlpha = 1.0;
+            }
+            eyelidMat.opacity = eyeAlpha;
           }
         }
       }
 
-      // 2. Real Human Lip-Sync Controller (Relaxed Medium Speaking Pace)
-      if (mouthMat && mouthMesh) {
+      // 2. Real Human Lip-Sync Controller (Vertical Mouth Opening & Natural Syllable Articulation)
+      if (mouthMat && mouthPivotGroup) {
         if (isSpeakingRef.current) {
           const level = audioLevelRef.current;
           
-          // Relaxed syllable cadence (~4-5 syllables per second matching medium speech)
-          const syllableOsc = Math.sin(elapsedTime * 8.5) * 0.35 + 0.65;
-          const targetOpacity = Math.min(0.9, (level > 0.04 ? level * 1.25 : Math.max(0, Math.sin(elapsedTime * 7.0) * 0.75)) * syllableOsc);
+          // Natural syllable cadence (~4-5 syllables per second matching medium speech)
+          const syllableWave = Math.sin(elapsedTime * 9.0) * 0.5 + 0.5;
           
-          // Fluid, natural mouth transitions (smooth medium opening and closing)
-          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, targetOpacity, 0.18);
+          // Calculate realistic mouth open amount (0 = closed, 1 = fully open)
+          let targetOpen = 0.0;
+          if (level > 0.03) {
+            targetOpen = Math.min(1.0, (level * 1.5 + 0.2) * (0.35 + 0.65 * syllableWave));
+          } else {
+            targetOpen = 0.0;
+          }
+          
+          // Fluid, natural mouth transitions
+          currentMouthOpen = THREE.MathUtils.lerp(currentMouthOpen, targetOpen, 0.24);
 
-          // Subtle natural jaw movement
-          const openScaleY = 1.0 + mouthMat.opacity * 0.05;
-          const openScaleX = 1.0 + mouthMat.opacity * 0.02;
-          mouthMesh.scale.set(openScaleX, openScaleY, 1.0);
+          if (currentMouthOpen > 0.03) {
+            mouthPivotGroup.visible = true;
+            mouthMat.opacity = Math.min(1.0, currentMouthOpen * 3.5);
+            mouthPivotGroup.scale.set(1.0 + currentMouthOpen * 0.05, currentMouthOpen, 1.0);
+            mouthPivotGroup.position.y = 0.0746 - currentMouthOpen * 0.025;
+          } else {
+            mouthPivotGroup.visible = false;
+            mouthPivotGroup.scale.set(1.0, 0.0, 1.0);
+            mouthPivotGroup.position.y = 0.0746;
+          }
         } else {
-          // Smooth return to closed neutral smile
-          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, 0.0, 0.15);
-          mouthMesh.scale.set(1.0, 1.0, 1.0);
+          currentMouthOpen = THREE.MathUtils.lerp(currentMouthOpen, 0.0, 0.2);
+          if (currentMouthOpen <= 0.03) {
+            mouthPivotGroup.visible = false;
+            mouthPivotGroup.scale.set(1.0, 0.0, 1.0);
+            mouthPivotGroup.position.y = 0.0746;
+          } else {
+            mouthPivotGroup.visible = true;
+            mouthMat.opacity = Math.min(1.0, currentMouthOpen * 3.5);
+            mouthPivotGroup.scale.set(1.0 + currentMouthOpen * 0.05, currentMouthOpen, 1.0);
+            mouthPivotGroup.position.y = 0.0746 - currentMouthOpen * 0.025;
+          }
         }
       }
 

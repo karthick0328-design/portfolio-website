@@ -18,7 +18,7 @@ const HeroSection = () => {
 
   // Initialize audio and Web Audio API analyser
   useEffect(() => {
-    const audio = new Audio('/audio/karthick_intro.mp3');
+    const audio = new Audio('/audio/karthick_intro.mp3?v=7');
     audioRef.current = audio;
 
     const handleEnded = () => {
