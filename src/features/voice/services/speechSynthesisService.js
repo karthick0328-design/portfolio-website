@@ -27,30 +27,74 @@ class SpeechSynthesisService {
   }
 
   /**
-   * Prioritize natural, human-sounding English voices across browsers
+   * Determine if a voice is a male/boy voice and strictly exclude female voices
+   */
+  _isMaleVoice(voice) {
+    if (!voice || !voice.name) return false;
+    const name = voice.name.toLowerCase();
+    const uri = (voice.voiceURI || '').toLowerCase();
+    const combined = `${name} ${uri}`;
+
+    // Explicit disqualifications for any female voice
+    const femaleKeywords = [
+      'female', 'woman', 'girl', 'zira', 'jenny', 'samantha', 'victoria', 'eva',
+      'susan', 'karen', 'moira', 'fiona', 'tessa', 'veena', 'heera', 'hazel',
+      'catherine', 'linda', 'aria', 'natasha', 'sonia', 'stephanie', 'allison',
+      'ava', 'emma', 'olivia', 'clara', 'amy', 'joanna', 'kendra', 'ivy', 'salli',
+      'kimberly', 'michelle', 'nicole', 'alice', 'lucia', 'laura', 'helena', 'anna',
+      'google us english' // Standard Google US English in Web Speech is female
+    ];
+
+    for (const kw of femaleKeywords) {
+      if (combined.includes(kw)) {
+        return false;
+      }
+    }
+
+    // Explicit male keywords
+    const maleKeywords = [
+      'male', 'david', 'mark', 'george', 'guy', 'ryan', 'christopher', 'eric',
+      'daniel', 'alex', 'fred', 'oliver', 'arthur', 'aaron', 'gordon', 'tom',
+      'james', 'richard', 'steffan', 'ravi', 'prabhat', 'matthew', 'joey', 'justin'
+    ];
+
+    for (const kw of maleKeywords) {
+      if (combined.includes(kw)) {
+        return true;
+      }
+    }
+
+    return voice.lang && voice.lang.toLowerCase().startsWith('en');
+  }
+
+  /**
+   * Prioritize natural, human-sounding English male/boy voices across all browsers & OS
    */
   _selectBestVoice() {
     if (!this.voices || this.voices.length === 0) return null;
 
-    const naturalVoices = [
-      (v) => v.name.includes('Google US English'),
-      (v) => v.name.includes('Google UK English Male'),
-      (v) => v.name.includes('Google UK English Female'),
-      (v) => v.name.includes('Natural') && v.lang.startsWith('en'),
-      (v) => v.name.includes('Guy') || v.name.includes('Ryan') || v.name.includes('Jenny'),
-      (v) => v.name.includes('David') || v.name.includes('Mark'),
-      (v) => v.name.includes('Daniel') || v.name.includes('Samantha') || v.name.includes('Alex'),
-      (v) => v.lang === 'en-US',
-      (v) => v.lang === 'en-GB',
-      (v) => v.lang.startsWith('en')
+    const englishVoices = this.voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+
+    // Priority list of premium male voices
+    const maleMatchers = [
+      (v) => /natural.*(guy|ryan|christopher|eric|george|david|mark)/i.test(v.name),
+      (v) => /google\s+uk\s+english\s+male/i.test(v.name),
+      (v) => /google.*male/i.test(v.name) || /google.*male/i.test(v.voiceURI || ''),
+      (v) => /microsoft\s+(david|mark|george|guy|ryan|christopher|eric)/i.test(v.name),
+      (v) => /(daniel|alex|oliver|arthur|aaron|fred|gordon|matthew|james)/i.test(v.name),
+      (v) => /male/i.test(v.name) || /male/i.test(v.voiceURI || ''),
+      (v) => this._isMaleVoice(v)
     ];
 
-    for (const matcher of naturalVoices) {
-      const match = this.voices.find(matcher);
-      if (match) return match;
+    for (const matcher of maleMatchers) {
+      const match = englishVoices.find(matcher);
+      if (match && this._isMaleVoice(match)) return match;
     }
 
-    return this.voices[0] || null;
+    const strictlyMaleVoice = englishVoices.find(v => this._isMaleVoice(v));
+    if (strictlyMaleVoice) return strictlyMaleVoice;
+
+    return englishVoices[0] || this.voices[0] || null;
   }
 
   /**
@@ -80,7 +124,7 @@ class SpeechSynthesisService {
     }
 
     utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+    utterance.pitch = 0.95; // Grounded, natural male voice resonance
     utterance.volume = 1.0;
 
     utterance.onstart = () => {
