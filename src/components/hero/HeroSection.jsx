@@ -27,8 +27,13 @@ const HeroSection = () => {
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const animFrameRef = useRef(null);
+  const isSpeakingRef = useRef(false);
 
-  // Initialize audio and Web Audio API analyser
+  useEffect(() => {
+    isSpeakingRef.current = isSpeaking;
+  }, [isSpeaking]);
+
+  // Initialize audio
   useEffect(() => {
     const audio = new Audio('/audio/karthick_intro.mp3?v=7');
     audioRef.current = audio;
@@ -41,7 +46,7 @@ const HeroSection = () => {
 
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('pause', () => {
-      if (audio.currentTime >= audio.duration) {
+      if (audio.currentTime >= audio.duration || audio.paused) {
         handleEnded();
       }
     });
@@ -57,21 +62,28 @@ const HeroSection = () => {
   }, []);
 
   const updateAudioMeter = () => {
-    if (analyserRef.current && isSpeaking) {
-      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-      analyserRef.current.getByteFrequencyData(dataArray);
+    const audio = audioRef.current;
+    if (audio && !audio.paused) {
+      if (analyserRef.current) {
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        analyserRef.current.getByteFrequencyData(dataArray);
 
-      // Focus on voice speech frequencies (100Hz - 3500Hz)
-      let sum = 0;
-      const count = Math.min(32, dataArray.length);
-      for (let i = 2; i < count; i++) {
-        sum += dataArray[i];
+        let sum = 0;
+        const count = Math.min(32, dataArray.length);
+        for (let i = 2; i < count; i++) {
+          sum += dataArray[i];
+        }
+        const avg = sum / (count - 2);
+        const normalizedLevel = Math.min(1.0, avg / 100.0);
+        setAudioLevel(normalizedLevel > 0.05 ? normalizedLevel : 0.35);
+      } else {
+        // Fallback rhythmic cadence
+        setAudioLevel(0.45);
       }
-      const avg = sum / (count - 2);
-      const normalizedLevel = Math.min(1.0, avg / 120.0);
-      setAudioLevel(normalizedLevel);
 
       animFrameRef.current = requestAnimationFrame(updateAudioMeter);
+    } else {
+      setAudioLevel(0);
     }
   };
 
@@ -91,7 +103,6 @@ const HeroSection = () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     } else {
       try {
-        // Setup AudioContext on first user interaction
         if (!audioContextRef.current) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           if (AudioContext) {
@@ -100,12 +111,16 @@ const HeroSection = () => {
             analyser.fftSize = 128;
             analyser.smoothingTimeConstant = 0.6;
 
-            const source = ctx.createMediaElementSource(audio);
-            source.connect(analyser);
-            analyser.connect(ctx.destination);
+            try {
+              const source = ctx.createMediaElementSource(audio);
+              source.connect(analyser);
+              analyser.connect(ctx.destination);
+              analyserRef.current = analyser;
+            } catch (mediaErr) {
+              console.warn('MediaElementSource fallback:', mediaErr);
+            }
 
             audioContextRef.current = ctx;
-            analyserRef.current = analyser;
           }
         }
 
@@ -114,21 +129,29 @@ const HeroSection = () => {
         }
 
         audio.currentTime = 0;
-        await audio.play();
         setIsSpeaking(true);
+        await audio.play();
         animFrameRef.current = requestAnimationFrame(updateAudioMeter);
       } catch (err) {
         console.warn('MP3 playback fallback to speech synthesis:', err);
-        // Fallback to Web Speech API if mp3 cannot play
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const introText = `Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!`;
           const utterance = new SpeechSynthesisUtterance(introText);
           utterance.rate = 1.0;
           utterance.pitch = 1.0;
-          utterance.onstart = () => setIsSpeaking(true);
-          utterance.onend = () => { setIsSpeaking(false); setAudioLevel(0); };
-          utterance.onerror = () => { setIsSpeaking(false); setAudioLevel(0); };
+          utterance.onstart = () => {
+            setIsSpeaking(true);
+            setAudioLevel(0.5);
+          };
+          utterance.onend = () => {
+            setIsSpeaking(false);
+            setAudioLevel(0);
+          };
+          utterance.onerror = () => {
+            setIsSpeaking(false);
+            setAudioLevel(0);
+          };
           window.speechSynthesis.speak(utterance);
         }
       }
