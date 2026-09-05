@@ -94,19 +94,20 @@ const HeroAvatarCanvas = () => {
       (gltf) => {
         character = gltf.scene;
 
-        // Names of non-character objects to completely remove/hide (monitor, screen, keyboard, desk, ground)
+        // Names of non-character objects to completely remove/hide (monitor, screen, keyboard, desk, ground, stand)
         const removePrefixes = [
           'cube.002', 'screenlight', 'keys', 'keyboard', 'plane.008', 'ground', 
-          'plane.011', 'plane.012', 'plane.013', 'plane.010', 'glass.002'
+          'plane.011', 'plane.012', 'plane.013', 'plane.010', 'glass.002', 'stand'
         ];
 
         character.traverse((child) => {
           const name = (child.name || '').toLowerCase();
           
-          // Completely hide monitor, desk, keyboard, screen, ground objects
+          // Completely hide monitor, desk, keyboard, screen, ground, stand objects
           const shouldRemove = removePrefixes.some(p => name.startsWith(p) || name === p) ||
             (name.includes('plane') && !name.includes('ear') && !name.includes('face') && !name.includes('eyebrow') && !name.includes('neck')) ||
-            (name.includes('cube') && !name.includes('shirt') && !name.includes('hair') && !name.includes('pant') && !name.includes('teeth'));
+            (name.includes('cube') && !name.includes('shirt') && !name.includes('hair') && !name.includes('pant') && !name.includes('teeth')) ||
+            (name.includes('stand') || name.includes('wood') || name.includes('desk'));
 
           if (shouldRemove) {
             child.visible = false;
@@ -118,35 +119,62 @@ const HeroAvatarCanvas = () => {
             child.castShadow = true;
             child.receiveShadow = true;
 
-            // Apply realistic developer styling matching Karthick's photo
+            // Apply high-quality materials matching the reference character
             if (child.material) {
               const matName = (child.material.name || '').toLowerCase();
               const meshName = (child.name || '').toLowerCase();
 
-              if (meshName.includes('shirt') || matName.includes('shirt')) {
-                // Sleek obsidian / dark navy shirt
+              if (meshName.includes('shirt') || matName.includes('shirt') || matName === 'material.008' || matName === 'material.010') {
+                // Sleek obsidian / jet black tailored outfit
                 const newMat = child.material.clone();
-                newMat.color = new THREE.Color('#18181b');
-                newMat.roughness = 0.6;
+                newMat.color = new THREE.Color('#121216');
+                newMat.roughness = 0.65;
+                newMat.metalness = 0.05;
+                child.material = newMat;
+              } else if (meshName.includes('cap') || matName === 'material.005' || matName === 'material.009') {
+                // Clean matte black cap
+                const newMat = child.material.clone();
+                newMat.color = new THREE.Color('#101014');
+                newMat.roughness = 0.55;
+                newMat.metalness = 0.1;
                 child.material = newMat;
               } else if (meshName.includes('pant')) {
                 // Clean dark trousers
                 const newMat = child.material.clone();
-                newMat.color = new THREE.Color('#0a0a0c');
+                newMat.color = new THREE.Color('#0a0a0d');
                 newMat.roughness = 0.7;
                 child.material = newMat;
-              } else if (meshName.includes('hair')) {
-                // Deep natural black hair
+              } else if (meshName.includes('hair') || matName === 'material.007') {
+                // Natural black stylized hair
                 const newMat = child.material.clone();
-                newMat.color = new THREE.Color('#0d0d10');
+                newMat.color = new THREE.Color('#0c0c0f');
+                newMat.roughness = 0.75;
+                child.material = newMat;
+              } else if (meshName.includes('eyebrow') || matName === 'material.003') {
+                // Eyebrows
+                const newMat = child.material.clone();
+                newMat.color = new THREE.Color('#0a0a0c');
                 newMat.roughness = 0.8;
                 child.material = newMat;
-              } else if (meshName.includes('face') || meshName.includes('ear') || meshName.includes('neck') || meshName.includes('hand')) {
-                // Warm, lifelike skin tone matching Karthick's photo
-                const newMat = child.material.clone();
-                newMat.color = new THREE.Color('#c89678');
-                newMat.roughness = 0.55;
-                child.material = newMat;
+              } else if (meshName.includes('eye') || matName.includes('eye')) {
+                // Expressive eyes with crisp gloss
+                if (child.material.map) {
+                  child.material.color = new THREE.Color('#ffffff');
+                  child.material.roughness = 0.1;
+                  child.material.metalness = 0.0;
+                }
+              } else if (meshName.includes('face') || meshName.includes('ear') || meshName.includes('neck')) {
+                // Keep the original high-res textured skin map vibrant without darkening tint
+                if (child.material.map) {
+                  child.material.color = new THREE.Color('#ffffff');
+                  child.material.roughness = 0.48;
+                  child.material.metalness = 0.0;
+                }
+              } else if (meshName.includes('hand') || matName.includes('hand')) {
+                if (child.material.map) {
+                  child.material.color = new THREE.Color('#ffffff');
+                  child.material.roughness = 0.52;
+                }
               }
             }
           }
