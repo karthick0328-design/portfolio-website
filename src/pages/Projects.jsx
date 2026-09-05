@@ -71,42 +71,30 @@ const Projects = () => {
     setCurrentIndex(0);
   }, [selectedCategory, searchQuery]);
 
+  const maxIndex = Math.max(0, filteredProjects.length - cardsPerView);
+
   const nextSlide = useCallback(() => {
-    if (filteredProjects.length === 0) return;
-    setCurrentIndex((prev) => {
-      if (prev >= filteredProjects.length - 1) {
-        return 0;
-      }
-      return prev + 1;
-    });
-  }, [filteredProjects.length]);
+    if (filteredProjects.length <= cardsPerView) return;
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  }, [filteredProjects.length, cardsPerView, maxIndex]);
 
   const prevSlide = useCallback(() => {
-    if (filteredProjects.length === 0) return;
-    setCurrentIndex((prev) => {
-      if (prev <= 0) {
-        return Math.max(0, filteredProjects.length - 1);
-      }
-      return prev - 1;
-    });
-  }, [filteredProjects.length]);
+    if (filteredProjects.length <= cardsPerView) return;
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  }, [filteredProjects.length, cardsPerView, maxIndex]);
 
-  // Automatic moving one-by-one timer (every 3.5 seconds)
+  // Automatic moving one-by-one timer (every 3.2 seconds)
   useEffect(() => {
-    if (!isPlaying || isHovered || viewMode !== 'carousel' || filteredProjects.length <= 1) {
+    if (!isPlaying || isHovered || viewMode !== 'carousel' || filteredProjects.length <= cardsPerView) {
       return;
     }
 
     const interval = setInterval(() => {
       nextSlide();
-    }, 3500);
+    }, 3200);
 
     return () => clearInterval(interval);
-  }, [isPlaying, isHovered, viewMode, filteredProjects.length, nextSlide]);
-
-  const liveProjectsCount = useMemo(() => {
-    return projects.filter((p) => p.live && p.live.startsWith('http')).length;
-  }, [projects]);
+  }, [isPlaying, isHovered, viewMode, filteredProjects.length, cardsPerView, nextSlide]);
 
   return (
     <div id="projects" className="min-h-screen pt-24 pb-24 relative overflow-hidden">
@@ -121,28 +109,8 @@ const Projects = () => {
           subtitle="Explore my complete portfolio of live web applications, AI tools, 3D experiences, and open-source contributions."
         />
 
-        {/* Quick Highlights / Stats Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-10 mb-12">
-          <div className="p-4 rounded-2xl bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/80 dark:border-white/10 text-center shadow-sm">
-            <div className="text-2xl md:text-3xl font-black text-blue-600 dark:text-blue-400">{projects.length}+</div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-1">Showcased Projects</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/80 dark:border-white/10 text-center shadow-sm">
-            <div className="text-2xl md:text-3xl font-black text-emerald-600 dark:text-emerald-400">{liveProjectsCount}</div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-1">Live Deployments</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/80 dark:border-white/10 text-center shadow-sm">
-            <div className="text-2xl md:text-3xl font-black text-purple-600 dark:text-purple-400">10+</div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-1">Tech Frameworks</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/80 dark:border-white/10 text-center shadow-sm">
-            <div className="text-2xl md:text-3xl font-black text-cyan-600 dark:text-cyan-400">100%</div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-400 font-medium mt-1">Open Source / Active</div>
-          </div>
-        </div>
-
         {/* Filter Controls, Search & Carousel Mode Toolbar */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-8 mt-12">
           {/* Category Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/80 backdrop-blur-lg border border-zinc-200 dark:border-zinc-800">
             {categories.map((category) => {
@@ -230,7 +198,7 @@ const Projects = () => {
             </span>
           </div>
 
-          {viewMode === 'carousel' && filteredProjects.length > 1 && (
+          {viewMode === 'carousel' && filteredProjects.length > cardsPerView && (
             <div className="flex items-center gap-3">
               {/* Autoplay status / Pause button */}
               <button
@@ -241,7 +209,7 @@ const Projects = () => {
                 {isPlaying ? (
                   <>
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                    <FiPause className="text-xs" />
+                    <FiPause className="text-xs text-emerald-500" />
                     <span className="text-[11px] hidden sm:inline">Auto-moving</span>
                   </>
                 ) : (
@@ -278,28 +246,31 @@ const Projects = () => {
           viewMode === 'carousel' ? (
             /* Automatic Sliding Carousel Track (Moves one by one) */
             <div
-              className="relative w-full overflow-hidden py-4"
+              className="relative w-full overflow-hidden py-4 -mx-3 px-3"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
               <motion.div
-                className="flex gap-6 md:gap-8"
+                className="flex"
+                style={{
+                  width: `${(filteredProjects.length * 100) / cardsPerView}%`
+                }}
                 animate={{
-                  x: `-${currentIndex * (100 / cardsPerView)}%`
+                  x: `-${(currentIndex * 100) / filteredProjects.length}%`
                 }}
                 transition={{
                   type: 'spring',
-                  stiffness: 70,
-                  damping: 18,
-                  mass: 0.8
+                  stiffness: 80,
+                  damping: 20,
+                  mass: 0.9
                 }}
               >
-                {filteredProjects.map((project, index) => (
+                {filteredProjects.map((project) => (
                   <div
                     key={project.id}
-                    className="flex-shrink-0 h-full"
+                    className="px-3 md:px-4 h-full flex-shrink-0"
                     style={{
-                      width: `calc(${100 / cardsPerView}% - ${(cardsPerView - 1) * (cardsPerView === 3 ? 21.33 : 16) / cardsPerView}px)`
+                      width: `${100 / filteredProjects.length}%`
                     }}
                   >
                     <ProjectCard project={project} />
@@ -308,17 +279,17 @@ const Projects = () => {
               </motion.div>
 
               {/* Progress Dots Navigation */}
-              {filteredProjects.length > 1 && (
+              {filteredProjects.length > cardsPerView && (
                 <div className="flex items-center justify-center gap-2 mt-8">
-                  {filteredProjects.map((_, idx) => (
+                  {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentIndex(idx)}
                       aria-label={`Go to slide ${idx + 1}`}
-                      className={`h-2 rounded-full transition-all duration-300 ${
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
                         currentIndex === idx
                           ? 'w-8 bg-gradient-to-r from-blue-600 to-indigo-600'
-                          : 'w-2 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400 dark:hover:bg-zinc-600'
+                          : 'w-2.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400 dark:hover:bg-zinc-600'
                       }`}
                     />
                   ))}
@@ -395,5 +366,6 @@ const Projects = () => {
 };
 
 export default Projects;
+
 
 

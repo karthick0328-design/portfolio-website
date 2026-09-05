@@ -92,25 +92,6 @@ export const portfolioData = {
     },
     {
       id: 3,
-      title: "Next-Gen 3D Avatar Portfolio",
-      category: "3D & Creative Tech",
-      featured: true,
-      description: "Interactive personal portfolio featuring an interactive real-time 3D/2.5D Lip-Syncing avatar, voice recognition conversational assistant, dynamic audio visualizers, and glassmorphic UI.",
-      technologies: ["React.js", "Three.js", "Web Audio API", "Framer Motion", "Tailwind CSS"],
-      features: [
-        "Real-Time Lip-Syncing & Blinking Avatar",
-        "Conversational Voice AI Assistant Engine",
-        "Interactive 3D Elements & Particle Effects",
-        "Dynamic Theme Switching & Glassmorphism"
-      ],
-      github: "https://github.com/karthick0328-design/portfolio-website",
-      live: "https://karthick-portfolio-six.vercel.app/",
-      status: "Live & Deployed",
-      image: "/Karthick.jpeg",
-      gradient: "from-violet-600 to-blue-600"
-    },
-    {
-      id: 4,
       title: "AI Intelligent Digital Marketing Platform",
       category: "AI & Full Stack",
       featured: true,
@@ -129,7 +110,7 @@ export const portfolioData = {
       gradient: "from-emerald-500 to-teal-600"
     },
     {
-      id: 5,
+      id: 4,
       title: "3D Molecular Visualization System",
       category: "3D & Creative Tech",
       featured: true,
@@ -148,7 +129,7 @@ export const portfolioData = {
       gradient: "from-amber-500 to-orange-600"
     },
     {
-      id: 6,
+      id: 5,
       title: "Full-Stack E-Commerce & Admin Hub",
       category: "Web Applications",
       featured: true,

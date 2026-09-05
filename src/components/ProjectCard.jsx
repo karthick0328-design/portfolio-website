@@ -1,9 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiExternalLink, FiGithub, FiZap, FiGlobe, FiCode } from 'react-icons/fi';
+import { FiGithub, FiZap, FiCode, FiArrowRight } from 'react-icons/fi';
 
 const ProjectCard = ({ project }) => {
-  const isExternalLive = project.live && project.live !== '#';
   const isGithubRepo = project.github && project.github !== '#';
 
   return (
@@ -66,28 +65,15 @@ const ProjectCard = ({ project }) => {
 
         {/* Quick Hover Action Overlay */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 z-20">
-          {isExternalLive && (
-            <a
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30 transform -translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 flex items-center gap-1.5 text-xs font-bold px-4"
-              title="Open Live Website"
-            >
-              <FiGlobe className="text-base" /> Live Demo
-            </a>
-          )}
-          {isGithubRepo && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white shadow-lg border border-white/20 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 flex items-center gap-1.5 text-xs font-bold px-4"
-              title="View Source on GitHub"
-            >
-              <FiGithub className="text-base" /> GitHub
-            </a>
-          )}
+          <a
+            href={isGithubRepo ? project.github : 'https://github.com/karthick0328-design'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-3 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-white shadow-xl border border-white/20 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:scale-105 flex items-center gap-2 text-xs font-bold px-5"
+            title="View Source on GitHub"
+          >
+            <FiGithub className="text-base text-blue-400" /> View Repository
+          </a>
         </div>
       </div>
 
@@ -95,18 +81,8 @@ const ProjectCard = ({ project }) => {
       <div className="p-6 md:p-7 flex-grow flex flex-col relative z-10 bg-transparent">
         {/* Title */}
         <div className="mb-3">
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-white group-hover:text-blue-500 transition-colors flex items-center justify-between gap-2">
-            <span>{project.title}</span>
-            {isExternalLive && (
-              <a 
-                href={project.live} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-400 transition-opacity"
-              >
-                <FiExternalLink className="text-base" />
-              </a>
-            )}
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-white group-hover:text-blue-500 transition-colors">
+            {project.title}
           </h3>
         </div>
 
@@ -145,42 +121,18 @@ const ProjectCard = ({ project }) => {
           ))}
         </div>
 
-        {/* Action Buttons Footer */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
-          {isExternalLive ? (
-            <a
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-blue-500/25 active:scale-95"
-            >
-              <FiGlobe className="text-sm" /> Live Demo
-            </a>
-          ) : (
-            <div className="flex items-center justify-center py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 font-medium text-xs cursor-not-allowed">
-              Internal Tool
-            </div>
-          )}
-
-          {isGithubRepo ? (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/90 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold text-xs border border-zinc-300 dark:border-zinc-700 transition-all active:scale-95"
-            >
-              <FiGithub className="text-sm" /> View Code
-            </a>
-          ) : (
-            <a
-              href="https://github.com/karthick0328-design"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/90 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold text-xs border border-zinc-300 dark:border-zinc-700 transition-all active:scale-95"
-            >
-              <FiGithub className="text-sm" /> GitHub Profile
-            </a>
-          )}
+        {/* Action Button Footer */}
+        <div className="pt-2">
+          <a
+            href={isGithubRepo ? project.github : 'https://github.com/karthick0328-design'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl bg-zinc-900 dark:bg-zinc-800 hover:bg-blue-600 dark:hover:bg-blue-600 text-white font-semibold text-xs border border-zinc-800 dark:border-zinc-700 hover:border-blue-500 transition-all duration-300 shadow-md hover:shadow-blue-500/25 active:scale-[0.98] group/btn"
+          >
+            <FiGithub className="text-base text-blue-400 group-hover/btn:text-white transition-colors" />
+            <span>View Source Code on GitHub</span>
+            <FiArrowRight className="text-sm group-hover/btn:translate-x-1 transition-transform" />
+          </a>
         </div>
       </div>
     </motion.div>
@@ -188,4 +140,5 @@ const ProjectCard = ({ project }) => {
 };
 
 export default ProjectCard;
+
 
