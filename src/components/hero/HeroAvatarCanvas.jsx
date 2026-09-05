@@ -1,15 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
+const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak }) => {
   const mountRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const isSpeakingRef = useRef(isSpeaking);
+  const audioLevelRef = useRef(audioLevel);
 
   useEffect(() => {
     isSpeakingRef.current = isSpeaking;
   }, [isSpeaking]);
+
+  useEffect(() => {
+    audioLevelRef.current = audioLevel;
+  }, [audioLevel]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -49,19 +54,20 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
 
     container.appendChild(renderer.domElement);
 
-    // 4. Character Meshes: Base Character + Animated Eyelids + Animated Speaking Mouth
+    // 4. Character Meshes: Base Character + Animated Eyelids + Speaking Mouth
     const textureLoader = new THREE.TextureLoader();
     let characterGroup = new THREE.Group();
     scene.add(characterGroup);
 
     let eyelidMat = null;
+    let mouthMesh = null;
     let mouthMat = null;
 
     const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
 
     // Load Base Character (Open Eyes & Neutral Mouth)
     textureLoader.load(
-      '/models/karthick_straight_open.png?v=5',
+      '/models/karthick_straight_open.png?v=6',
       (baseTex) => {
         baseTex.colorSpace = THREE.SRGBColorSpace;
         baseTex.generateMipmaps = true;
@@ -79,9 +85,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
         baseMesh.position.set(0, -0.2, 0);
         characterGroup.add(baseMesh);
 
-        // Load Eyelids Layer (For Realistic Eye Blinking)
+        // Load Eyelids Layer (For Natural Eye Blinking)
         textureLoader.load(
-          '/models/karthick_eyelids.png?v=5',
+          '/models/karthick_eyelids.png?v=6',
           (eyelidTex) => {
             eyelidTex.colorSpace = THREE.SRGBColorSpace;
             eyelidTex.generateMipmaps = true;
@@ -101,9 +107,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
           }
         );
 
-        // Load Open Mouth Layer (For Realistic Human Speaking Lip-Sync)
+        // Load Open Mouth Layer (For Real Human Speaking Lip-Sync)
         textureLoader.load(
-          '/models/karthick_mouth_open.png?v=5',
+          '/models/karthick_mouth_open.png?v=6',
           (mouthTex) => {
             mouthTex.colorSpace = THREE.SRGBColorSpace;
             mouthTex.generateMipmaps = true;
@@ -117,7 +123,7 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
               side: THREE.DoubleSide,
             });
 
-            const mouthMesh = new THREE.Mesh(planeGeom, mouthMat);
+            mouthMesh = new THREE.Mesh(planeGeom, mouthMat);
             mouthMesh.position.set(0, -0.2, 0.02);
             characterGroup.add(mouthMesh);
 
@@ -167,9 +173,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
     let nextBlinkTime = 2.5;
     let isBlinking = false;
     let blinkStartTime = 0;
-    const blinkDuration = 0.16; // 160ms natural blink
+    const blinkDuration = 0.16; // 160ms natural human blink
 
-    // 7. Animation Loop: Realistic Lip-Sync Speaking + Eye Blinking
+    // 7. Animation Loop: Real Human Audio Lip-Sync + Eye Blinking
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -214,27 +220,26 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
         }
       }
 
-      // 2. Realistic Open-Mouth Speaking Lip-Sync Controller
-      if (mouthMat) {
+      // 2. Real Human Lip-Sync Controller (Driven by Voice Audio Energy + Syllables)
+      if (mouthMat && mouthMesh) {
         if (isSpeakingRef.current) {
-          // Dynamic multi-frequency phoneme rhythm simulating human speech syllables
-          const syllable1 = Math.sin(elapsedTime * 14.0);
-          const syllable2 = Math.sin(elapsedTime * 9.5 + 1.2);
-          const wordPause = Math.sin(elapsedTime * 2.8);
+          const level = audioLevelRef.current;
+          
+          // Syllable oscillation for natural vowel articulation
+          const syllableOsc = Math.sin(elapsedTime * 16.0) * 0.3 + 0.7;
+          const targetOpacity = Math.min(1.0, (level > 0.05 ? level * 1.4 : Math.max(0, Math.sin(elapsedTime * 12.0) * 0.85)) * syllableOsc);
+          
+          // Smooth mouth opening transitions
+          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, targetOpacity, 0.35);
 
-          // Calculate speech amplitude (with natural breath pauses between words)
-          let speechAmp = (syllable1 * 0.6 + syllable2 * 0.4);
-          if (wordPause < -0.3) {
-            speechAmp = 0.0; // natural micro-pause between phrases
-          } else {
-            speechAmp = Math.max(0.0, speechAmp);
-          }
-
-          // Smoothly interpolate mouth opacity to speech amplitude
-          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, speechAmp * 0.95, 0.25);
+          // Subtle physical jaw expansion when pronouncing vowels
+          const openScaleY = 1.0 + mouthMat.opacity * 0.08;
+          const openScaleX = 1.0 + mouthMat.opacity * 0.03;
+          mouthMesh.scale.set(openScaleX, openScaleY, 1.0);
         } else {
-          // Return smoothly to closed neutral mouth
-          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, 0.0, 0.2);
+          // Return to closed neutral mouth
+          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, 0.0, 0.25);
+          mouthMesh.scale.set(1.0, 1.0, 1.0);
         }
       }
 
@@ -260,7 +265,7 @@ const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
     <div 
       onClick={onToggleSpeak}
       className="absolute inset-0 w-full h-full flex items-center justify-center select-none z-10 overflow-hidden cursor-pointer"
-      title="Click character to toggle voice introduction"
+      title="Click to play real voice introduction"
     >
       {/* 3D Canvas Mounting Point */}
       <div 

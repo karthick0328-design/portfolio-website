@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight, FiVolume2, FiVolumeX } from 'react-icons/fi';
@@ -9,44 +9,116 @@ const HeroSection = () => {
   const { personalInfo } = portfolioData;
   const { scrollY } = useScroll();
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [audioLevel, setAudioLevel] = useState(0);
 
-  // Speech narration handler using Web Speech API
-  const toggleSpeak = () => {
-    if (!('speechSynthesis' in window)) return;
+  const audioRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const animFrameRef = useRef(null);
 
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    } else {
-      window.speechSynthesis.cancel(); // cancel any active speech
-      const introText = `Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!`;
-      
-      const utterance = new SpeechSynthesisUtterance(introText);
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-
-      // Select a natural English voice if available
-      const voices = window.speechSynthesis.getVoices();
-      const naturalVoice = voices.find(v => (v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Guy')))) || voices.find(v => v.lang.startsWith('en'));
-      if (naturalVoice) {
-        utterance.voice = naturalVoice;
-      }
-
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
+  // Initialize audio and Web Audio API analyser
   useEffect(() => {
+    const audio = new Audio('/audio/karthick_intro.mp3');
+    audioRef.current = audio;
+
+    const handleEnded = () => {
+      setIsSpeaking(false);
+      setAudioLevel(0);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('pause', () => {
+      if (audio.currentTime >= audio.duration) {
+        handleEnded();
+      }
+    });
+
     return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+      audio.pause();
+      audio.removeEventListener('ended', handleEnded);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close();
       }
     };
   }, []);
+
+  const updateAudioMeter = () => {
+    if (analyserRef.current && isSpeaking) {
+      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+      analyserRef.current.getByteFrequencyData(dataArray);
+
+      // Focus on voice speech frequencies (100Hz - 3500Hz)
+      let sum = 0;
+      const count = Math.min(32, dataArray.length);
+      for (let i = 2; i < count; i++) {
+        sum += dataArray[i];
+      }
+      const avg = sum / (count - 2);
+      const normalizedLevel = Math.min(1.0, avg / 120.0);
+      setAudioLevel(normalizedLevel);
+
+      animFrameRef.current = requestAnimationFrame(updateAudioMeter);
+    }
+  };
+
+  // Toggle studio voice narration
+  const toggleSpeak = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isSpeaking) {
+      audio.pause();
+      audio.currentTime = 0;
+      setIsSpeaking(false);
+      setAudioLevel(0);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    } else {
+      try {
+        // Setup AudioContext on first user interaction
+        if (!audioContextRef.current) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            const ctx = new AudioContext();
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 128;
+            analyser.smoothingTimeConstant = 0.6;
+
+            const source = ctx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(ctx.destination);
+
+            audioContextRef.current = ctx;
+            analyserRef.current = analyser;
+          }
+        }
+
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+
+        audio.currentTime = 0;
+        await audio.play();
+        setIsSpeaking(true);
+        animFrameRef.current = requestAnimationFrame(updateAudioMeter);
+      } catch (err) {
+        console.warn('MP3 playback fallback to speech synthesis:', err);
+        // Fallback to Web Speech API if mp3 cannot play
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const introText = `Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!`;
+          const utterance = new SpeechSynthesisUtterance(introText);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          utterance.onstart = () => setIsSpeaking(true);
+          utterance.onend = () => { setIsSpeaking(false); setAudioLevel(0); };
+          utterance.onerror = () => { setIsSpeaking(false); setAudioLevel(0); };
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+    }
+  };
 
   // Subtle parallax effect on scroll
   const contentY = useTransform(scrollY, [0, 500], [0, 50]);
@@ -66,8 +138,8 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(248,250,252,0),#f8fafc)] dark:bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)] transition-colors duration-500" />
       </div>
 
-      {/* 2. 3D Human Avatar (Centered, Close-Up, Speaking Lip-Sync) */}
-      <HeroAvatarCanvas isSpeaking={isSpeaking} onToggleSpeak={toggleSpeak} />
+      {/* 2. 3D Human Avatar (Centered, Close-Up, Real Voice Lip-Sync) */}
+      <HeroAvatarCanvas isSpeaking={isSpeaking} audioLevel={audioLevel} onToggleSpeak={toggleSpeak} />
 
       {/* 3. Floating Left Social Icons (Vertical Stack) */}
       <motion.div 
