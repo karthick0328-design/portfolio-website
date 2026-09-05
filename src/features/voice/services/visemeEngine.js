@@ -5,6 +5,7 @@
 
 export const VISEME_SHAPES = {
   rest: { name: 'rest', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },
+  SMILE: { name: 'SMILE', openY: 0.28, scaleX: 1.0, scaleY: 1.0, opacity: 0.8 },
   A: { name: 'A', openY: 0.95, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ah', 'car', 'and', 'stack'
   E: { name: 'E', openY: 0.60, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ee', 'react', 'see', 'web'
   O: { name: 'O', openY: 0.85, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oh', 'code', 'node', 'know'
@@ -43,12 +44,15 @@ class VisemeEngine {
 
       // Handle punctuation pauses
       if (token === '.' || token === '!' || token === '?') {
+        const prevToken = (tokens[t - 1] || '').toLowerCase();
+        const isWelcomingEnd = prevToken === 'portfolio' || prevToken === 'welcome';
+
         this.timeline.push({
           startMs: currentMs,
-          endMs: currentMs + 380,
-          viseme: VISEME_SHAPES.rest
+          endMs: currentMs + (isWelcomingEnd ? 450 : 380),
+          viseme: isWelcomingEnd ? VISEME_SHAPES.SMILE : VISEME_SHAPES.rest
         });
-        currentMs += 380;
+        currentMs += (isWelcomingEnd ? 450 : 380);
         continue;
       }
 
@@ -89,6 +93,17 @@ class VisemeEngine {
         viseme: VISEME_SHAPES.rest
       });
       currentMs += 30;
+    }
+
+    // Warm friendly smile hold at the end of welcome/portfolio greetings
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes('welcome') || lowerText.includes('portfolio')) {
+      this.timeline.push({
+        startMs: currentMs,
+        endMs: currentMs + 500,
+        viseme: VISEME_SHAPES.SMILE
+      });
+      currentMs += 500;
     }
 
     this.totalDurationMs = currentMs;
@@ -150,6 +165,9 @@ class VisemeEngine {
     const result = [];
 
     // Special dictionary words for developer portfolio
+    if (clean === 'welcome') return [VISEME_SHAPES.U, VISEME_SHAPES.E, VISEME_SHAPES.L, VISEME_SHAPES.TH, VISEME_SHAPES.MBP, VISEME_SHAPES.SMILE];
+    if (clean === 'portfolio') return [VISEME_SHAPES.MBP, VISEME_SHAPES.O, VISEME_SHAPES.TH, VISEME_SHAPES.FV, VISEME_SHAPES.O, VISEME_SHAPES.L, VISEME_SHAPES.E, VISEME_SHAPES.O, VISEME_SHAPES.SMILE];
+    if (clean === 'smile' || clean === 'smiling') return [VISEME_SHAPES.TH, VISEME_SHAPES.MBP, VISEME_SHAPES.A, VISEME_SHAPES.L, VISEME_SHAPES.SMILE];
     if (clean === 'react') return [VISEME_SHAPES.TH, VISEME_SHAPES.E, VISEME_SHAPES.A, VISEME_SHAPES.TH];
     if (clean === 'karthick') return [VISEME_SHAPES.TH, VISEME_SHAPES.A, VISEME_SHAPES.TH, VISEME_SHAPES.E, VISEME_SHAPES.TH];
     if (clean === 'pandi') return [VISEME_SHAPES.MBP, VISEME_SHAPES.A, VISEME_SHAPES.TH, VISEME_SHAPES.E];
