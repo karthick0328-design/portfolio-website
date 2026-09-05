@@ -1,19 +1,20 @@
 /**
- * Real-time Speech-to-Phoneme/Viseme Timeline Lip-Sync Engine
- * Synchronizes 3D avatar mouth shapes with speech playback timing and phonemes.
+ * Real-time Speech-to-Viseme Natural Lip-Sync Engine
+ * Synchronizes 3D avatar mouth movements with natural human speech tempo,
+ * using syllable-level visemes and exact SpeechSynthesis word boundaries.
  */
 
 export const VISEME_SHAPES = {
   rest: { name: 'rest', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },
   SMILE: { name: 'SMILE', openY: 0.28, scaleX: 1.0, scaleY: 1.0, opacity: 0.8 },
-  A: { name: 'A', openY: 0.95, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ah', 'car', 'and', 'stack'
-  E: { name: 'E', openY: 0.60, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ee', 'react', 'see', 'web'
-  O: { name: 'O', openY: 0.85, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oh', 'code', 'node', 'know'
-  U: { name: 'U', openY: 0.50, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oo', 'you', 'full', 'who'
-  MBP: { name: 'MBP', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },      // 'pandi', 'built', 'modern'
-  FV: { name: 'FV', openY: 0.35, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },       // 'full', 'developer', 'for'
-  L: { name: 'L', openY: 0.45, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },         // 'scalable', 'applications'
-  TH: { name: 'TH', openY: 0.40, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 }        // 'three', 'the', 'with'
+  A: { name: 'A', openY: 0.90, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ah', 'car', 'and', 'stack'
+  E: { name: 'E', openY: 0.55, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ee', 'react', 'see', 'web'
+  O: { name: 'O', openY: 0.80, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oh', 'code', 'node', 'know'
+  U: { name: 'U', openY: 0.45, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oo', 'you', 'full', 'who'
+  MBP: { name: 'MBP', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },      // 'm', 'b', 'p' (lips closed)
+  FV: { name: 'FV', openY: 0.35, scaleX: 1.0, scaleY: 1.0, opacity: 0.9 },       // 'full', 'developer', 'for'
+  L: { name: 'L', openY: 0.45, scaleX: 1.0, scaleY: 1.0, opacity: 0.9 },         // 'scalable', 'applications'
+  TH: { name: 'TH', openY: 0.38, scaleX: 1.0, scaleY: 1.0, opacity: 0.9 }        // 'three', 'the', 'with'
 };
 
 class VisemeEngine {
@@ -21,23 +22,25 @@ class VisemeEngine {
     this.currentViseme = { ...VISEME_SHAPES.rest };
     this.targetViseme = { ...VISEME_SHAPES.rest };
     this.timeline = []; // Array of { startMs, endMs, viseme }
+    this.wordMarkers = []; // Array of { charIndex, startMs, endMs, word }
     this.speechStartTime = 0;
     this.isPlaying = false;
     this.totalDurationMs = 0;
   }
 
   /**
-   * Build a detailed time-stamped phoneme/viseme schedule from speech text
+   * Build a syllable-paced time-stamped phoneme/viseme schedule from speech text
    * @param {string} text - The spoken sentence
    * @param {number} speechRate - SpeechSynthesis rate (default 1.0)
    */
   prepareSpeechTimeline(text, speechRate = 1.0) {
     this.timeline = [];
+    this.wordMarkers = [];
     if (!text || typeof text !== 'string') return;
 
     let currentMs = 0;
-    // Split into sentences and tokens
     const tokens = text.match(/[\w']+|[.,!?;:]/g) || [];
+    let charSearchOffset = 0;
 
     for (let t = 0; t < tokens.length; t++) {
       const token = tokens[t];
@@ -49,34 +52,40 @@ class VisemeEngine {
 
         this.timeline.push({
           startMs: currentMs,
-          endMs: currentMs + (isWelcomingEnd ? 450 : 380),
+          endMs: currentMs + (isWelcomingEnd ? 500 : 420),
           viseme: isWelcomingEnd ? VISEME_SHAPES.SMILE : VISEME_SHAPES.rest
         });
-        currentMs += (isWelcomingEnd ? 450 : 380);
+        currentMs += (isWelcomingEnd ? 500 : 420);
         continue;
       }
 
       if (token === ',' || token === ';' || token === ':') {
         this.timeline.push({
           startMs: currentMs,
-          endMs: currentMs + 220,
+          endMs: currentMs + 260,
           viseme: VISEME_SHAPES.rest
         });
-        currentMs += 220;
+        currentMs += 260;
         continue;
       }
 
-      // Break word into phonemes
-      const phonemes = this._wordToPhonemes(token);
-      // Word duration proportional to character count & syllables
-      const wordBaseDuration = Math.max(160, Math.min(550, token.length * 52 + phonemes.length * 35));
-      const wordDuration = wordBaseDuration / speechRate;
-      const phonemeDuration = wordDuration / phonemes.length;
+      // Track character index for exact SpeechSynthesis onboundary synchronization
+      const foundIndex = text.indexOf(token, charSearchOffset);
+      const tokenCharIndex = foundIndex >= 0 ? foundIndex : charSearchOffset;
+      charSearchOffset = tokenCharIndex + token.length;
 
-      for (let pIdx = 0; pIdx < phonemes.length; pIdx++) {
-        const viseme = phonemes[pIdx];
-        const start = currentMs + pIdx * phonemeDuration;
-        const end = start + phonemeDuration;
+      // Extract syllable visemes (1 to 4 clean shapes per word)
+      const visemes = this._wordToSyllables(token);
+      
+      // Natural human speaking tempo: ~180ms to 240ms per syllable
+      const syllableDuration = Math.max(160, Math.min(260, (token.length > 5 ? 180 : 220))) / speechRate;
+      const wordDuration = syllableDuration * visemes.length;
+      const wordStartMs = currentMs;
+
+      for (let pIdx = 0; pIdx < visemes.length; pIdx++) {
+        const viseme = visemes[pIdx];
+        const start = currentMs + pIdx * syllableDuration;
+        const end = start + syllableDuration;
         this.timeline.push({
           startMs: start,
           endMs: end,
@@ -86,13 +95,21 @@ class VisemeEngine {
 
       currentMs += wordDuration;
 
-      // Small natural inter-word release (30ms)
+      // Record word marker for real-time speech synchronization
+      this.wordMarkers.push({
+        charIndex: tokenCharIndex,
+        startMs: wordStartMs,
+        endMs: currentMs,
+        word: token
+      });
+
+      // Natural inter-word spacing (45ms)
       this.timeline.push({
         startMs: currentMs,
-        endMs: currentMs + 30,
+        endMs: currentMs + 45,
         viseme: VISEME_SHAPES.rest
       });
-      currentMs += 30;
+      currentMs += 45;
     }
 
     // Warm friendly smile hold at the end of welcome/portfolio greetings
@@ -100,10 +117,10 @@ class VisemeEngine {
     if (lowerText.includes('welcome') || lowerText.includes('portfolio')) {
       this.timeline.push({
         startMs: currentMs,
-        endMs: currentMs + 500,
+        endMs: currentMs + 550,
         viseme: VISEME_SHAPES.SMILE
       });
-      currentMs += 500;
+      currentMs += 550;
     }
 
     this.totalDurationMs = currentMs;
@@ -119,22 +136,30 @@ class VisemeEngine {
   }
 
   /**
-   * Recalibrate speech timeline on native onboundary word event
-   * @param {number} charIndex - Character index of the word currently spoken
+   * Lock lip-sync to the exact millisecond when the browser plays each word
+   * @param {number} charIndex - Character index from SpeechSynthesis onboundary
    * @param {string} fullText - Full text being spoken
    */
   syncWordBoundary(charIndex, fullText) {
-    if (!this.isPlaying || !fullText) return;
+    if (!this.isPlaying) return;
 
-    // Calculate approximate expected time for this charIndex
-    const textUpToChar = fullText.slice(0, charIndex);
-    const wordsUpToChar = (textUpToChar.match(/[\w']+/g) || []).length;
-    const allWords = (fullText.match(/[\w']+/g) || []).length;
+    // Find the word marker closest to this charIndex
+    const marker = this.wordMarkers.find(
+      (m) => Math.abs(m.charIndex - charIndex) <= 2
+    );
 
-    if (allWords > 0 && this.totalDurationMs > 0) {
-      const estimatedElapsedMs = (wordsUpToChar / allWords) * this.totalDurationMs;
-      // Adjust speechStartTime to keep timeline in sync with actual browser audio
-      this.speechStartTime = performance.now() - estimatedElapsedMs;
+    if (marker) {
+      // Re-align speechStartTime to lockstep with the actual audio playback
+      this.speechStartTime = performance.now() - marker.startMs;
+    } else if (fullText && this.totalDurationMs > 0) {
+      const textUpToChar = fullText.slice(0, charIndex);
+      const wordsUpToChar = (textUpToChar.match(/[\w']+/g) || []).length;
+      const allWords = (fullText.match(/[\w']+/g) || []).length;
+
+      if (allWords > 0) {
+        const estimatedElapsedMs = (wordsUpToChar / allWords) * this.totalDurationMs;
+        this.speechStartTime = performance.now() - estimatedElapsedMs;
+      }
     }
   }
 
@@ -144,6 +169,7 @@ class VisemeEngine {
   stopSpeech() {
     this.isPlaying = false;
     this.timeline = [];
+    this.wordMarkers = [];
     this.targetViseme = { ...VISEME_SHAPES.rest };
   }
 
@@ -156,45 +182,59 @@ class VisemeEngine {
   }
 
   /**
-   * Convert an English word to specific Viseme shapes
+   * Convert an English word into clean, natural syllable-level visemes
+   * Avoids rapid sub-phoneme flapping by focusing on dominant vocalic shapes
    */
-  _wordToPhonemes(word) {
+  _wordToSyllables(word) {
     const clean = word.toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!clean) return [VISEME_SHAPES.rest];
 
-    const result = [];
-
-    // Special dictionary words for developer portfolio
-    if (clean === 'welcome') return [VISEME_SHAPES.U, VISEME_SHAPES.E, VISEME_SHAPES.L, VISEME_SHAPES.TH, VISEME_SHAPES.MBP, VISEME_SHAPES.SMILE];
-    if (clean === 'portfolio') return [VISEME_SHAPES.MBP, VISEME_SHAPES.O, VISEME_SHAPES.TH, VISEME_SHAPES.FV, VISEME_SHAPES.O, VISEME_SHAPES.L, VISEME_SHAPES.E, VISEME_SHAPES.O, VISEME_SHAPES.SMILE];
-    if (clean === 'smile' || clean === 'smiling') return [VISEME_SHAPES.TH, VISEME_SHAPES.MBP, VISEME_SHAPES.A, VISEME_SHAPES.L, VISEME_SHAPES.SMILE];
-    if (clean === 'react') return [VISEME_SHAPES.TH, VISEME_SHAPES.E, VISEME_SHAPES.A, VISEME_SHAPES.TH];
-    if (clean === 'karthick') return [VISEME_SHAPES.TH, VISEME_SHAPES.A, VISEME_SHAPES.TH, VISEME_SHAPES.E, VISEME_SHAPES.TH];
-    if (clean === 'pandi') return [VISEME_SHAPES.MBP, VISEME_SHAPES.A, VISEME_SHAPES.TH, VISEME_SHAPES.E];
-    if (clean === 'python') return [VISEME_SHAPES.MBP, VISEME_SHAPES.A, VISEME_SHAPES.TH, VISEME_SHAPES.O, VISEME_SHAPES.TH];
-    if (clean === 'node' || clean === 'nodejs') return [VISEME_SHAPES.TH, VISEME_SHAPES.O, VISEME_SHAPES.TH];
-    if (clean === 'three' || clean === 'threejs') return [VISEME_SHAPES.TH, VISEME_SHAPES.E];
-    if (clean === 'full') return [VISEME_SHAPES.FV, VISEME_SHAPES.U, VISEME_SHAPES.L];
-    if (clean === 'stack') return [VISEME_SHAPES.TH, VISEME_SHAPES.A, VISEME_SHAPES.TH];
-    if (clean === 'developer') return [VISEME_SHAPES.TH, VISEME_SHAPES.E, VISEME_SHAPES.FV, VISEME_SHAPES.E, VISEME_SHAPES.L, VISEME_SHAPES.O, VISEME_SHAPES.MBP, VISEME_SHAPES.E];
-    if (clean === 'applications') return [VISEME_SHAPES.A, VISEME_SHAPES.MBP, VISEME_SHAPES.L, VISEME_SHAPES.E, VISEME_SHAPES.TH, VISEME_SHAPES.A, VISEME_SHAPES.TH];
+    // 1. Handcrafted developer dictionary with natural syllable pacing
+    if (clean === 'hello') return [VISEME_SHAPES.E, VISEME_SHAPES.O];
+    if (clean === 'im' || clean === 'i') return [VISEME_SHAPES.A, VISEME_SHAPES.E];
+    if (clean === 'karthick') return [VISEME_SHAPES.A, VISEME_SHAPES.E];
+    if (clean === 'pandi') return [VISEME_SHAPES.MBP, VISEME_SHAPES.A, VISEME_SHAPES.E];
+    if (clean === 'developer') return [VISEME_SHAPES.E, VISEME_SHAPES.FV, VISEME_SHAPES.O, VISEME_SHAPES.E];
+    if (clean === 'building' || clean === 'builds') return [VISEME_SHAPES.E, VISEME_SHAPES.L];
+    if (clean === 'modern') return [VISEME_SHAPES.O, VISEME_SHAPES.E];
+    if (clean === 'scalable') return [VISEME_SHAPES.A, VISEME_SHAPES.L, VISEME_SHAPES.E];
+    if (clean === 'interactive') return [VISEME_SHAPES.E, VISEME_SHAPES.A, VISEME_SHAPES.E];
+    if (clean === 'applications') return [VISEME_SHAPES.A, VISEME_SHAPES.L, VISEME_SHAPES.E, VISEME_SHAPES.O];
+    if (clean === 'react') return [VISEME_SHAPES.E, VISEME_SHAPES.A];
+    if (clean === 'nextjs' || clean === 'next') return [VISEME_SHAPES.E, VISEME_SHAPES.TH];
+    if (clean === 'nodejs' || clean === 'node') return [VISEME_SHAPES.O, VISEME_SHAPES.TH];
+    if (clean === 'python') return [VISEME_SHAPES.A, VISEME_SHAPES.O];
+    if (clean === 'threejs' || clean === 'three') return [VISEME_SHAPES.TH, VISEME_SHAPES.E];
+    if (clean === 'technologies') return [VISEME_SHAPES.E, VISEME_SHAPES.O, VISEME_SHAPES.L, VISEME_SHAPES.E];
+    if (clean === 'welcome') return [VISEME_SHAPES.U, VISEME_SHAPES.E, VISEME_SHAPES.SMILE];
+    if (clean === 'portfolio') return [VISEME_SHAPES.O, VISEME_SHAPES.FV, VISEME_SHAPES.O, VISEME_SHAPES.SMILE];
+    if (clean === 'smile' || clean === 'smiling') return [VISEME_SHAPES.A, VISEME_SHAPES.SMILE];
     if (clean === 'who' || clean === 'you') return [VISEME_SHAPES.U];
-    if (clean === 'builds' || clean === 'built') return [VISEME_SHAPES.MBP, VISEME_SHAPES.E, VISEME_SHAPES.L, VISEME_SHAPES.TH];
+    if (clean === 'full' || clean === 'stack') return [clean === 'full' ? VISEME_SHAPES.FV : VISEME_SHAPES.A];
+    if (clean === 'web') return [VISEME_SHAPES.E];
+    if (clean === 'and' || clean === 'with') return [clean === 'and' ? VISEME_SHAPES.A : VISEME_SHAPES.TH];
 
+    // 2. Generalized natural syllable parser for any English word
+    const result = [];
+    const vowels = /[aeiouy]/g;
+    const matches = clean.match(vowels);
+
+    if (!matches || matches.length === 0) {
+      return [VISEME_SHAPES.A];
+    }
+
+    // Map each vowel cluster to a natural mouth posture
     let i = 0;
     while (i < clean.length) {
       const ch = clean[i];
       const next = clean[i + 1] || '';
       const pair = ch + next;
 
-      if (pair === 'th' || pair === 'sh' || pair === 'ch' || pair === 'st') {
-        result.push(VISEME_SHAPES.TH);
+      if (pair === 'oo' || pair === 'ou') {
+        result.push(VISEME_SHAPES.U);
         i += 2;
       } else if (pair === 'ee' || pair === 'ea' || pair === 'ie') {
         result.push(VISEME_SHAPES.E);
-        i += 2;
-      } else if (pair === 'oo' || pair === 'ou') {
-        result.push(VISEME_SHAPES.U);
         i += 2;
       } else if (pair === 'oa' || pair === 'ow') {
         result.push(VISEME_SHAPES.O);
@@ -202,10 +242,7 @@ class VisemeEngine {
       } else if (ch === 'a') {
         result.push(VISEME_SHAPES.A);
         i++;
-      } else if (ch === 'e') {
-        result.push(VISEME_SHAPES.E);
-        i++;
-      } else if (ch === 'i' || ch === 'y') {
+      } else if (ch === 'e' || ch === 'i' || ch === 'y') {
         result.push(VISEME_SHAPES.E);
         i++;
       } else if (ch === 'o') {
@@ -214,32 +251,19 @@ class VisemeEngine {
       } else if (ch === 'u') {
         result.push(VISEME_SHAPES.U);
         i++;
-      } else if (ch === 'm' || ch === 'b' || ch === 'p') {
-        result.push(VISEME_SHAPES.MBP);
-        i++;
-      } else if (ch === 'f' || ch === 'v') {
-        result.push(VISEME_SHAPES.FV);
-        i++;
-      } else if (ch === 'l') {
-        result.push(VISEME_SHAPES.L);
-        i++;
-      } else if (ch === 'w') {
-        result.push(VISEME_SHAPES.U);
-        i++;
       } else {
-        result.push(VISEME_SHAPES.TH);
         i++;
       }
     }
 
-    return result.length > 0 ? result : [VISEME_SHAPES.A];
+    return result.length > 0 ? result.slice(0, 4) : [VISEME_SHAPES.A];
   }
 
   /**
    * Called on every animation frame in Three.js renderer
-   * Computes smooth interpolated viseme state for the current millisecond
+   * Computes smooth organic viseme interpolation with natural muscular inertia
    */
-  update(lerpFactor = 0.3) {
+  update(lerpFactor = 0.20) {
     if (!this.isPlaying || this.timeline.length === 0) {
       this.targetViseme = VISEME_SHAPES.rest;
     } else {
@@ -256,15 +280,16 @@ class VisemeEngine {
       }
     }
 
-    // Smooth anatomical interpolation
+    // Natural smooth anatomical interpolation
     const target = this.targetViseme;
     this.currentViseme.openY += (target.openY - this.currentViseme.openY) * lerpFactor;
     this.currentViseme.scaleX += (target.scaleX - this.currentViseme.scaleX) * lerpFactor;
     this.currentViseme.scaleY += (target.scaleY - this.currentViseme.scaleY) * lerpFactor;
-    this.currentViseme.opacity += (target.opacity - this.currentViseme.opacity) * Math.min(1.0, lerpFactor * 1.6);
+    this.currentViseme.opacity += (target.opacity - this.currentViseme.opacity) * Math.min(1.0, lerpFactor * 1.5);
 
     return this.currentViseme;
   }
 }
 
 export const visemeEngine = new VisemeEngine();
+

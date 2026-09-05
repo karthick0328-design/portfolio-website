@@ -236,12 +236,12 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
       }
 
       // 2. Real Viseme-Driven Lip Sync Controller (Single Unified Mouth)
-      const currentViseme = visemeEngine.update(0.35);
+      const currentViseme = visemeEngine.update(0.20);
 
       if (mouthMat && mouthMesh) {
-        if (isSpeakingRef.current && currentViseme.openY > 0.12) {
+        if (isSpeakingRef.current && currentViseme.openY > 0.08) {
           mouthMesh.visible = true;
-          mouthMat.opacity = Math.min(1.0, (currentViseme.openY - 0.12) * 5.0);
+          mouthMat.opacity = Math.min(1.0, currentViseme.opacity * Math.min(1.0, (currentViseme.openY - 0.08) * 3.5));
           mouthMesh.scale.set(1.0, 1.0, 1.0);
         } else {
           mouthMesh.visible = false;
