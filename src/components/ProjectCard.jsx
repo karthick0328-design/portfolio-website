@@ -21,7 +21,7 @@ const ProjectCard = ({ project }) => {
             <img 
               src={project.image} 
               alt={project.title} 
-              className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108 group-hover:filter group-hover:brightness-95"
+              className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108 group-hover:filter group-hover:brightness-95"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent pointer-events-none" />
           </>

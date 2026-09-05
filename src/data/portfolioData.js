@@ -68,7 +68,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design/AI-Voice",
       live: "https://ai-voice-tau-olive.vercel.app",
       status: "Live & Deployed",
-      image: "/projects/as_photography-digital-marketing-1725340.jpg",
+      image: "/projects/ai-voice.jpg",
       gradient: "from-blue-600 to-indigo-600"
     },
     {
@@ -87,7 +87,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design/jano-hd-video-downloader",
       live: "https://jano-hd-video-downloader.vercel.app",
       status: "Live & Deployed",
-      image: null,
+      image: "/projects/jano-downloader.jpg",
       gradient: "from-cyan-500 to-blue-600"
     },
     {
