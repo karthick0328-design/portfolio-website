@@ -85,26 +85,17 @@ class SpeechSynthesisService {
 
     utterance.onstart = () => {
       this.isSpeaking = true;
+      visemeEngine.startSpeech(text, utterance.rate || 1.0);
       if (options.onStart) options.onStart();
-
-      // Trigger first words immediately
-      const firstWords = text.trim().split(/\s+/);
-      if (firstWords[0]) {
-        visemeEngine.processWordBoundary(firstWords[0], 250);
-      }
     };
 
     utterance.onboundary = (event) => {
       if (event.name === 'word') {
         const charIdx = typeof event.charIndex === 'number' ? event.charIndex : 0;
-        const remaining = text.slice(charIdx);
-        const match = remaining.match(/^([a-zA-Z0-9']+)/);
-        const word = match ? match[1] : '';
-        const estDuration = Math.max(120, Math.min(500, word.length * 70));
-        visemeEngine.processWordBoundary(word, estDuration);
+        visemeEngine.syncWordBoundary(charIdx, text);
 
         if (options.onAudioLevel) {
-          options.onAudioLevel(0.8);
+          options.onAudioLevel(0.85);
         }
       }
     };
@@ -112,7 +103,7 @@ class SpeechSynthesisService {
     const cleanup = () => {
       this.isSpeaking = false;
       this.currentUtterance = null;
-      visemeEngine.reset();
+      visemeEngine.stopSpeech();
       if (options.onAudioLevel) {
         options.onAudioLevel(0);
       }
@@ -152,7 +143,7 @@ class SpeechSynthesisService {
     }
     this.isSpeaking = false;
     this.currentUtterance = null;
-    visemeEngine.reset();
+    visemeEngine.stopSpeech();
   }
 }
 

@@ -129,9 +129,13 @@ const HeroSection = () => {
       audio.currentTime = 0;
       setIsSpeaking(false);
       setAudioLevel(0);
+      visemeEngine.stopSpeech();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     } else {
       try {
+        const introText = "Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!";
+        visemeEngine.startSpeech(introText, 1.0);
+
         if (!audioContextRef.current) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           if (AudioContext) {
