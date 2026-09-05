@@ -5,7 +5,6 @@ const HeroAvatarCanvas = () => {
   const mountRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const mousePos = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
   useEffect(() => {
     const container = mountRef.current;
@@ -45,103 +44,74 @@ const HeroAvatarCanvas = () => {
 
     container.appendChild(renderer.domElement);
 
-    // 4. Character Structure: Stationary Body + Mouse-Tracking Head
+    // 4. Character Meshes: Base Character + Animated Eyelids Layer
     const textureLoader = new THREE.TextureLoader();
-    let bodyMesh = null;
-    let headGroup = new THREE.Group();
-    let headMesh = null;
+    let characterGroup = new THREE.Group();
+    scene.add(characterGroup);
 
-    scene.add(headGroup);
+    let eyelidMesh = null;
+    let eyelidMat = null;
 
     const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
 
-    // Load Body Texture (Stationary)
+    // Load Base Character (Open Eyes)
     textureLoader.load(
-      '/models/karthick_straight_body.png?v=3',
-      (bodyTex) => {
-        bodyTex.colorSpace = THREE.SRGBColorSpace;
-        bodyTex.generateMipmaps = true;
-        bodyTex.minFilter = THREE.LinearMipmapLinearFilter;
+      '/models/karthick_straight_open.png?v=4',
+      (baseTex) => {
+        baseTex.colorSpace = THREE.SRGBColorSpace;
+        baseTex.generateMipmaps = true;
+        baseTex.minFilter = THREE.LinearMipmapLinearFilter;
 
-        const bodyMat = new THREE.MeshBasicMaterial({
-          map: bodyTex,
+        const baseMat = new THREE.MeshBasicMaterial({
+          map: baseTex,
           transparent: true,
           alphaTest: 0.01,
           depthWrite: false,
           side: THREE.DoubleSide,
         });
 
-        bodyMesh = new THREE.Mesh(planeGeom, bodyMat);
-        bodyMesh.position.set(0, -0.2, 0);
-        scene.add(bodyMesh);
+        const baseMesh = new THREE.Mesh(planeGeom, baseMat);
+        baseMesh.position.set(0, -0.2, 0);
+        characterGroup.add(baseMesh);
 
-        // Load Head Texture (Interactive Mouse Tracking)
+        // Load Eyelids Overlay Layer (For Realistic Eye Blinking)
         textureLoader.load(
-          '/models/karthick_straight_head.png?v=3',
-          (headTex) => {
-            headTex.colorSpace = THREE.SRGBColorSpace;
-            headTex.generateMipmaps = true;
-            headTex.minFilter = THREE.LinearMipmapLinearFilter;
+          '/models/karthick_eyelids.png?v=4',
+          (eyelidTex) => {
+            eyelidTex.colorSpace = THREE.SRGBColorSpace;
+            eyelidTex.generateMipmaps = true;
+            eyelidTex.minFilter = THREE.LinearMipmapLinearFilter;
 
-            const headMat = new THREE.MeshBasicMaterial({
-              map: headTex,
+            eyelidMat = new THREE.MeshBasicMaterial({
+              map: eyelidTex,
               transparent: true,
-              alphaTest: 0.01,
+              opacity: 0.0,
               depthWrite: false,
               side: THREE.DoubleSide,
             });
 
-            headMesh = new THREE.Mesh(planeGeom, headMat);
-            // Pivot around neck / chin
-            headMesh.position.set(0, 0, 0);
-            headGroup.position.set(0, -0.2, 0.05);
-            headGroup.add(headMesh);
+            eyelidMesh = new THREE.Mesh(planeGeom, eyelidMat);
+            eyelidMesh.position.set(0, -0.2, 0.01);
+            characterGroup.add(eyelidMesh);
 
             setIsLoading(false);
           },
           undefined,
           (err) => {
-            console.error('Failed to load head texture:', err);
-            setLoadError(true);
+            console.error('Failed to load eyelids texture:', err);
             setIsLoading(false);
           }
         );
       },
       undefined,
       (err) => {
-        console.error('Failed to load body texture:', err);
+        console.error('Failed to load character texture:', err);
         setLoadError(true);
         setIsLoading(false);
       }
     );
 
-    // 5. Global Mouse & Touch Tracking Listeners
-    const handleMouseMove = (e) => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = -(e.clientY / window.innerHeight) * 2 + 1;
-      mousePos.current.targetX = Math.max(-1.0, Math.min(1.0, x));
-      mousePos.current.targetY = Math.max(-1.0, Math.min(1.0, y));
-    };
-
-    const handleTouchMove = (e) => {
-      if (e.touches && e.touches[0]) {
-        const x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-        const y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-        mousePos.current.targetX = Math.max(-1.0, Math.min(1.0, x));
-        mousePos.current.targetY = Math.max(-1.0, Math.min(1.0, y));
-      }
-    };
-
-    const handleMouseLeave = () => {
-      mousePos.current.targetX = 0;
-      mousePos.current.targetY = 0;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
-
-    // 6. Responsive Camera Adjustments
+    // 5. Responsive Camera Adjustments
     const handleResize = () => {
       if (!container) return;
       const w = container.clientWidth || window.innerWidth;
@@ -167,7 +137,13 @@ const HeroAvatarCanvas = () => {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // 7. Animation Loop: Head tracks mouse, Body remains stationary
+    // 6. Realistic Periodic Eye Blinking State
+    let nextBlinkTime = 2.5;
+    let isBlinking = false;
+    let blinkStartTime = 0;
+    const blinkDuration = 0.16; // 160ms natural blink cycle
+
+    // 7. Animation Loop: Pure Eye Blinking + Subtle Idle Breathing (NO mouse move effects)
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -184,31 +160,34 @@ const HeroAvatarCanvas = () => {
 
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth Spring-Damped Lerping of mouse position
-      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.06;
-      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.06;
-
-      const mx = mousePos.current.x;
-      const my = mousePos.current.y;
-
-      // Subtle breathing motion
-      const breathingHover = Math.sin(elapsedTime * 1.3) * 0.03;
-      const breathingSway = Math.sin(elapsedTime * 0.7) * 0.005;
-
-      // HEAD ROTATES & MOVES WITH MOUSE (Straight direction + interactive tracking)
-      if (headGroup) {
-        headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, mx * 0.2 + breathingSway, 0.08);
-        headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, -my * 0.14, 0.08);
-        headGroup.rotation.z = THREE.MathUtils.lerp(headGroup.rotation.z, -mx * 0.02, 0.08);
-        headGroup.position.x = THREE.MathUtils.lerp(headGroup.position.x, mx * 0.16, 0.08);
-        headGroup.position.y = THREE.MathUtils.lerp(headGroup.position.y, -0.2 + my * 0.08 + breathingHover, 0.08);
+      // Natural subtle idle breathing float
+      const breathingHover = Math.sin(elapsedTime * 1.3) * 0.025;
+      if (characterGroup) {
+        characterGroup.position.y = breathingHover;
+        characterGroup.position.x = 0;
+        characterGroup.rotation.set(0, 0, 0);
       }
 
-      // BODY REMAINS STATIONARY (Only subtle vertical breathing anchor)
-      if (bodyMesh) {
-        bodyMesh.position.y = -0.2 + breathingHover * 0.4;
-        bodyMesh.position.x = 0;
-        bodyMesh.rotation.set(0, 0, 0);
+      // Eye Blinking Controller
+      if (eyelidMat) {
+        if (!isBlinking && elapsedTime >= nextBlinkTime) {
+          isBlinking = true;
+          blinkStartTime = elapsedTime;
+        }
+
+        if (isBlinking) {
+          const progress = (elapsedTime - blinkStartTime) / blinkDuration;
+          if (progress >= 1.0) {
+            eyelidMat.opacity = 0.0;
+            isBlinking = false;
+            // Next blink scheduled in 3.2 to 5.2 seconds (with occasional quick double-blink)
+            const isDoubleBlink = Math.random() < 0.25;
+            nextBlinkTime = elapsedTime + (isDoubleBlink ? 0.25 : 3.2 + Math.random() * 2.0);
+          } else {
+            // Smooth bell curve for eyelid closing and reopening: sin(progress * PI)
+            eyelidMat.opacity = Math.sin(progress * Math.PI);
+          }
+        }
       }
 
       renderer.render(scene, camera);
@@ -219,9 +198,6 @@ const HeroAvatarCanvas = () => {
     // 8. Cleanup
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
 
@@ -237,7 +213,7 @@ const HeroAvatarCanvas = () => {
       {/* 3D Canvas Mounting Point */}
       <div 
         ref={mountRef} 
-        className="w-full h-full relative z-10 flex items-center justify-center pointer-events-auto cursor-grab active:cursor-grabbing"
+        className="w-full h-full relative z-10 flex items-center justify-center pointer-events-none"
       />
 
       {/* Loading Skeleton */}
