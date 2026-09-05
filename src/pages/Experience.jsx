@@ -133,7 +133,7 @@ const Experience = () => {
             variants={container}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={{ once: true, amount: 0 }}
             className="space-y-16 md:space-y-20 relative z-10"
           >
             {experience.map((exp, index) => {

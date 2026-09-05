@@ -108,7 +108,7 @@ const Education = () => {
             variants={container}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={{ once: true, amount: 0 }}
             className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 relative z-10"
           >
             {education.map((edu, index) => {
