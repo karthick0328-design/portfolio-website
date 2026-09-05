@@ -26,7 +26,7 @@ const HeroAvatarCanvas = () => {
     // 1. Scene
     const scene = new THREE.Scene();
 
-    // 2. Camera Setup - Balanced portrait framing
+    // 2. Camera Setup - Balanced straight-on portrait framing
     const aspect = width / height;
     const camera = new THREE.PerspectiveCamera(24, aspect, 0.1, 1000);
     camera.position.set(0, 0, 18);
@@ -45,41 +45,71 @@ const HeroAvatarCanvas = () => {
 
     container.appendChild(renderer.domElement);
 
-    // 4. Character 3D Mesh
+    // 4. Character Structure: Stationary Body + Mouse-Tracking Head
     const textureLoader = new THREE.TextureLoader();
-    let characterGroup = new THREE.Group();
-    scene.add(characterGroup);
+    let bodyMesh = null;
+    let headGroup = new THREE.Group();
+    let headMesh = null;
 
-    let characterMesh = null;
+    scene.add(headGroup);
 
-    // Load flawless transparent PNG
+    const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
+
+    // Load Body Texture (Stationary)
     textureLoader.load(
-      '/models/karthick_avatar_transparent.png',
-      (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.generateMipmaps = true;
-        texture.minFilter = THREE.LinearMipmapLinearFilter;
-        texture.magFilter = THREE.LinearFilter;
+      '/models/karthick_straight_body.png',
+      (bodyTex) => {
+        bodyTex.colorSpace = THREE.SRGBColorSpace;
+        bodyTex.generateMipmaps = true;
+        bodyTex.minFilter = THREE.LinearMipmapLinearFilter;
 
-        // Plane dimensions matching character portrait aspect ratio
-        const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
-        const material = new THREE.MeshBasicMaterial({
-          map: texture,
+        const bodyMat = new THREE.MeshBasicMaterial({
+          map: bodyTex,
           transparent: true,
           alphaTest: 0.01,
           depthWrite: false,
           side: THREE.DoubleSide,
         });
 
-        characterMesh = new THREE.Mesh(planeGeom, material);
-        characterMesh.position.set(0, -0.2, 0);
-        characterGroup.add(characterMesh);
+        bodyMesh = new THREE.Mesh(planeGeom, bodyMat);
+        bodyMesh.position.set(0, -0.2, 0);
+        scene.add(bodyMesh);
 
-        setIsLoading(false);
+        // Load Head Texture (Interactive Mouse Tracking)
+        textureLoader.load(
+          '/models/karthick_straight_head.png',
+          (headTex) => {
+            headTex.colorSpace = THREE.SRGBColorSpace;
+            headTex.generateMipmaps = true;
+            headTex.minFilter = THREE.LinearMipmapLinearFilter;
+
+            const headMat = new THREE.MeshBasicMaterial({
+              map: headTex,
+              transparent: true,
+              alphaTest: 0.01,
+              depthWrite: false,
+              side: THREE.DoubleSide,
+            });
+
+            headMesh = new THREE.Mesh(planeGeom, headMat);
+            // Pivot around neck / chin
+            headMesh.position.set(0, 0, 0);
+            headGroup.position.set(0, -0.2, 0.05);
+            headGroup.add(headMesh);
+
+            setIsLoading(false);
+          },
+          undefined,
+          (err) => {
+            console.error('Failed to load head texture:', err);
+            setLoadError(true);
+            setIsLoading(false);
+          }
+        );
       },
       undefined,
       (err) => {
-        console.error('Failed to load avatar texture:', err);
+        console.error('Failed to load body texture:', err);
         setLoadError(true);
         setIsLoading(false);
       }
@@ -89,17 +119,16 @@ const HeroAvatarCanvas = () => {
     const handleMouseMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
-      // Clamped smooth input range
-      mousePos.current.targetX = Math.max(-0.85, Math.min(0.85, x));
-      mousePos.current.targetY = Math.max(-0.85, Math.min(0.85, y));
+      mousePos.current.targetX = Math.max(-1.0, Math.min(1.0, x));
+      mousePos.current.targetY = Math.max(-1.0, Math.min(1.0, y));
     };
 
     const handleTouchMove = (e) => {
       if (e.touches && e.touches[0]) {
         const x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
         const y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-        mousePos.current.targetX = Math.max(-0.85, Math.min(0.85, x));
-        mousePos.current.targetY = Math.max(-0.85, Math.min(0.85, y));
+        mousePos.current.targetX = Math.max(-1.0, Math.min(1.0, x));
+        mousePos.current.targetY = Math.max(-1.0, Math.min(1.0, y));
       }
     };
 
@@ -138,7 +167,7 @@ const HeroAvatarCanvas = () => {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // 7. Animation Loop with Subtle, Refined 3D Mouse Tracking
+    // 7. Animation Loop: Head tracks mouse, Body remains stationary
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -156,29 +185,31 @@ const HeroAvatarCanvas = () => {
       const elapsedTime = clock.getElapsedTime();
 
       // Smooth Spring-Damped Lerping of mouse position
-      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.05;
-      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.05;
+      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.06;
+      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.06;
 
       const mx = mousePos.current.x;
       const my = mousePos.current.y;
 
-      // Subtle, gentle idle breathing motion
-      const breathingHover = Math.sin(elapsedTime * 1.3) * 0.04;
-      const breathingSway = Math.sin(elapsedTime * 0.7) * 0.006;
+      // Subtle breathing motion
+      const breathingHover = Math.sin(elapsedTime * 1.3) * 0.03;
+      const breathingSway = Math.sin(elapsedTime * 0.7) * 0.005;
 
-      // Refined, subtle 3D perspective rotation (not exaggerated)
-      if (characterGroup) {
-        characterGroup.rotation.y = THREE.MathUtils.lerp(characterGroup.rotation.y, mx * 0.09 + breathingSway, 0.06);
-        characterGroup.rotation.x = THREE.MathUtils.lerp(characterGroup.rotation.x, -my * 0.06, 0.06);
-        characterGroup.rotation.z = THREE.MathUtils.lerp(characterGroup.rotation.z, -mx * 0.015, 0.06);
-        characterGroup.position.x = THREE.MathUtils.lerp(characterGroup.position.x, mx * 0.2, 0.05);
-        characterGroup.position.y = THREE.MathUtils.lerp(characterGroup.position.y, my * 0.12 + breathingHover - 0.15, 0.05);
+      // HEAD ROTATES & MOVES WITH MOUSE (Straight direction + interactive tracking)
+      if (headGroup) {
+        headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, mx * 0.2 + breathingSway, 0.08);
+        headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, -my * 0.14, 0.08);
+        headGroup.rotation.z = THREE.MathUtils.lerp(headGroup.rotation.z, -mx * 0.02, 0.08);
+        headGroup.position.x = THREE.MathUtils.lerp(headGroup.position.x, mx * 0.16, 0.08);
+        headGroup.position.y = THREE.MathUtils.lerp(headGroup.position.y, -0.2 + my * 0.08 + breathingHover, 0.08);
       }
 
-      // Subtle Camera Tracking
-      camera.position.x = THREE.MathUtils.lerp(camera.position.x, mx * 0.25, 0.04);
-      camera.position.y = THREE.MathUtils.lerp(camera.position.y, my * 0.15, 0.04);
-      camera.lookAt(0, 0, 0);
+      // BODY REMAINS STATIONARY (Only subtle vertical breathing anchor)
+      if (bodyMesh) {
+        bodyMesh.position.y = -0.2 + breathingHover * 0.4;
+        bodyMesh.position.x = 0;
+        bodyMesh.rotation.set(0, 0, 0);
+      }
 
       renderer.render(scene, camera);
     };
