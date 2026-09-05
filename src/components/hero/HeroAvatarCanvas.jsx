@@ -220,25 +220,25 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         }
       }
 
-      // 2. Real Human Lip-Sync Controller (Driven by Voice Audio Energy + Syllables)
+      // 2. Real Human Lip-Sync Controller (Relaxed Medium Speaking Pace)
       if (mouthMat && mouthMesh) {
         if (isSpeakingRef.current) {
           const level = audioLevelRef.current;
           
-          // Syllable oscillation for natural vowel articulation
-          const syllableOsc = Math.sin(elapsedTime * 16.0) * 0.3 + 0.7;
-          const targetOpacity = Math.min(1.0, (level > 0.05 ? level * 1.4 : Math.max(0, Math.sin(elapsedTime * 12.0) * 0.85)) * syllableOsc);
+          // Relaxed syllable cadence (~4-5 syllables per second matching medium speech)
+          const syllableOsc = Math.sin(elapsedTime * 8.5) * 0.35 + 0.65;
+          const targetOpacity = Math.min(0.9, (level > 0.04 ? level * 1.25 : Math.max(0, Math.sin(elapsedTime * 7.0) * 0.75)) * syllableOsc);
           
-          // Smooth mouth opening transitions
-          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, targetOpacity, 0.35);
+          // Fluid, natural mouth transitions (smooth medium opening and closing)
+          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, targetOpacity, 0.18);
 
-          // Subtle physical jaw expansion when pronouncing vowels
-          const openScaleY = 1.0 + mouthMat.opacity * 0.08;
-          const openScaleX = 1.0 + mouthMat.opacity * 0.03;
+          // Subtle natural jaw movement
+          const openScaleY = 1.0 + mouthMat.opacity * 0.05;
+          const openScaleX = 1.0 + mouthMat.opacity * 0.02;
           mouthMesh.scale.set(openScaleX, openScaleY, 1.0);
         } else {
-          // Return to closed neutral mouth
-          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, 0.0, 0.25);
+          // Smooth return to closed neutral smile
+          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, 0.0, 0.15);
           mouthMesh.scale.set(1.0, 1.0, 1.0);
         }
       }
