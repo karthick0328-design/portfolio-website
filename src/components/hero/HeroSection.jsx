@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight, FiVolume2, FiVolumeX, FiMic, FiMicOff } from 'react-icons/fi';
 import { portfolioData } from '../../data/portfolioData';
 import HeroAvatarCanvas from './HeroAvatarCanvas';
 import { useVoiceAssistant } from '../../features/voice';
-import { visemeEngine } from '../../features/voice/services/visemeEngine';
+import { speechSynthesisService } from '../../features/voice/services/speechSynthesisService';
 
 const INTRO_TEXT = "Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!";
 
@@ -23,72 +23,22 @@ const HeroSection = () => {
 
   const activeIsSpeaking = isSpeaking || isVoiceSpeaking;
 
-  const audioRef = useRef(null);
-
-  // Initialize audio
-  useEffect(() => {
-    const audio = new Audio('/audio/karthick_intro.mp3?v=7');
-    audioRef.current = audio;
-
-    const handleEnded = () => {
-      setIsSpeaking(false);
-      visemeEngine.stopSpeech();
-    };
-
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('pause', () => {
-      if (audio.currentTime >= audio.duration || audio.paused) {
-        handleEnded();
-      }
-    });
-
-    return () => {
-      audio.pause();
-      audio.removeEventListener('ended', handleEnded);
-      visemeEngine.stopSpeech();
-    };
-  }, []);
-
-  // Toggle studio voice narration
-  const toggleSpeak = async () => {
+  // Toggle studio voice narration (speaks complete intro to the end)
+  const toggleSpeak = () => {
     if (isVoiceSpeaking) {
       stopVoiceSpeaking();
     }
-    const audio = audioRef.current;
-    if (!audio) return;
 
     if (isSpeaking) {
-      audio.pause();
-      audio.currentTime = 0;
+      speechSynthesisService.stop();
       setIsSpeaking(false);
-      visemeEngine.stopSpeech();
     } else {
-      try {
-        visemeEngine.startSpeech(INTRO_TEXT, 1.0);
-        audio.currentTime = 0;
-        setIsSpeaking(true);
-        await audio.play();
-      } catch (err) {
-        console.warn('MP3 playback fallback to speech synthesis:', err);
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(INTRO_TEXT);
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
-          utterance.onstart = () => {
-            visemeEngine.startSpeech(INTRO_TEXT, 1.0);
-            setIsSpeaking(true);
-          };
-          utterance.onend = () => {
-            setIsSpeaking(false);
-            visemeEngine.stopSpeech();
-          };
-          utterance.onerror = () => {
-            setIsSpeaking(false);
-            visemeEngine.stopSpeech();
-          };
-        }
-      }
+      setIsSpeaking(true);
+      speechSynthesisService.speak(INTRO_TEXT, {
+        onStart: () => setIsSpeaking(true),
+        onEnd: () => setIsSpeaking(false),
+        onError: () => setIsSpeaking(false)
+      });
     }
   };
 
@@ -265,10 +215,9 @@ const HeroSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.82, duration: 0.8 }}
                 onClick={() => {
-                  if (isSpeaking && audioRef.current) {
-                    audioRef.current.pause();
+                  if (isSpeaking) {
+                    speechSynthesisService.stop();
                     setIsSpeaking(false);
-                    visemeEngine.stopSpeech();
                   }
                   toggleListening();
                 }}
