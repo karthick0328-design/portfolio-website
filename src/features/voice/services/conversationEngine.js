@@ -159,6 +159,16 @@ class ConversationEngine {
   handleProjects(query) {
     this.context.lastTopic = 'projects';
 
+    if (query.includes('voice') || query.includes('speech') || query.includes('ai-voice')) {
+      this.context.lastProject = 'AI-Voice Platform';
+      return "AI-Voice is an intelligent conversational speech platform built by Karthick using React, Web Speech API, and Tailwind CSS. It features real-time speech-to-text recognition, dynamic waveform audio visualizers, and interactive voice synthesis. You can test the live demo online!";
+    }
+
+    if (query.includes('jano') || query.includes('downloader') || query.includes('video')) {
+      this.context.lastProject = 'Jano HD Video Downloader';
+      return "Jano HD Video Downloader is a high-performance web utility built with TypeScript and Next.js that allows users to download and extract high-definition video and audio streams seamlessly with multiple format options.";
+    }
+
     if (query.includes('marketing') || query.includes('seo') || query.includes('ai intelligent')) {
       this.context.lastProject = 'AI Marketing Platform';
       return "The AI Intelligent Digital Marketing Platform is an automated SEO tool built with React, Node.js, Python, and MongoDB. It automates blog generation, analyzes competitor rankings, and handles SEO workflows seamlessly.";
@@ -169,13 +179,13 @@ class ConversationEngine {
       return "The E-Commerce project is a full-stack platform featuring a dynamic shopping cart, secure authentication, and a complete admin management dashboard built with React, Node.js, MongoDB, and Tailwind CSS.";
     }
 
-    if (query.includes('molecular') || query.includes('3d')) {
+    if (query.includes('molecular') || query.includes('3d molecule')) {
       this.context.lastProject = '3D Molecular Visualization';
-      return "The 3D Molecular Visualization project is an interactive scientific tool built with React, Python, and Node.js. It enables real-time rendering and interactive exploration of 3D biological molecules.";
+      return "The 3D Molecular Visualization project is an interactive scientific tool built with React, Three.js, Python, and Node.js. It enables real-time rendering and interactive exploration of 3D biological molecules.";
     }
 
     // General projects summary
-    return "Karthick has built several standout projects: an AI Intelligent Digital Marketing Platform, a full-stack E-Commerce web app, and a real-time 3D Molecular Visualization system. Which of these would you like to know more about?";
+    return "Karthick has built several standout projects: AI-Voice Speech Assistant, Jano HD Video Downloader, 3D Molecular Visualization System, and an AI Intelligent Digital Marketing Platform. All are available on his GitHub at karthick0328-design. Which project would you like to explore?";
   }
 
   handleSkills(query) {

@@ -54,33 +54,117 @@ export const portfolioData = {
   projects: [
     {
       id: 1,
-      title: "AI Intelligent Digital Marketing Platform",
-      description: "A comprehensive digital marketing platform powered by AI to automate SEO, generate blog content, and perform competitor analysis.",
-      technologies: ["React.js", "Node.js", "MongoDB", "Tailwind CSS", "Python"],
-      features: ["AI Blog Generator", "Competitor Analysis", "SEO Automation", "Dashboard", "JWT Authentication"],
-      github: "https://github.com/placeholder",
-      live: "https://example.com",
-      image: "/projects/as_photography-digital-marketing-1725340.jpg"
+      title: "AI-Voice - Intelligent Speech Platform",
+      category: "AI & Full Stack",
+      featured: true,
+      description: "An advanced real-time conversational AI voice platform featuring interactive speech synthesis, speech-to-text recognition, dynamic sound waves, and responsive audio visualizers.",
+      technologies: ["React.js", "JavaScript", "Web Speech API", "AI Speech Synthesis", "Tailwind CSS"],
+      features: [
+        "Real-time Conversational Voice AI",
+        "Reactive Audio Waveform Visualizers",
+        "Instant Speech-to-Text Transcription",
+        "Natural Voice Synthesis & Playback"
+      ],
+      github: "https://github.com/karthick0328-design/AI-Voice",
+      live: "https://ai-voice-tau-olive.vercel.app",
+      status: "Live & Deployed",
+      image: "/projects/as_photography-digital-marketing-1725340.jpg",
+      gradient: "from-blue-600 to-indigo-600"
     },
     {
       id: 2,
-      title: "E-Commerce Website",
-      description: "A fully functional e-commerce web application featuring a shopping cart, secure authentication, and an administrative dashboard.",
-      technologies: ["React.js", "Node.js", "MongoDB", "Tailwind CSS"],
-      features: ["Shopping Cart", "Authentication", "Admin Dashboard", "Order Management", "Responsive Design"],
-      github: "https://github.com/placeholder",
-      live: "https://example.com",
-      image: "/projects/andrespradagarcia-online-6817350.jpg"
+      title: "Jano HD Video Downloader",
+      category: "Web Applications",
+      featured: true,
+      description: "A high-performance media downloader and stream extractor application allowing users to download high-definition media streams across multiple platforms with fast format conversion.",
+      technologies: ["TypeScript", "Next.js / React", "Tailwind CSS", "Stream APIs"],
+      features: [
+        "Multi-Resolution HD Download (1080p/4K)",
+        "Instant Media Stream Link Extraction",
+        "Fast Video & Audio Format Conversion",
+        "Responsive Modern Glass UI Dashboard"
+      ],
+      github: "https://github.com/karthick0328-design/jano-hd-video-downloader",
+      live: "https://jano-hd-video-downloader.vercel.app",
+      status: "Live & Deployed",
+      image: null,
+      gradient: "from-cyan-500 to-blue-600"
     },
     {
       id: 3,
-      title: "3D Molecular Visualization",
-      description: "An interactive tool for visualizing 3D molecular structures and processing scientific data in real-time.",
-      technologies: ["React.js", "Python", "Node.js"],
-      features: ["Interactive 3D Models", "Scientific Data Processing", "Real-time Rendering"],
-      github: "https://github.com/placeholder",
-      live: "https://example.com",
-      image: "/projects/images (7).jpg"
+      title: "Next-Gen 3D Avatar Portfolio",
+      category: "3D & Creative Tech",
+      featured: true,
+      description: "Interactive personal portfolio featuring an interactive real-time 3D/2.5D Lip-Syncing avatar, voice recognition conversational assistant, dynamic audio visualizers, and glassmorphic UI.",
+      technologies: ["React.js", "Three.js", "Web Audio API", "Framer Motion", "Tailwind CSS"],
+      features: [
+        "Real-Time Lip-Syncing & Blinking Avatar",
+        "Conversational Voice AI Assistant Engine",
+        "Interactive 3D Elements & Particle Effects",
+        "Dynamic Theme Switching & Glassmorphism"
+      ],
+      github: "https://github.com/karthick0328-design/portfolio-website",
+      live: "https://karthick-portfolio-six.vercel.app/",
+      status: "Live & Deployed",
+      image: "/Karthick.jpeg",
+      gradient: "from-violet-600 to-blue-600"
+    },
+    {
+      id: 4,
+      title: "AI Intelligent Digital Marketing Platform",
+      category: "AI & Full Stack",
+      featured: true,
+      description: "A comprehensive digital marketing platform powered by AI to automate SEO, generate Yoast-compliant blog content, and perform automated competitor intelligence analysis.",
+      technologies: ["React.js", "Node.js", "MongoDB", "Tailwind CSS", "Python"],
+      features: [
+        "AI Blog & Content Generation Engine",
+        "Automated Competitor SEO Analysis",
+        "Analytics Dashboard with Real-time Metrics",
+        "JWT Role-Based Secure Authentication"
+      ],
+      github: "https://github.com/karthick0328-design",
+      live: "https://karthick-portfolio-six.vercel.app/",
+      status: "Production Ready",
+      image: "/projects/as_photography-digital-marketing-1725340.jpg",
+      gradient: "from-emerald-500 to-teal-600"
+    },
+    {
+      id: 5,
+      title: "3D Molecular Visualization System",
+      category: "3D & Creative Tech",
+      featured: true,
+      description: "An interactive scientific tool for visualizing 3D biological molecules and chemical compounds, rendering real-time atomic bonds and structures for researchers.",
+      technologies: ["React.js", "Three.js", "Python", "Node.js", "WebGL"],
+      features: [
+        "Interactive 3D Atomic & Molecular Models",
+        "Real-Time Scientific Data Processing",
+        "WebGL Shader & Dynamic Lighting Rendering",
+        "Compound Property Inspector"
+      ],
+      github: "https://github.com/karthick0328-design",
+      live: "https://karthick-portfolio-six.vercel.app/",
+      status: "Research Tool",
+      image: "/projects/images (7).jpg",
+      gradient: "from-amber-500 to-orange-600"
+    },
+    {
+      id: 6,
+      title: "Full-Stack E-Commerce & Admin Hub",
+      category: "Web Applications",
+      featured: true,
+      description: "A full-featured scalable e-commerce application featuring real-time cart state management, product filtering, secure authentication, and an administrative control panel.",
+      technologies: ["React.js", "Node.js", "Express.js", "MongoDB", "Tailwind CSS"],
+      features: [
+        "Dynamic Cart & Checkout Flow",
+        "Secure User & Admin Authentication",
+        "Admin Product & Order Management Hub",
+        "Optimized Performance & Responsive UX"
+      ],
+      github: "https://github.com/karthick0328-design",
+      live: "https://karthick-portfolio-six.vercel.app/",
+      status: "Full Stack App",
+      image: "/projects/andrespradagarcia-online-6817350.jpg",
+      gradient: "from-rose-500 to-red-600"
     }
   ],
   education: [
