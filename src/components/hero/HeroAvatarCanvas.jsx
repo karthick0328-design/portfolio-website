@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-const HeroAvatarCanvas = () => {
+const HeroAvatarCanvas = ({ isSpeaking = false, onToggleSpeak }) => {
   const mountRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const isSpeakingRef = useRef(isSpeaking);
+
+  useEffect(() => {
+    isSpeakingRef.current = isSpeaking;
+  }, [isSpeaking]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -44,19 +49,19 @@ const HeroAvatarCanvas = () => {
 
     container.appendChild(renderer.domElement);
 
-    // 4. Character Meshes: Base Character + Animated Eyelids Layer
+    // 4. Character Meshes: Base Character + Animated Eyelids + Animated Speaking Mouth
     const textureLoader = new THREE.TextureLoader();
     let characterGroup = new THREE.Group();
     scene.add(characterGroup);
 
-    let eyelidMesh = null;
     let eyelidMat = null;
+    let mouthMat = null;
 
     const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
 
-    // Load Base Character (Open Eyes)
+    // Load Base Character (Open Eyes & Neutral Mouth)
     textureLoader.load(
-      '/models/karthick_straight_open.png?v=4',
+      '/models/karthick_straight_open.png?v=5',
       (baseTex) => {
         baseTex.colorSpace = THREE.SRGBColorSpace;
         baseTex.generateMipmaps = true;
@@ -74,9 +79,9 @@ const HeroAvatarCanvas = () => {
         baseMesh.position.set(0, -0.2, 0);
         characterGroup.add(baseMesh);
 
-        // Load Eyelids Overlay Layer (For Realistic Eye Blinking)
+        // Load Eyelids Layer (For Realistic Eye Blinking)
         textureLoader.load(
-          '/models/karthick_eyelids.png?v=4',
+          '/models/karthick_eyelids.png?v=5',
           (eyelidTex) => {
             eyelidTex.colorSpace = THREE.SRGBColorSpace;
             eyelidTex.generateMipmaps = true;
@@ -90,15 +95,36 @@ const HeroAvatarCanvas = () => {
               side: THREE.DoubleSide,
             });
 
-            eyelidMesh = new THREE.Mesh(planeGeom, eyelidMat);
+            const eyelidMesh = new THREE.Mesh(planeGeom, eyelidMat);
             eyelidMesh.position.set(0, -0.2, 0.01);
             characterGroup.add(eyelidMesh);
+          }
+        );
+
+        // Load Open Mouth Layer (For Realistic Human Speaking Lip-Sync)
+        textureLoader.load(
+          '/models/karthick_mouth_open.png?v=5',
+          (mouthTex) => {
+            mouthTex.colorSpace = THREE.SRGBColorSpace;
+            mouthTex.generateMipmaps = true;
+            mouthTex.minFilter = THREE.LinearMipmapLinearFilter;
+
+            mouthMat = new THREE.MeshBasicMaterial({
+              map: mouthTex,
+              transparent: true,
+              opacity: 0.0,
+              depthWrite: false,
+              side: THREE.DoubleSide,
+            });
+
+            const mouthMesh = new THREE.Mesh(planeGeom, mouthMat);
+            mouthMesh.position.set(0, -0.2, 0.02);
+            characterGroup.add(mouthMesh);
 
             setIsLoading(false);
           },
           undefined,
-          (err) => {
-            console.error('Failed to load eyelids texture:', err);
+          () => {
             setIsLoading(false);
           }
         );
@@ -141,9 +167,9 @@ const HeroAvatarCanvas = () => {
     let nextBlinkTime = 2.5;
     let isBlinking = false;
     let blinkStartTime = 0;
-    const blinkDuration = 0.16; // 160ms natural blink cycle
+    const blinkDuration = 0.16; // 160ms natural blink
 
-    // 7. Animation Loop: Pure Eye Blinking + Subtle Idle Breathing (NO mouse move effects)
+    // 7. Animation Loop: Realistic Lip-Sync Speaking + Eye Blinking
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -160,7 +186,7 @@ const HeroAvatarCanvas = () => {
 
       const elapsedTime = clock.getElapsedTime();
 
-      // Natural subtle idle breathing float
+      // Subtle natural breathing float
       const breathingHover = Math.sin(elapsedTime * 1.3) * 0.025;
       if (characterGroup) {
         characterGroup.position.y = breathingHover;
@@ -168,7 +194,7 @@ const HeroAvatarCanvas = () => {
         characterGroup.rotation.set(0, 0, 0);
       }
 
-      // Eye Blinking Controller
+      // 1. Natural Eye Blinking Controller
       if (eyelidMat) {
         if (!isBlinking && elapsedTime >= nextBlinkTime) {
           isBlinking = true;
@@ -180,13 +206,35 @@ const HeroAvatarCanvas = () => {
           if (progress >= 1.0) {
             eyelidMat.opacity = 0.0;
             isBlinking = false;
-            // Next blink scheduled in 3.2 to 5.2 seconds (with occasional quick double-blink)
-            const isDoubleBlink = Math.random() < 0.25;
-            nextBlinkTime = elapsedTime + (isDoubleBlink ? 0.25 : 3.2 + Math.random() * 2.0);
+            const isDoubleBlink = Math.random() < 0.22;
+            nextBlinkTime = elapsedTime + (isDoubleBlink ? 0.22 : 3.2 + Math.random() * 2.2);
           } else {
-            // Smooth bell curve for eyelid closing and reopening: sin(progress * PI)
             eyelidMat.opacity = Math.sin(progress * Math.PI);
           }
+        }
+      }
+
+      // 2. Realistic Open-Mouth Speaking Lip-Sync Controller
+      if (mouthMat) {
+        if (isSpeakingRef.current) {
+          // Dynamic multi-frequency phoneme rhythm simulating human speech syllables
+          const syllable1 = Math.sin(elapsedTime * 14.0);
+          const syllable2 = Math.sin(elapsedTime * 9.5 + 1.2);
+          const wordPause = Math.sin(elapsedTime * 2.8);
+
+          // Calculate speech amplitude (with natural breath pauses between words)
+          let speechAmp = (syllable1 * 0.6 + syllable2 * 0.4);
+          if (wordPause < -0.3) {
+            speechAmp = 0.0; // natural micro-pause between phrases
+          } else {
+            speechAmp = Math.max(0.0, speechAmp);
+          }
+
+          // Smoothly interpolate mouth opacity to speech amplitude
+          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, speechAmp * 0.95, 0.25);
+        } else {
+          // Return smoothly to closed neutral mouth
+          mouthMat.opacity = THREE.MathUtils.lerp(mouthMat.opacity, 0.0, 0.2);
         }
       }
 
@@ -209,7 +257,11 @@ const HeroAvatarCanvas = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full flex items-center justify-center select-none pointer-events-none z-10 overflow-hidden">
+    <div 
+      onClick={onToggleSpeak}
+      className="absolute inset-0 w-full h-full flex items-center justify-center select-none z-10 overflow-hidden cursor-pointer"
+      title="Click character to toggle voice introduction"
+    >
       {/* 3D Canvas Mounting Point */}
       <div 
         ref={mountRef} 

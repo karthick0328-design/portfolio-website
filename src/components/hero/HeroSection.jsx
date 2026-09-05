@@ -1,13 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight } from 'react-icons/fi';
+import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { portfolioData } from '../../data/portfolioData';
 import HeroAvatarCanvas from './HeroAvatarCanvas';
 
 const HeroSection = () => {
   const { personalInfo } = portfolioData;
   const { scrollY } = useScroll();
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Speech narration handler using Web Speech API
+  const toggleSpeak = () => {
+    if (!('speechSynthesis' in window)) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      window.speechSynthesis.cancel(); // cancel any active speech
+      const introText = `Hello! I'm Karthick Pandi. I'm a Full Stack Developer building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies. Welcome to my portfolio!`;
+      
+      const utterance = new SpeechSynthesisUtterance(introText);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      // Select a natural English voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const naturalVoice = voices.find(v => (v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Guy')))) || voices.find(v => v.lang.startsWith('en'));
+      if (naturalVoice) {
+        utterance.voice = naturalVoice;
+      }
+
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   // Subtle parallax effect on scroll
   const contentY = useTransform(scrollY, [0, 500], [0, 50]);
@@ -27,8 +66,8 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(248,250,252,0),#f8fafc)] dark:bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)] transition-colors duration-500" />
       </div>
 
-      {/* 2. 3D Human Avatar (Centered, Close-Up, Dominant) */}
-      <HeroAvatarCanvas />
+      {/* 2. 3D Human Avatar (Centered, Close-Up, Speaking Lip-Sync) */}
+      <HeroAvatarCanvas isSpeaking={isSpeaking} onToggleSpeak={toggleSpeak} />
 
       {/* 3. Floating Left Social Icons (Vertical Stack) */}
       <motion.div 
@@ -143,6 +182,37 @@ const HeroSection = () => {
             >
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
             </motion.p>
+
+            {/* Interactive Voice Introduction Button */}
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75, duration: 0.8 }}
+              onClick={toggleSpeak}
+              className={`mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono tracking-wide transition-all duration-300 ${
+                isSpeaking 
+                  ? 'bg-cyan-500/15 border-cyan-500 text-cyan-600 dark:text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.35)]'
+                  : 'bg-zinc-200/60 dark:bg-zinc-800/60 border-zinc-300 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-400'
+              }`}
+            >
+              {isSpeaking ? (
+                <>
+                  <FiVolumeX size={14} className="text-cyan-500" />
+                  <span>Speaking Intro...</span>
+                  <div className="flex items-center gap-0.5 ml-1">
+                    <span className="w-0.5 h-3 bg-cyan-400 animate-pulse" />
+                    <span className="w-0.5 h-4 bg-cyan-400 animate-bounce" />
+                    <span className="w-0.5 h-2 bg-cyan-400 animate-pulse" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <FiVolume2 size={14} className="text-cyan-500" />
+                  <span>Listen to Intro</span>
+                </>
+              )}
+            </motion.button>
           </motion.div>
 
         </div>
