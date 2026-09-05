@@ -157,15 +157,15 @@ export const portfolioData = {
   education: [
     {
       id: 1,
-      degree: "Master of Computer Applications",
-      institution: "KLN College of Engineering",
-      year: "2023 - 2025"
-    },
-    {
-      id: 2,
       degree: "Bachelor of Computer Science",
       institution: "The American College",
       year: "2020 - 2023"
+    },
+    {
+      id: 2,
+      degree: "Master of Computer Applications",
+      institution: "KLN College of Engineering",
+      year: "2023 - 2025"
     }
   ],
   caseStudies: [
