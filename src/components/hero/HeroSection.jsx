@@ -1,15 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight, FiVolume2, FiVolumeX } from 'react-icons/fi';
+import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight, FiVolume2, FiVolumeX, FiMic, FiMicOff } from 'react-icons/fi';
 import { portfolioData } from '../../data/portfolioData';
 import HeroAvatarCanvas from './HeroAvatarCanvas';
+import { useVoiceAssistant } from '../../features/voice';
 
 const HeroSection = () => {
   const { personalInfo } = portfolioData;
   const { scrollY } = useScroll();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+
+  const { 
+    isSpeaking: isVoiceSpeaking, 
+    audioLevel: voiceAudioLevel, 
+    toggleListening, 
+    isListening: isVoiceListening,
+    stopSpeaking: stopVoiceSpeaking 
+  } = useVoiceAssistant();
+
+  const activeIsSpeaking = isSpeaking || isVoiceSpeaking;
+  const activeAudioLevel = isVoiceSpeaking ? voiceAudioLevel : audioLevel;
 
   const audioRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -65,6 +77,9 @@ const HeroSection = () => {
 
   // Toggle studio voice narration
   const toggleSpeak = async () => {
+    if (isVoiceSpeaking) {
+      stopVoiceSpeaking();
+    }
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -139,7 +154,7 @@ const HeroSection = () => {
       </div>
 
       {/* 2. 3D Human Avatar (Centered, Close-Up, Real Voice Lip-Sync) */}
-      <HeroAvatarCanvas isSpeaking={isSpeaking} audioLevel={audioLevel} onToggleSpeak={toggleSpeak} />
+      <HeroAvatarCanvas isSpeaking={activeIsSpeaking} audioLevel={activeAudioLevel} onToggleSpeak={toggleSpeak} />
 
       {/* 3. Floating Left Social Icons (Vertical Stack) */}
       <motion.div 
@@ -255,36 +270,78 @@ const HeroSection = () => {
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
             </motion.p>
 
-            {/* Interactive Voice Introduction Button */}
-            <motion.button
-              type="button"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.75, duration: 0.8 }}
-              onClick={toggleSpeak}
-              className={`mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono tracking-wide transition-all duration-300 ${
-                isSpeaking 
-                  ? 'bg-cyan-500/15 border-cyan-500 text-cyan-600 dark:text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.35)]'
-                  : 'bg-zinc-200/60 dark:bg-zinc-800/60 border-zinc-300 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-400'
-              }`}
-            >
-              {isSpeaking ? (
-                <>
-                  <FiVolumeX size={14} className="text-cyan-500" />
-                  <span>Speaking Intro...</span>
-                  <div className="flex items-center gap-0.5 ml-1">
-                    <span className="w-0.5 h-3 bg-cyan-400 animate-pulse" />
-                    <span className="w-0.5 h-4 bg-cyan-400 animate-bounce" />
-                    <span className="w-0.5 h-2 bg-cyan-400 animate-pulse" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <FiVolume2 size={14} className="text-cyan-500" />
-                  <span>Listen to Intro</span>
-                </>
-              )}
-            </motion.button>
+            {/* Interactive Voice Action Buttons */}
+            <div className="mt-4 flex flex-wrap items-center gap-2.5 justify-center lg:justify-start">
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.75, duration: 0.8 }}
+                onClick={toggleSpeak}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono tracking-wide transition-all duration-300 ${
+                  isSpeaking 
+                    ? 'bg-cyan-500/15 border-cyan-500 text-cyan-600 dark:text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.35)]'
+                    : 'bg-zinc-200/60 dark:bg-zinc-800/60 border-zinc-300 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-400'
+                }`}
+              >
+                {isSpeaking ? (
+                  <>
+                    <FiVolumeX size={14} className="text-cyan-500" />
+                    <span>Speaking Intro...</span>
+                    <div className="flex items-center gap-0.5 ml-1">
+                      <span className="w-0.5 h-3 bg-cyan-400 animate-pulse" />
+                      <span className="w-0.5 h-4 bg-cyan-400 animate-bounce" />
+                      <span className="w-0.5 h-2 bg-cyan-400 animate-pulse" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FiVolume2 size={14} className="text-cyan-500" />
+                    <span>Listen to Intro</span>
+                  </>
+                )}
+              </motion.button>
+
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.82, duration: 0.8 }}
+                onClick={() => {
+                  if (isSpeaking && audioRef.current) {
+                    audioRef.current.pause();
+                    setIsSpeaking(false);
+                    setAudioLevel(0);
+                  }
+                  toggleListening();
+                }}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono tracking-wide transition-all duration-300 ${
+                  isVoiceListening
+                    ? 'bg-red-500/20 border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.35)] animate-pulse'
+                    : isVoiceSpeaking
+                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-600 dark:text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.35)]'
+                    : 'bg-cyan-500/10 dark:bg-cyan-500/10 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-500'
+                }`}
+                title="Click to talk to Karthick's AI voice assistant"
+              >
+                {isVoiceListening ? (
+                  <>
+                    <FiMicOff size={14} className="text-red-500 animate-pulse" />
+                    <span>Listening...</span>
+                  </>
+                ) : isVoiceSpeaking ? (
+                  <>
+                    <FiVolume2 size={14} className="text-cyan-400 animate-pulse" />
+                    <span>Avatar Speaking...</span>
+                  </>
+                ) : (
+                  <>
+                    <FiMic size={14} className="text-cyan-500" />
+                    <span>Talk to Voice AI</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
           </motion.div>
 
         </div>
