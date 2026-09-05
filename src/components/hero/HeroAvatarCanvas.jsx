@@ -30,32 +30,38 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
       return;
     }
 
+    const isMobile = window.innerWidth < 768;
     let width = container.clientWidth || window.innerWidth;
     let height = container.clientHeight || window.innerHeight;
 
     // 1. Scene
     const scene = new THREE.Scene();
 
-    // 2. Camera Setup - Balanced straight-on portrait framing
+    // 2. Camera Setup
     const aspect = width / height;
     const camera = new THREE.PerspectiveCamera(24, aspect, 0.1, 1000);
     camera.position.set(0, 0, 18);
 
-    // 3. WebGL Renderer
+    // 3. WebGL Renderer with Mobile Optimizations
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance',
+      antialias: !isMobile, // Disable on mobile to prevent GPU hanging
+      powerPreference: isMobile ? 'default' : 'high-performance',
+      precision: isMobile ? 'mediump' : 'highp'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.75));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    if (!isMobile) {
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+    }
 
+    renderer.domElement.style.touchAction = 'pan-y';
+    renderer.domElement.style.pointerEvents = 'none';
     container.appendChild(renderer.domElement);
 
-    // 4. Character Meshes: Base Character + Animated Eyelids + Speaking Mouth
+    // 4. Character Meshes
     const textureLoader = new THREE.TextureLoader();
     let characterGroup = new THREE.Group();
     scene.add(characterGroup);
@@ -67,13 +73,13 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
 
     const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
 
-    // Load Base Character (Open Eyes & Neutral Mouth)
+    // Load Base Character
     textureLoader.load(
       '/models/karthick_straight_open.png?v=7',
       (baseTex) => {
         baseTex.colorSpace = THREE.SRGBColorSpace;
-        baseTex.generateMipmaps = true;
-        baseTex.minFilter = THREE.LinearMipmapLinearFilter;
+        baseTex.generateMipmaps = !isMobile;
+        baseTex.minFilter = isMobile ? THREE.LinearFilter : THREE.LinearMipmapLinearFilter;
 
         const baseMat = new THREE.MeshBasicMaterial({
           map: baseTex,
@@ -87,13 +93,13 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         baseMesh.position.set(0, -0.2, 0);
         characterGroup.add(baseMesh);
 
-        // Load Eyelids Layer (For Natural Solid Eye Blinking)
+        // Load Eyelids Layer
         textureLoader.load(
           '/models/karthick_eyelids.png?v=7',
           (eyelidTex) => {
             eyelidTex.colorSpace = THREE.SRGBColorSpace;
-            eyelidTex.generateMipmaps = true;
-            eyelidTex.minFilter = THREE.LinearMipmapLinearFilter;
+            eyelidTex.generateMipmaps = !isMobile;
+            eyelidTex.minFilter = isMobile ? THREE.LinearFilter : THREE.LinearMipmapLinearFilter;
 
             eyelidMat = new THREE.MeshBasicMaterial({
               map: eyelidTex,
@@ -110,13 +116,13 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
           }
         );
 
-        // Load Open Mouth Layer Directly
+        // Load Open Mouth Layer
         textureLoader.load(
           '/models/karthick_mouth_open.png?v=7',
           (mouthTex) => {
             mouthTex.colorSpace = THREE.SRGBColorSpace;
-            mouthTex.generateMipmaps = true;
-            mouthTex.minFilter = THREE.LinearMipmapLinearFilter;
+            mouthTex.generateMipmaps = !isMobile;
+            mouthTex.minFilter = isMobile ? THREE.LinearFilter : THREE.LinearMipmapLinearFilter;
 
             mouthMat = new THREE.MeshBasicMaterial({
               map: mouthTex,
@@ -155,8 +161,8 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
       camera.aspect = w / h;
 
       if (w < 640) {
-        camera.fov = 30;
-        camera.position.set(0, -0.15, 17.5);
+        camera.fov = 32;
+        camera.position.set(0, -0.3, 17.5);
       } else if (w < 1024) {
         camera.fov = 26;
         camera.position.set(0, -0.1, 18.0);
@@ -177,9 +183,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
     let nextBlinkTime = 2.2;
     let isBlinking = false;
     let blinkStartTime = 0;
-    const blinkDuration = 0.13; // 130ms natural human blink
+    const blinkDuration = 0.13;
 
-    // 7. Animation Loop: Real Human Audio Lip-Sync + Eye Blinking
+    // 7. Animation Loop with Mobile Throttling & Visibility Detection
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -189,22 +195,32 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
     });
     intersectionObserver.observe(container);
 
-    const animate = () => {
+    let lastRenderTime = 0;
+    const targetFps = isMobile ? 45 : 60;
+    const frameInterval = 1000 / targetFps;
+
+    const animate = (currentTime) => {
       animationFrameId = requestAnimationFrame(animate);
 
       if (!isVisible) return;
 
+      // Throttle rendering on mobile to prevent main thread blocking
+      if (isMobile) {
+        const delta = currentTime - lastRenderTime;
+        if (delta < frameInterval) return;
+        lastRenderTime = currentTime - (delta % frameInterval);
+      }
+
       const elapsedTime = clock.getElapsedTime();
 
-      // Subtle natural breathing float
+      // Breathing hover
       const breathingHover = Math.sin(elapsedTime * 1.3) * 0.025;
       if (characterGroup) {
         characterGroup.position.y = breathingHover;
         characterGroup.position.x = 0;
-        characterGroup.rotation.set(0, 0, 0);
       }
 
-      // 1. Natural Eye Blinking Controller (Fast, snappy, solid eyelids without ghosting)
+      // 1. Natural Eye Blinking Controller
       if (eyelidMat && eyelidMesh) {
         if (!isBlinking && elapsedTime >= nextBlinkTime) {
           isBlinking = true;
@@ -235,25 +251,27 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         }
       }
 
-      // 2. Real Viseme-Driven Lip Sync Controller (Single Unified Mouth)
-      const currentViseme = visemeEngine.update(0.20);
-
-      if (mouthMat && mouthMesh) {
-        if (isSpeakingRef.current && currentViseme.openY > 0.08) {
-          mouthMesh.visible = true;
-          mouthMat.opacity = Math.min(1.0, currentViseme.opacity * Math.min(1.0, (currentViseme.openY - 0.08) * 3.5));
-          mouthMesh.scale.set(1.0, 1.0, 1.0);
-        } else {
-          mouthMesh.visible = false;
-          mouthMat.opacity = 0.0;
-          mouthMesh.scale.set(1.0, 1.0, 1.0);
+      // 2. Real Viseme-Driven Lip Sync Controller (only update when speaking)
+      if (isSpeakingRef.current) {
+        const currentViseme = visemeEngine.update(0.20);
+        if (mouthMat && mouthMesh) {
+          if (currentViseme.openY > 0.08) {
+            mouthMesh.visible = true;
+            mouthMat.opacity = Math.min(1.0, currentViseme.opacity * Math.min(1.0, (currentViseme.openY - 0.08) * 3.5));
+          } else {
+            mouthMesh.visible = false;
+            mouthMat.opacity = 0.0;
+          }
         }
+      } else if (mouthMesh && mouthMesh.visible) {
+        mouthMesh.visible = false;
+        if (mouthMat) mouthMat.opacity = 0.0;
       }
 
       renderer.render(scene, camera);
     };
 
-    animate();
+    animate(0);
 
     // 8. Cleanup
     return () => {
@@ -271,19 +289,19 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
   return (
     <div 
       onClick={onToggleSpeak}
-      className="absolute inset-0 w-full h-full flex items-center justify-center select-none z-10 overflow-hidden cursor-pointer"
+      className="absolute inset-0 w-full h-full flex items-center justify-center select-none z-10 overflow-hidden cursor-pointer touch-pan-y"
       title="Click to play real voice introduction"
     >
       {/* 3D Canvas Mounting Point */}
       <div 
         ref={mountRef} 
-        className="w-full h-full relative z-10 flex items-center justify-center pointer-events-none"
+        className="w-full h-full relative z-10 flex items-center justify-center pointer-events-none touch-pan-y"
       />
 
       {/* Loading Skeleton */}
       {isLoading && !loadError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
-          <div className="relative w-14 h-14">
+          <div className="relative w-12 h-12">
             <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-ping" />
             <div className="absolute inset-0 rounded-full border-2 border-t-cyan-400 border-r-purple-500 border-b-transparent border-l-transparent animate-spin" />
             <div className="absolute inset-2 rounded-full bg-cyan-500/10 backdrop-blur-sm flex items-center justify-center">

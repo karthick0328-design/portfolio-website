@@ -21,17 +21,22 @@ const HeroSection = () => {
 
   const activeIsSpeaking = isSpeaking || isVoiceSpeaking;
 
-  // Function to speak intro narration
+  // Function to speak intro narration safely
   const speakIntro = useCallback(() => {
-    if (isVoiceSpeaking) {
-      stopVoiceSpeaking();
+    try {
+      if (isVoiceSpeaking) {
+        stopVoiceSpeaking();
+      }
+      setIsSpeaking(true);
+      speechSynthesisService.speak(INTRO_TEXT, {
+        onStart: () => setIsSpeaking(true),
+        onEnd: () => setIsSpeaking(false),
+        onError: () => setIsSpeaking(false)
+      });
+    } catch (e) {
+      console.warn('Speech synthesis non-blocking error:', e);
+      setIsSpeaking(false);
     }
-    setIsSpeaking(true);
-    speechSynthesisService.speak(INTRO_TEXT, {
-      onStart: () => setIsSpeaking(true),
-      onEnd: () => setIsSpeaking(false),
-      onError: () => setIsSpeaking(false)
-    });
   }, [isVoiceSpeaking, stopVoiceSpeaking]);
 
   // Toggle speak on avatar click
@@ -44,7 +49,7 @@ const HeroSection = () => {
     }
   };
 
-  // Auto-speak intro upon visiting the website
+  // Safe non-blocking auto-speech trigger upon visiting
   useEffect(() => {
     let hasSpoken = false;
 
@@ -54,54 +59,47 @@ const HeroSection = () => {
       speakIntro();
     };
 
-    // Auto-play intro with smooth delay
+    // Auto-play intro with smooth delay (non-blocking for mobile)
     const timer = setTimeout(() => {
       triggerAutoSpeech();
-    }, 900);
+    }, 1200);
 
-    // Fallback: If browser autoplay policy requires user interaction, trigger on first click or touch
+    // Fallback: Click or touch listener for mobile autoplay permissions (passive: true to prevent hanging)
     const handleFirstGesture = () => {
       triggerAutoSpeech();
       window.removeEventListener('click', handleFirstGesture);
       window.removeEventListener('touchstart', handleFirstGesture);
-      window.removeEventListener('keydown', handleFirstGesture);
     };
 
-    window.addEventListener('click', handleFirstGesture, { once: true });
-    window.addEventListener('touchstart', handleFirstGesture, { once: true });
-    window.addEventListener('keydown', handleFirstGesture, { once: true });
+    window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
+    window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener('click', handleFirstGesture);
       window.removeEventListener('touchstart', handleFirstGesture);
-      window.removeEventListener('keydown', handleFirstGesture);
       speechSynthesisService.stop();
     };
   }, [speakIntro]);
 
-  // Subtle parallax effect on scroll
-  const contentY = useTransform(scrollY, [0, 500], [0, 50]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.1]);
+  // Subtle parallax effect on scroll (smooth transform)
+  const contentY = useTransform(scrollY, [0, 400], [0, 30]);
+  const heroOpacity = useTransform(scrollY, [0, 350], [1, 0.15]);
 
   return (
-    <section className="relative w-full min-h-screen h-screen flex items-center justify-center overflow-hidden bg-[#f8fafc] dark:bg-[#050507] text-zinc-900 dark:text-white select-none transition-colors duration-500">
+    <section className="relative w-full min-h-[100svh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-[#f8fafc] dark:bg-[#050507] text-zinc-900 dark:text-white select-none transition-colors duration-500 touch-pan-y">
       
-      {/* 1. Cinematic Ambient Background & Glows for Light and Dark mode */}
+      {/* 1. Ambient Background & Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {/* Soft atmospheric cyan/teal and purple glowing flares */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full bg-cyan-500/[0.12] dark:bg-cyan-500/[0.08] filter blur-[150px] pointer-events-none transition-opacity duration-500" />
-        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[550px] h-[550px] rounded-full bg-purple-600/[0.1] dark:bg-purple-600/[0.07] filter blur-[160px] pointer-events-none transition-opacity duration-500" />
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-blue-500/[0.08] dark:bg-blue-500/[0.04] filter blur-[120px] pointer-events-none transition-opacity duration-500" />
-        
-        {/* Radial vignette mask matching active theme background */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[650px] h-[500px] md:h-[650px] rounded-full bg-cyan-500/[0.10] dark:bg-cyan-500/[0.07] filter blur-[120px] md:blur-[150px] pointer-events-none transition-opacity duration-500" />
+        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[450px] md:w-[550px] h-[450px] md:h-[550px] rounded-full bg-purple-600/[0.08] dark:bg-purple-600/[0.06] filter blur-[120px] md:blur-[160px] pointer-events-none transition-opacity duration-500" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(248,250,252,0),#f8fafc)] dark:bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)] transition-colors duration-500" />
       </div>
 
       {/* 2. 3D Human Avatar (Centered, Close-Up, Real Voice Lip-Sync) */}
       <HeroAvatarCanvas isSpeaking={activeIsSpeaking} onToggleSpeak={toggleSpeak} />
 
-      {/* 3. Floating Left Social Icons (Vertical Stack) */}
+      {/* 3. Floating Left Social Icons (Desktop) */}
       <motion.div 
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
@@ -115,7 +113,7 @@ const HeroSection = () => {
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"
-            className="text-zinc-600 hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.3)] dark:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+            className="text-zinc-600 hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300"
           >
             <FiGithub size={19} />
           </a>
@@ -124,14 +122,14 @@ const HeroSection = () => {
             target="_blank"
             rel="noreferrer"
             aria-label="LinkedIn"
-            className="text-zinc-600 hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.3)] dark:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+            className="text-zinc-600 hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300"
           >
             <FiLinkedin size={19} />
           </a>
           <a
             href={`mailto:${personalInfo.email}`}
             aria-label="Email"
-            className="text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.3)] dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+            className="text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 hover:scale-125 transition-all duration-300"
           >
             <FiMail size={19} />
           </a>
@@ -139,34 +137,34 @@ const HeroSection = () => {
         <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-300 via-zinc-400 to-transparent dark:from-zinc-500 dark:via-zinc-600 dark:to-transparent" />
       </motion.div>
 
-      {/* 4. Main Content Overlay (Left Intro + Right Role, arranged around Character) */}
+      {/* 4. Main Content Overlay */}
       <motion.div 
         style={{ y: contentY, opacity: heroOpacity }}
-        className="w-full h-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 flex flex-col justify-between py-20 lg:py-0 relative z-20 pointer-events-none"
+        className="w-full h-full max-w-7xl mx-auto px-5 sm:px-12 lg:px-16 flex flex-col justify-between pt-24 pb-8 lg:py-0 relative z-20 pointer-events-none"
       >
-        {/* Mid-screen Container: Left Intro & Right Info */}
-        <div className="w-full flex-grow flex flex-col lg:flex-row items-center lg:items-center justify-between gap-6 lg:gap-0 my-auto">
+        {/* Mid-screen Container */}
+        <div className="w-full flex-grow flex flex-col lg:flex-row items-center lg:items-center justify-between gap-5 lg:gap-0 my-auto">
           
-          {/* LEFT CONTENT: Introduction & Name */}
+          {/* LEFT CONTENT: Name */}
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto"
           >
             <motion.p 
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1.5 font-medium dark:font-light"
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1 font-medium"
             >
               Hello! I'm
             </motion.p>
 
             <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: 0.3, duration: 0.7 }}
               className="text-3xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-black tracking-tight uppercase leading-[0.95] text-zinc-900 dark:text-white"
             >
               <span className="block text-zinc-900 dark:text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.06)] dark:drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]">
@@ -178,38 +176,38 @@ const HeroSection = () => {
             </motion.h1>
           </motion.div>
 
-          {/* Spacer for the large center 3D character */}
+          {/* Spacer for center 3D character */}
           <div className="hidden lg:block w-72 xl:w-96 h-1 pointer-events-none" />
 
-          {/* RIGHT CONTENT: Professional Role & Description */}
+          {/* RIGHT CONTENT: Role */}
           <motion.div 
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.0, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-[300px] sm:max-w-[340px]"
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-[320px] sm:max-w-[340px]"
           >
             <motion.p 
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-base sm:text-lg font-medium dark:font-light text-cyan-600 dark:text-cyan-400 tracking-wide mb-0.5 drop-shadow-[0_0_10px_rgba(6,182,212,0.2)] dark:drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+              transition={{ delay: 0.35, duration: 0.6 }}
+              className="text-sm sm:text-base font-medium text-cyan-600 dark:text-cyan-400 tracking-wide mb-0.5"
             >
               Full Stack &
             </motion.p>
 
             <motion.h2 
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              className="text-2xl sm:text-4xl md:text-5xl font-black text-zinc-900 dark:text-white uppercase leading-[0.95] tracking-tight mb-3"
+              transition={{ delay: 0.45, duration: 0.7 }}
+              className="text-2xl sm:text-4xl md:text-5xl font-black text-zinc-900 dark:text-white uppercase leading-[0.95] tracking-tight mb-2.5"
             >
               DEVELOPER
             </motion.h2>
 
             <motion.p 
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
+              transition={{ delay: 0.55, duration: 0.7 }}
               className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal"
             >
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
@@ -218,8 +216,8 @@ const HeroSection = () => {
 
         </div>
 
-        {/* Bottom Bar: Minimal Resume Link (Right) and Scroll Prompt (Center) */}
-        <div className="w-full pb-6 flex items-center justify-between pointer-events-auto">
+        {/* Bottom Bar */}
+        <div className="w-full pb-4 sm:pb-6 flex items-center justify-between pointer-events-auto">
           {/* Mobile Social Links */}
           <div className="flex md:hidden items-center gap-4 text-zinc-600 dark:text-zinc-400">
             <a href={personalInfo.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-cyan-600 dark:hover:text-cyan-400">
@@ -233,11 +231,11 @@ const HeroSection = () => {
             </a>
           </div>
 
-          {/* Center Minimal Scroll Prompt */}
+          {/* Center Scroll Prompt */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.0, duration: 0.8 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
             className="hidden sm:flex flex-col items-center gap-1.5 mx-auto pointer-events-none"
           >
             <span className="text-[9px] font-mono tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500">
@@ -246,11 +244,11 @@ const HeroSection = () => {
             <div className="w-[1px] h-5 bg-gradient-to-b from-cyan-500/80 dark:from-cyan-400/80 to-transparent animate-pulse" />
           </motion.div>
 
-          {/* Minimal Resume Link (Bottom Right) */}
+          {/* Minimal Resume Link */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
             className="ml-auto"
           >
             <Link 
