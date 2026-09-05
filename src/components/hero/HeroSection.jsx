@@ -23,11 +23,6 @@ const HeroSection = () => {
         <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[550px] h-[550px] rounded-full bg-purple-600/[0.07] filter blur-[160px] pointer-events-none" />
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-blue-500/[0.04] filter blur-[120px] pointer-events-none" />
         
-        {/* Subtle decorative glowing ambient spheres */}
-        <div className="absolute top-[18%] left-[12%] w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_3px_rgba(34,211,238,0.7)] animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[22%] right-[14%] w-2.5 h-2.5 rounded-full bg-purple-400 shadow-[0_0_18px_3px_rgba(168,85,247,0.7)] animate-pulse" style={{ animationDuration: '6s' }} />
-        <div className="absolute top-[35%] right-[18%] w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_12px_2px_rgba(96,165,250,0.6)] animate-pulse" style={{ animationDuration: '5s' }} />
-
         {/* Deep dark vignette mask */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)]" />
       </div>
