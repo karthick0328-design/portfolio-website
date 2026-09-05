@@ -1,3 +1,9 @@
+import aiVoiceImg from '../assets/projects/ai-voice.jpg';
+import janoDownloaderImg from '../assets/projects/jano-downloader.jpg';
+import marketingImg from '../assets/projects/as_photography-digital-marketing-1725340.jpg';
+import molecularImg from '../assets/projects/images (7).jpg';
+import ecommerceImg from '../assets/projects/andrespradagarcia-online-6817350.jpg';
+
 export const portfolioData = {
   personalInfo: {
     name: "Karthick Pandi",
@@ -68,7 +74,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design/AI-Voice",
       live: "https://ai-voice-tau-olive.vercel.app",
       status: "Live & Deployed",
-      image: "/projects/ai-voice.jpg",
+      image: aiVoiceImg,
       gradient: "from-blue-600 to-indigo-600"
     },
     {
@@ -87,7 +93,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design/jano-hd-video-downloader",
       live: "https://jano-hd-video-downloader.vercel.app",
       status: "Live & Deployed",
-      image: "/projects/jano-downloader.jpg",
+      image: janoDownloaderImg,
       gradient: "from-cyan-500 to-blue-600"
     },
     {
@@ -106,7 +112,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design",
       live: "https://karthick-portfolio-six.vercel.app/",
       status: "Production Ready",
-      image: "/projects/as_photography-digital-marketing-1725340.jpg",
+      image: marketingImg,
       gradient: "from-emerald-500 to-teal-600"
     },
     {
@@ -125,7 +131,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design",
       live: "https://karthick-portfolio-six.vercel.app/",
       status: "Research Tool",
-      image: "/projects/images (7).jpg",
+      image: molecularImg,
       gradient: "from-amber-500 to-orange-600"
     },
     {
@@ -144,7 +150,7 @@ export const portfolioData = {
       github: "https://github.com/karthick0328-design",
       live: "https://karthick-portfolio-six.vercel.app/",
       status: "Full Stack App",
-      image: "/projects/andrespradagarcia-online-6817350.jpg",
+      image: ecommerceImg,
       gradient: "from-rose-500 to-red-600"
     }
   ],
