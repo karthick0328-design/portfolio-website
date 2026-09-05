@@ -26,12 +26,12 @@ const HeroAvatarCanvas = () => {
     // 1. Scene
     const scene = new THREE.Scene();
 
-    // 2. Camera Setup - Focused close on character portrait
+    // 2. Camera Setup - Balanced portrait framing
     const aspect = width / height;
-    const camera = new THREE.PerspectiveCamera(26, aspect, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(24, aspect, 0.1, 1000);
     camera.position.set(0, 0, 18);
 
-    // 3. WebGL Renderer (High performance, crisp rendering)
+    // 3. WebGL Renderer
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
@@ -41,7 +41,7 @@ const HeroAvatarCanvas = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.0;
 
     container.appendChild(renderer.domElement);
 
@@ -52,9 +52,9 @@ const HeroAvatarCanvas = () => {
 
     let characterMesh = null;
 
-    // Load master high-definition character asset
+    // Load flawless transparent PNG
     textureLoader.load(
-      '/models/karthick_avatar.jpg',
+      '/models/karthick_avatar_transparent.png',
       (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.generateMipmaps = true;
@@ -62,42 +62,17 @@ const HeroAvatarCanvas = () => {
         texture.magFilter = THREE.LinearFilter;
 
         // Plane dimensions matching character portrait aspect ratio
-        const planeGeom = new THREE.PlaneGeometry(8.2, 8.2);
-        
-        // Custom Shader for seamless dark edge blending without distorting character
-        const material = new THREE.ShaderMaterial({
-          uniforms: {
-            uTexture: { value: texture },
-            uMouse: { value: new THREE.Vector2(0, 0) },
-          },
-          vertexShader: `
-            varying vec2 vUv;
-            void main() {
-              vUv = uv;
-              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-          `,
-          fragmentShader: `
-            varying vec2 vUv;
-            uniform sampler2D uTexture;
-            uniform vec2 uMouse;
-
-            void main() {
-              vec4 color = texture2D(uTexture, vUv);
-              
-              // Soft border vignette to merge seamlessly with #050507 background
-              vec2 edge = min(vUv, 1.0 - vUv);
-              float fade = smoothstep(0.0, 0.05, min(edge.x, edge.y));
-              
-              gl_FragColor = vec4(color.rgb, color.a * fade);
-            }
-          `,
+        const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
+        const material = new THREE.MeshBasicMaterial({
+          map: texture,
           transparent: true,
+          alphaTest: 0.01,
+          depthWrite: false,
           side: THREE.DoubleSide,
         });
 
         characterMesh = new THREE.Mesh(planeGeom, material);
-        characterMesh.position.set(0, -0.4, 0);
+        characterMesh.position.set(0, -0.2, 0);
         characterGroup.add(characterMesh);
 
         setIsLoading(false);
@@ -114,16 +89,17 @@ const HeroAvatarCanvas = () => {
     const handleMouseMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
-      mousePos.current.targetX = Math.max(-1.0, Math.min(1.0, x));
-      mousePos.current.targetY = Math.max(-1.0, Math.min(1.0, y));
+      // Clamped smooth input range
+      mousePos.current.targetX = Math.max(-0.85, Math.min(0.85, x));
+      mousePos.current.targetY = Math.max(-0.85, Math.min(0.85, y));
     };
 
     const handleTouchMove = (e) => {
       if (e.touches && e.touches[0]) {
         const x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
         const y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-        mousePos.current.targetX = Math.max(-1.0, Math.min(1.0, x));
-        mousePos.current.targetY = Math.max(-1.0, Math.min(1.0, y));
+        mousePos.current.targetX = Math.max(-0.85, Math.min(0.85, x));
+        mousePos.current.targetY = Math.max(-0.85, Math.min(0.85, y));
       }
     };
 
@@ -144,13 +120,13 @@ const HeroAvatarCanvas = () => {
       camera.aspect = w / h;
 
       if (w < 640) {
-        camera.fov = 32;
-        camera.position.set(0, -0.2, 17.5);
+        camera.fov = 30;
+        camera.position.set(0, -0.15, 17.5);
       } else if (w < 1024) {
-        camera.fov = 28;
+        camera.fov = 26;
         camera.position.set(0, -0.1, 18.0);
       } else {
-        camera.fov = 26;
+        camera.fov = 24;
         camera.position.set(0, 0, 18.0);
       }
 
@@ -162,7 +138,7 @@ const HeroAvatarCanvas = () => {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // 7. Animation Loop with Solid 3D Perspective Rotation & Parallax
+    // 7. Animation Loop with Subtle, Refined 3D Mouse Tracking
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -180,28 +156,28 @@ const HeroAvatarCanvas = () => {
       const elapsedTime = clock.getElapsedTime();
 
       // Smooth Spring-Damped Lerping of mouse position
-      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.065;
-      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.065;
+      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.05;
+      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.05;
 
       const mx = mousePos.current.x;
       const my = mousePos.current.y;
 
-      // Natural idle breathing motion (clean vertical float, no texture warping)
-      const breathingHover = Math.sin(elapsedTime * 1.4) * 0.06;
-      const breathingSway = Math.sin(elapsedTime * 0.8) * 0.01;
+      // Subtle, gentle idle breathing motion
+      const breathingHover = Math.sin(elapsedTime * 1.3) * 0.04;
+      const breathingSway = Math.sin(elapsedTime * 0.7) * 0.006;
 
-      // Solid 3D Perspective Tilt & Rotation tracking the cursor
+      // Refined, subtle 3D perspective rotation (not exaggerated)
       if (characterGroup) {
-        characterGroup.rotation.y = THREE.MathUtils.lerp(characterGroup.rotation.y, mx * 0.18 + breathingSway, 0.08);
-        characterGroup.rotation.x = THREE.MathUtils.lerp(characterGroup.rotation.x, -my * 0.12, 0.08);
-        characterGroup.rotation.z = THREE.MathUtils.lerp(characterGroup.rotation.z, -mx * 0.02, 0.08);
-        characterGroup.position.x = THREE.MathUtils.lerp(characterGroup.position.x, mx * 0.35, 0.06);
-        characterGroup.position.y = THREE.MathUtils.lerp(characterGroup.position.y, my * 0.2 + breathingHover - 0.2, 0.06);
+        characterGroup.rotation.y = THREE.MathUtils.lerp(characterGroup.rotation.y, mx * 0.09 + breathingSway, 0.06);
+        characterGroup.rotation.x = THREE.MathUtils.lerp(characterGroup.rotation.x, -my * 0.06, 0.06);
+        characterGroup.rotation.z = THREE.MathUtils.lerp(characterGroup.rotation.z, -mx * 0.015, 0.06);
+        characterGroup.position.x = THREE.MathUtils.lerp(characterGroup.position.x, mx * 0.2, 0.05);
+        characterGroup.position.y = THREE.MathUtils.lerp(characterGroup.position.y, my * 0.12 + breathingHover - 0.15, 0.05);
       }
 
       // Subtle Camera Tracking
-      camera.position.x = THREE.MathUtils.lerp(camera.position.x, mx * 0.45, 0.05);
-      camera.position.y = THREE.MathUtils.lerp(camera.position.y, my * 0.25, 0.05);
+      camera.position.x = THREE.MathUtils.lerp(camera.position.x, mx * 0.25, 0.04);
+      camera.position.y = THREE.MathUtils.lerp(camera.position.y, my * 0.15, 0.04);
       camera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
@@ -245,10 +221,6 @@ const HeroAvatarCanvas = () => {
           </div>
         </div>
       )}
-
-      {/* Atmospheric Rim Glow behind character */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[620px] bg-cyan-500/[0.12] dark:bg-cyan-400/[0.14] rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-purple-600/[0.1] rounded-full blur-[130px] pointer-events-none z-0" />
     </div>
   );
 };
