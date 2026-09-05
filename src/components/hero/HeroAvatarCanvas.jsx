@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { visemeEngine } from '../../features/voice/services/visemeEngine';
 
 const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak }) => {
   const mountRef = useRef(null);
@@ -61,9 +62,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
 
     let eyelidMat = null;
     let eyelidMesh = null;
+    let mouthPivotGroup = null;
     let mouthMesh = null;
     let mouthMat = null;
-    let currentMouthOpen = 0.0;
 
     const planeGeom = new THREE.PlaneGeometry(7.6, 7.6);
 
@@ -110,7 +111,7 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
           }
         );
 
-        // Load Open Mouth Layer Directly
+        // Load Open Mouth Layer with Pivot at Lip Seam
         textureLoader.load(
           '/models/karthick_mouth_open.png?v=7',
           (mouthTex) => {
@@ -126,10 +127,14 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
               side: THREE.DoubleSide,
             });
 
+            mouthPivotGroup = new THREE.Group();
+            mouthPivotGroup.position.set(0, -0.38, 0.02);
+
             mouthMesh = new THREE.Mesh(planeGeom, mouthMat);
-            mouthMesh.position.set(0, -0.2, 0.02);
-            mouthMesh.visible = false;
-            characterGroup.add(mouthMesh);
+            mouthMesh.position.set(0, 0.18, 0);
+            mouthPivotGroup.add(mouthMesh);
+            mouthPivotGroup.visible = false;
+            characterGroup.add(mouthPivotGroup);
 
             setIsLoading(false);
           },
@@ -235,48 +240,26 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         }
       }
 
-      // 2. Real Human Lip-Sync Controller (Vertical Mouth Opening & Natural Syllable Articulation)
-      if (mouthMat && mouthMesh) {
-        if (isSpeakingRef.current) {
-          const level = audioLevelRef.current;
-          
-          // Natural syllable cadence (~4-5 syllables per second with dynamic variance)
-          const syllableOsc1 = Math.sin(elapsedTime * 11.5) * 0.5 + 0.5;
-          const syllableOsc2 = Math.cos(elapsedTime * 6.8) * 0.3 + 0.7;
-          const cadence = syllableOsc1 * syllableOsc2;
-          
-          // Target mouth openness
-          let targetOpen = 0.0;
-          if (level > 0.02) {
-            targetOpen = Math.min(1.0, (level * 1.3 + 0.25) * (0.35 + 0.65 * cadence));
-          } else {
-            targetOpen = 0.35 + 0.65 * cadence;
-          }
-          
-          // Fluid, natural mouth transitions
-          currentMouthOpen = THREE.MathUtils.lerp(currentMouthOpen, targetOpen, 0.28);
+      // 2. Real Human Lip-Sync Controller (Phoneme/Viseme Driven Shapes)
+      const currentViseme = visemeEngine.update(0.32);
 
-          if (currentMouthOpen > 0.02) {
-            mouthMesh.visible = true;
-            mouthMat.opacity = Math.min(1.0, currentMouthOpen * 1.6);
-            const scaleY = 0.88 + currentMouthOpen * 0.24;
-            const scaleX = 1.0 + (1.0 - currentMouthOpen) * 0.03;
-            mouthMesh.scale.set(scaleX, scaleY, 1.0);
-          } else {
-            mouthMesh.visible = false;
-            mouthMat.opacity = 0.0;
-            mouthMesh.scale.set(1.0, 1.0, 1.0);
-          }
+      if (mouthMat && mouthPivotGroup) {
+        if (isSpeakingRef.current && currentViseme.opacity > 0.08) {
+          mouthPivotGroup.visible = true;
+          mouthMat.opacity = Math.min(1.0, currentViseme.opacity * 1.8);
+
+          // Apply phoneme-driven natural shapes (vertical jaw drop + horizontal stretch/pucker)
+          const scaleY = currentViseme.scaleY * (1.0 + currentViseme.openY * 0.35);
+          const scaleX = currentViseme.scaleX;
+          mouthPivotGroup.scale.set(scaleX, scaleY, 1.0);
+
+          // Natural anatomical jaw drop position
+          mouthPivotGroup.position.y = -0.38 - currentViseme.openY * 0.035;
         } else {
-          currentMouthOpen = THREE.MathUtils.lerp(currentMouthOpen, 0.0, 0.25);
-          if (currentMouthOpen <= 0.02) {
-            mouthMesh.visible = false;
-            mouthMat.opacity = 0.0;
-            mouthMesh.scale.set(1.0, 1.0, 1.0);
-          } else {
-            mouthMesh.visible = true;
-            mouthMat.opacity = currentMouthOpen * 1.6;
-          }
+          mouthPivotGroup.visible = false;
+          mouthMat.opacity = 0.0;
+          mouthPivotGroup.scale.set(1.0, 1.0, 1.0);
+          mouthPivotGroup.position.y = -0.38;
         }
       }
 

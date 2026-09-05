@@ -5,6 +5,39 @@ import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight, FiVolume2, FiVolumeX, FiM
 import { portfolioData } from '../../data/portfolioData';
 import HeroAvatarCanvas from './HeroAvatarCanvas';
 import { useVoiceAssistant } from '../../features/voice';
+import { visemeEngine } from '../../features/voice/services/visemeEngine';
+
+const INTRO_WORDS = [
+  { word: "Hello", time: 0.1, dur: 380 },
+  { word: "I'm", time: 0.7, dur: 220 },
+  { word: "Karthick", time: 1.0, dur: 360 },
+  { word: "Pandi", time: 1.5, dur: 360 },
+  { word: "I'm", time: 2.2, dur: 220 },
+  { word: "a", time: 2.5, dur: 150 },
+  { word: "Full", time: 2.7, dur: 250 },
+  { word: "Stack", time: 3.0, dur: 320 },
+  { word: "Developer", time: 3.5, dur: 450 },
+  { word: "building", time: 4.2, dur: 350 },
+  { word: "modern", time: 4.7, dur: 300 },
+  { word: "scalable", time: 5.2, dur: 380 },
+  { word: "and", time: 5.7, dur: 180 },
+  { word: "interactive", time: 6.0, dur: 420 },
+  { word: "web", time: 6.6, dur: 250 },
+  { word: "applications", time: 7.0, dur: 500 },
+  { word: "with", time: 7.7, dur: 200 },
+  { word: "React", time: 8.0, dur: 350 },
+  { word: "Nextjs", time: 8.6, dur: 380 },
+  { word: "Nodejs", time: 9.2, dur: 380 },
+  { word: "Python", time: 9.8, dur: 380 },
+  { word: "Threejs", time: 10.4, dur: 380 },
+  { word: "and", time: 11.0, dur: 180 },
+  { word: "AI", time: 11.3, dur: 280 },
+  { word: "technologies", time: 11.7, dur: 550 },
+  { word: "Welcome", time: 12.6, dur: 350 },
+  { word: "to", time: 13.0, dur: 180 },
+  { word: "my", time: 13.3, dur: 200 },
+  { word: "portfolio", time: 13.6, dur: 450 }
+];
 
 const HeroSection = () => {
   const { personalInfo } = portfolioData;
@@ -28,6 +61,7 @@ const HeroSection = () => {
   const analyserRef = useRef(null);
   const animFrameRef = useRef(null);
   const isSpeakingRef = useRef(false);
+  const lastWordRef = useRef('');
 
   useEffect(() => {
     isSpeakingRef.current = isSpeaking;
@@ -41,6 +75,8 @@ const HeroSection = () => {
     const handleEnded = () => {
       setIsSpeaking(false);
       setAudioLevel(0);
+      lastWordRef.current = '';
+      visemeEngine.reset();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
 
@@ -54,6 +90,7 @@ const HeroSection = () => {
     return () => {
       audio.pause();
       audio.removeEventListener('ended', handleEnded);
+      visemeEngine.reset();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
@@ -64,26 +101,18 @@ const HeroSection = () => {
   const updateAudioMeter = () => {
     const audio = audioRef.current;
     if (audio && !audio.paused) {
-      if (analyserRef.current) {
-        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-        analyserRef.current.getByteFrequencyData(dataArray);
-
-        let sum = 0;
-        const count = Math.min(32, dataArray.length);
-        for (let i = 2; i < count; i++) {
-          sum += dataArray[i];
-        }
-        const avg = sum / (count - 2);
-        const normalizedLevel = Math.min(1.0, avg / 100.0);
-        setAudioLevel(normalizedLevel > 0.05 ? normalizedLevel : 0.35);
-      } else {
-        // Fallback rhythmic cadence
-        setAudioLevel(0.45);
+      const curTime = audio.currentTime;
+      const activeItem = INTRO_WORDS.find(w => curTime >= w.time && curTime <= w.time + w.dur / 1000 + 0.05);
+      if (activeItem && activeItem.word !== lastWordRef.current) {
+        lastWordRef.current = activeItem.word;
+        visemeEngine.processWordBoundary(activeItem.word, activeItem.dur);
       }
 
+      setAudioLevel(0.7);
       animFrameRef.current = requestAnimationFrame(updateAudioMeter);
     } else {
       setAudioLevel(0);
+      visemeEngine.reset();
     }
   };
 

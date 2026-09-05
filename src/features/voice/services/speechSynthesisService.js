@@ -1,8 +1,4 @@
-/**
- * Speech Synthesis Service with Natural Voice Tuning & Lip-Sync Driver
- * Selects highest quality browser voices, formats natural pauses,
- * and generates real-time audio amplitude meters for 3D avatar lip-sync.
- */
+import { visemeEngine } from './visemeEngine';
 
 class SpeechSynthesisService {
   constructor() {
@@ -10,7 +6,6 @@ class SpeechSynthesisService {
     this.voices = [];
     this.currentUtterance = null;
     this.isSpeaking = false;
-    this.meterInterval = null;
     this.preferredVoice = null;
 
     if (this.synth) {
@@ -38,17 +33,13 @@ class SpeechSynthesisService {
     if (!this.voices || this.voices.length === 0) return null;
 
     const naturalVoices = [
-      // Google / Chrome natural voices
       (v) => v.name.includes('Google US English'),
       (v) => v.name.includes('Google UK English Male'),
       (v) => v.name.includes('Google UK English Female'),
-      // Microsoft Natural / Neural voices
       (v) => v.name.includes('Natural') && v.lang.startsWith('en'),
       (v) => v.name.includes('Guy') || v.name.includes('Ryan') || v.name.includes('Jenny'),
       (v) => v.name.includes('David') || v.name.includes('Mark'),
-      // Apple / Safari natural voices
       (v) => v.name.includes('Daniel') || v.name.includes('Samantha') || v.name.includes('Alex'),
-      // General US/UK English
       (v) => v.lang === 'en-US',
       (v) => v.lang === 'en-GB',
       (v) => v.lang.startsWith('en')
@@ -63,7 +54,7 @@ class SpeechSynthesisService {
   }
 
   /**
-   * Speak text with natural cadence, pause handling, and audio metering for lip sync
+   * Speak text with real phoneme/viseme word timing for mouth lip-sync
    * @param {string} text - Clean natural text
    * @param {Object} options - { onStart, onEnd, onError, onAudioLevel }
    */
@@ -88,48 +79,40 @@ class SpeechSynthesisService {
       utterance.voice = voice;
     }
 
-    // Natural human pacing
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-
-    let wordBurst = 0.5;
 
     utterance.onstart = () => {
       this.isSpeaking = true;
       if (options.onStart) options.onStart();
 
-      // Drive dynamic audio amplitude wave for realistic lip sync
-      if (options.onAudioLevel) {
-        let phase = 0;
-        this.meterInterval = setInterval(() => {
-          if (!this.isSpeaking) return;
-
-          phase += 0.28;
-          // Natural syllable oscillation + subtle random fluctuation
-          const syllableOsc = Math.sin(phase * 4.5) * 0.4 + 0.6;
-          const jitter = (Math.random() - 0.5) * 0.15;
-          const targetLevel = Math.max(0.08, Math.min(0.95, (syllableOsc + jitter) * wordBurst));
-
-          options.onAudioLevel(targetLevel);
-        }, 40);
+      // Trigger first words immediately
+      const firstWords = text.trim().split(/\s+/);
+      if (firstWords[0]) {
+        visemeEngine.processWordBoundary(firstWords[0], 250);
       }
     };
 
     utterance.onboundary = (event) => {
       if (event.name === 'word') {
-        // Boost mouth movement at start of each word
-        wordBurst = 0.75 + Math.random() * 0.25;
+        const charIdx = typeof event.charIndex === 'number' ? event.charIndex : 0;
+        const remaining = text.slice(charIdx);
+        const match = remaining.match(/^([a-zA-Z0-9']+)/);
+        const word = match ? match[1] : '';
+        const estDuration = Math.max(120, Math.min(500, word.length * 70));
+        visemeEngine.processWordBoundary(word, estDuration);
+
+        if (options.onAudioLevel) {
+          options.onAudioLevel(0.8);
+        }
       }
     };
 
     const cleanup = () => {
       this.isSpeaking = false;
       this.currentUtterance = null;
-      if (this.meterInterval) {
-        clearInterval(this.meterInterval);
-        this.meterInterval = null;
-      }
+      visemeEngine.reset();
       if (options.onAudioLevel) {
         options.onAudioLevel(0);
       }
@@ -169,10 +152,7 @@ class SpeechSynthesisService {
     }
     this.isSpeaking = false;
     this.currentUtterance = null;
-    if (this.meterInterval) {
-      clearInterval(this.meterInterval);
-      this.meterInterval = null;
-    }
+    visemeEngine.reset();
   }
 }
 
