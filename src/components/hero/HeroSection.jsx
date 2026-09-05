@@ -14,20 +14,20 @@ const HeroSection = () => {
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.1]);
 
   return (
-    <section className="relative w-full min-h-screen h-screen flex items-center justify-center overflow-hidden bg-[#050507] text-white select-none">
+    <section className="relative w-full min-h-screen h-screen flex items-center justify-center overflow-hidden bg-[#f8fafc] dark:bg-[#050507] text-zinc-900 dark:text-white select-none transition-colors duration-500">
       
-      {/* 1. Dark Cinematic Ambient Background & Glows */}
+      {/* 1. Cinematic Ambient Background & Glows for Light and Dark mode */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         {/* Soft atmospheric cyan/teal and purple glowing flares */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full bg-cyan-500/[0.08] filter blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[550px] h-[550px] rounded-full bg-purple-600/[0.07] filter blur-[160px] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-blue-500/[0.04] filter blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full bg-cyan-500/[0.12] dark:bg-cyan-500/[0.08] filter blur-[150px] pointer-events-none transition-opacity duration-500" />
+        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[550px] h-[550px] rounded-full bg-purple-600/[0.1] dark:bg-purple-600/[0.07] filter blur-[160px] pointer-events-none transition-opacity duration-500" />
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-blue-500/[0.08] dark:bg-blue-500/[0.04] filter blur-[120px] pointer-events-none transition-opacity duration-500" />
         
-        {/* Deep dark vignette mask */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)]" />
+        {/* Radial vignette mask matching active theme background */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(248,250,252,0),#f8fafc)] dark:bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)] transition-colors duration-500" />
       </div>
 
-      {/* 2. HUGE 3D Human Avatar (Centered, Close-Up, Dominant) */}
+      {/* 2. 3D Human Avatar (Centered, Close-Up, Dominant) */}
       <HeroAvatarCanvas />
 
       {/* 3. Floating Left Social Icons (Vertical Stack) */}
@@ -37,14 +37,14 @@ const HeroSection = () => {
         transition={{ delay: 0.8, duration: 0.8 }}
         className="hidden md:flex flex-col items-center gap-6 absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 z-30"
       >
-        <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-zinc-600 to-zinc-500" />
+        <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-zinc-400 to-zinc-300 dark:via-zinc-600 dark:to-zinc-500" />
         <div className="flex flex-col gap-4">
           <a
             href={personalInfo.github}
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"
-            className="text-zinc-400 hover:text-cyan-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+            className="text-zinc-600 hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.3)] dark:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
           >
             <FiGithub size={19} />
           </a>
@@ -53,19 +53,19 @@ const HeroSection = () => {
             target="_blank"
             rel="noreferrer"
             aria-label="LinkedIn"
-            className="text-zinc-400 hover:text-cyan-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+            className="text-zinc-600 hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.3)] dark:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
           >
             <FiLinkedin size={19} />
           </a>
           <a
             href={`mailto:${personalInfo.email}`}
             aria-label="Email"
-            className="text-zinc-400 hover:text-purple-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+            className="text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 hover:scale-125 transition-all duration-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.3)] dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]"
           >
             <FiMail size={19} />
           </a>
         </div>
-        <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-500 via-zinc-600 to-transparent" />
+        <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-300 via-zinc-400 to-transparent dark:from-zinc-500 dark:via-zinc-600 dark:to-transparent" />
       </motion.div>
 
       {/* 4. Main Content Overlay (Left Intro + Right Role, arranged around Character) */}
@@ -87,7 +87,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-zinc-400 mb-1.5 font-light"
+              className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1.5 font-medium dark:font-light"
             >
               Hello! I'm
             </motion.p>
@@ -96,12 +96,12 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-black tracking-tight uppercase leading-[0.95] text-white"
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-black tracking-tight uppercase leading-[0.95] text-zinc-900 dark:text-white"
             >
-              <span className="block text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]">
+              <span className="block text-zinc-900 dark:text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.06)] dark:drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]">
                 KARTHICK
               </span>
-              <span className="block bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-500 bg-clip-text text-transparent mt-0.5">
+              <span className="block bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-500 dark:from-zinc-200 dark:via-zinc-400 dark:to-zinc-500 bg-clip-text text-transparent mt-0.5">
                 PANDI
               </span>
             </motion.h1>
@@ -121,7 +121,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-base sm:text-lg font-light text-cyan-400 tracking-wide mb-0.5 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+              className="text-base sm:text-lg font-medium dark:font-light text-cyan-600 dark:text-cyan-400 tracking-wide mb-0.5 drop-shadow-[0_0_10px_rgba(6,182,212,0.2)] dark:drop-shadow-[0_0_10px_rgba(34,211,238,0.3)]"
             >
               Full Stack &
             </motion.p>
@@ -130,7 +130,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              className="text-2xl sm:text-4xl md:text-5xl font-black text-white uppercase leading-[0.95] tracking-tight mb-3"
+              className="text-2xl sm:text-4xl md:text-5xl font-black text-zinc-900 dark:text-white uppercase leading-[0.95] tracking-tight mb-3"
             >
               DEVELOPER
             </motion.h2>
@@ -139,7 +139,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-normal"
+              className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal"
             >
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
             </motion.p>
@@ -150,14 +150,14 @@ const HeroSection = () => {
         {/* Bottom Bar: Minimal Resume Link (Right) and Scroll Prompt (Center) */}
         <div className="w-full pb-6 flex items-center justify-between pointer-events-auto">
           {/* Mobile Social Links */}
-          <div className="flex md:hidden items-center gap-4 text-zinc-400">
-            <a href={personalInfo.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-cyan-400">
+          <div className="flex md:hidden items-center gap-4 text-zinc-600 dark:text-zinc-400">
+            <a href={personalInfo.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-cyan-600 dark:hover:text-cyan-400">
               <FiGithub size={18} />
             </a>
-            <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:text-cyan-400">
+            <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:text-cyan-600 dark:hover:text-cyan-400">
               <FiLinkedin size={18} />
             </a>
-            <a href={`mailto:${personalInfo.email}`} aria-label="Email" className="hover:text-purple-400">
+            <a href={`mailto:${personalInfo.email}`} aria-label="Email" className="hover:text-purple-600 dark:hover:text-purple-400">
               <FiMail size={18} />
             </a>
           </div>
@@ -169,10 +169,10 @@ const HeroSection = () => {
             transition={{ delay: 1.0, duration: 0.8 }}
             className="hidden sm:flex flex-col items-center gap-1.5 mx-auto pointer-events-none"
           >
-            <span className="text-[9px] font-mono tracking-[0.3em] uppercase text-zinc-500">
+            <span className="text-[9px] font-mono tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500">
               SCROLL
             </span>
-            <div className="w-[1px] h-5 bg-gradient-to-b from-cyan-400/80 to-transparent animate-pulse" />
+            <div className="w-[1px] h-5 bg-gradient-to-b from-cyan-500/80 dark:from-cyan-400/80 to-transparent animate-pulse" />
           </motion.div>
 
           {/* Minimal Resume Link (Bottom Right) */}
@@ -184,13 +184,13 @@ const HeroSection = () => {
           >
             <Link 
               to="/resume" 
-              className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono uppercase tracking-widest text-zinc-300 hover:text-cyan-400 transition-colors duration-300"
+              className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono uppercase tracking-widest text-zinc-700 hover:text-cyan-600 dark:text-zinc-300 dark:hover:text-cyan-400 transition-colors duration-300"
             >
               <span className="relative pb-0.5">
                 RESUME
-                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyan-400 group-hover:w-full transition-all duration-300" />
+                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyan-600 dark:bg-cyan-400 group-hover:w-full transition-all duration-300" />
               </span>
-              <FiArrowUpRight className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300 text-cyan-400" />
+              <FiArrowUpRight className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300 text-cyan-600 dark:text-cyan-400" />
             </Link>
           </motion.div>
         </div>
