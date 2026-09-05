@@ -12,7 +12,7 @@ const HeroAvatarCanvas = () => {
     const container = mountRef.current;
     if (!container) return;
 
-    // Check WebGL availability
+    // WebGL support check
     const testCanvas = document.createElement('canvas');
     const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
     if (!gl) {
@@ -27,10 +27,12 @@ const HeroAvatarCanvas = () => {
     // 1. Scene
     const scene = new THREE.Scene();
 
-    // 2. Camera Setup - Cinematic Portrait Framing (Large, Close-Up Character)
+    // 2. Camera Setup matching reference perspective
     const aspect = width / height;
-    const camera = new THREE.PerspectiveCamera(22, aspect, 0.1, 100);
-    camera.position.set(0, 1.42, 3.2);
+    const camera = new THREE.PerspectiveCamera(14.5, aspect, 0.1, 1000);
+    camera.position.set(0, 13.1, 24.7);
+    camera.zoom = 1.05;
+    camera.updateProjectionMatrix();
 
     // 3. WebGL Renderer
     const renderer = new THREE.WebGLRenderer({
@@ -42,91 +44,54 @@ const HeroAvatarCanvas = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.1;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     container.appendChild(renderer.domElement);
 
-    // 4. Cinematic Studio Lighting Setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
+    // 4. Studio Lighting Rig (Cyan/Teal Rim + Warm Key + Purple Fill)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
-    // Key Light (Soft Warm Studio Front Light)
-    const keyLight = new THREE.DirectionalLight(0xfff7ed, 2.6);
-    keyLight.position.set(2, 3.5, 3);
+    // Main Directional Key Light
+    const keyLight = new THREE.DirectionalLight(0xfff7ed, 2.2);
+    keyLight.position.set(2.5, 18, 15);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
     keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 10;
+    keyLight.shadow.camera.far = 60;
     keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    // Cyan / Teal Rim Backlight (Signature Neon Edge Highlight)
-    const rimLight = new THREE.DirectionalLight(0x22d3ee, 5.0);
-    rimLight.position.set(-2.8, 2.8, -2.5);
+    // Teal / Cyan Rim Light (Sharp Silhouette Highlight)
+    const rimLight = new THREE.DirectionalLight(0x22d3ee, 4.5);
+    rimLight.position.set(-6, 14, -6);
     scene.add(rimLight);
 
-    // Secondary Purple / Indigo Rim Light (Opposite Edge Glow)
+    // Purple / Indigo Accent Light
     const rimLight2 = new THREE.DirectionalLight(0xa855f7, 3.2);
-    rimLight2.position.set(2.8, 2.0, -2.5);
+    rimLight2.position.set(6, 10, -5);
     scene.add(rimLight2);
 
-    // Soft Chest & Face Fill Light
-    const fillLight = new THREE.PointLight(0x38bdf8, 1.4, 6);
-    fillLight.position.set(0, 0.8, 2);
-    scene.add(fillLight);
+    // Face / Upper Body Soft Point Light
+    const pointLight = new THREE.PointLight(0x22d3ee, 1.5, 50);
+    pointLight.position.set(0, 14, 8);
+    scene.add(pointLight);
 
-    // Floating 3D Ambient Glowing Particles
-    const particleCount = 35;
-    const particleGeom = new THREE.BufferGeometry();
-    const particlePos = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
-      particlePos[i * 3] = (Math.random() - 0.5) * 4.5;
-      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 3.5 + 1.2;
-      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 2.5;
-    }
-    particleGeom.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
-
-    const pCanvas = document.createElement('canvas');
-    pCanvas.width = 32;
-    pCanvas.height = 32;
-    const pCtx = pCanvas.getContext('2d');
-    const pGrad = pCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    pGrad.addColorStop(0, 'rgba(255,255,255,1)');
-    pGrad.addColorStop(0.3, 'rgba(34,211,238,0.8)');
-    pGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    pCtx.fillStyle = pGrad;
-    pCtx.fillRect(0, 0, 32, 32);
-
-    const pTex = new THREE.CanvasTexture(pCanvas);
-    const pMat = new THREE.PointsMaterial({
-      size: 0.07,
-      map: pTex,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-    const particlePoints = new THREE.Points(particleGeom, pMat);
-    scene.add(particlePoints);
-
-    // 5. 3D Character Group & Loader
-    const avatarGroup = new THREE.Group();
-    scene.add(avatarGroup);
-
-    let mixer = null;
+    // 5. Load EXACT Reference Character Model (/models/character.glb)
+    let character = null;
     let headBone = null;
-    let spineBone = null;
-    let loadedModel = null;
+    let mixer = null;
 
     const loader = new GLTFLoader();
     loader.load(
-      '/models/developer.glb',
+      '/models/character.glb',
       (gltf) => {
-        loadedModel = gltf.scene;
+        character = gltf.scene;
 
-        loadedModel.traverse((child) => {
+        character.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
@@ -135,72 +100,55 @@ const HeroAvatarCanvas = () => {
               child.material.envMapIntensity = 1.2;
             }
           }
-          const name = (child.name || '').toLowerCase();
-          if ((name.includes('head') || name.includes('spine006') || name.includes('neck')) && !headBone) {
-            headBone = child;
-          } else if (name.includes('spine') && !spineBone) {
-            spineBone = child;
-          }
         });
 
-        // Compute box and scale so upper body and head fill the hero prominently
-        const box = new THREE.Box3().setFromObject(loadedModel);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
+        // Locate head/neck bone (spine006 in reference model)
+        headBone = character.getObjectByName('spine006') || character.getObjectByName('Head') || null;
 
-        // Target height ~ 2.6 units so the character is large, close, and commands the screen
-        const targetHeight = 2.65;
-        const scale = targetHeight / (size.y || 1.8);
-        loadedModel.scale.set(scale, scale, scale);
+        scene.add(character);
 
-        // Center horizontally and set vertical position so head/torso aligns with camera
-        loadedModel.position.x = -center.x * scale;
-        loadedModel.position.y = -box.min.y * scale - 0.22;
-        loadedModel.position.z = -center.z * scale;
-
-        avatarGroup.add(loadedModel);
-
+        // Play reference animation clips (introAnimation, Blink, typing)
         if (gltf.animations && gltf.animations.length > 0) {
-          mixer = new THREE.AnimationMixer(loadedModel);
-          const idleClip = gltf.animations.find(
-            (a) => a.name.toLowerCase().includes('idle') || a.name.toLowerCase().includes('wave')
-          ) || gltf.animations[0];
+          mixer = new THREE.AnimationMixer(character);
 
-          if (idleClip) {
-            const action = mixer.clipAction(idleClip);
-            action.play();
+          // Intro Animation
+          const introClip = gltf.animations.find((a) => a.name === 'introAnimation');
+          if (introClip) {
+            const introAction = mixer.clipAction(introClip);
+            introAction.setLoop(THREE.LoopOnce, 1);
+            introAction.clampWhenFinished = true;
+            introAction.play();
           }
+
+          // Blinking loop
+          const blinkClip = gltf.animations.find((a) => a.name === 'Blink');
+          if (blinkClip) {
+            const blinkAction = mixer.clipAction(blinkClip);
+            blinkAction.play();
+          }
+
+          // Subtle keyboard/hands idle keys
+          ['key1', 'key2', 'key5', 'key6'].forEach((name) => {
+            const clip = gltf.animations.find((a) => a.name === name);
+            if (clip) {
+              const act = mixer.clipAction(clip);
+              act.play();
+              act.timeScale = 1.0;
+            }
+          });
         }
 
         setIsLoading(false);
       },
       undefined,
-      () => {
-        loader.load(
-          '/models/developer_alt.glb',
-          (fallbackGltf) => {
-            loadedModel = fallbackGltf.scene;
-            const box = new THREE.Box3().setFromObject(loadedModel);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            const scale = 2.65 / (size.y || 1.8);
-            loadedModel.scale.set(scale, scale, scale);
-            loadedModel.position.x = -center.x * scale;
-            loadedModel.position.y = -box.min.y * scale - 0.22;
-            loadedModel.position.z = -center.z * scale;
-            avatarGroup.add(loadedModel);
-            setIsLoading(false);
-          },
-          undefined,
-          () => {
-            setLoadError(true);
-            setIsLoading(false);
-          }
-        );
+      (err) => {
+        console.error('Error loading reference character.glb:', err);
+        setLoadError(true);
+        setIsLoading(false);
       }
     );
 
-    // 6. Pointer & Cursor Tracking Listeners
+    // 6. Mouse Tracking Listeners
     const handleMouseMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -220,7 +168,7 @@ const HeroAvatarCanvas = () => {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
-    // 7. Dynamic Camera & Responsive Resize Handling
+    // 7. Responsive Resize Handler
     const handleResize = () => {
       if (!container) return;
       const w = container.clientWidth || window.innerWidth;
@@ -228,17 +176,20 @@ const HeroAvatarCanvas = () => {
       camera.aspect = w / h;
 
       if (w < 640) {
-        // Mobile: Slightly pull back and raise height so head/torso is framed nicely
-        camera.fov = 28;
-        camera.position.set(0, 1.35, 3.8);
+        // Mobile: Zoom and frame head/upper body nicely
+        camera.fov = 17.5;
+        camera.position.set(0, 12.8, 26);
+        camera.zoom = 1.0;
       } else if (w < 1024) {
         // Tablet
-        camera.fov = 24;
-        camera.position.set(0, 1.4, 3.5);
+        camera.fov = 15.5;
+        camera.position.set(0, 13.0, 25.2);
+        camera.zoom = 1.05;
       } else {
         // Desktop: High-impact close-up portrait framing
-        camera.fov = 22;
-        camera.position.set(0, 1.42, 3.2);
+        camera.fov = 14.5;
+        camera.position.set(0, 13.1, 24.7);
+        camera.zoom = 1.1;
       }
 
       camera.updateProjectionMatrix();
@@ -249,7 +200,7 @@ const HeroAvatarCanvas = () => {
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // 8. Animation Loop
+    // 8. Animation & Render Loop
     let animationFrameId;
     const clock = new THREE.Clock();
     let isVisible = true;
@@ -267,44 +218,44 @@ const HeroAvatarCanvas = () => {
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsedTime = clock.getElapsedTime();
 
+      // Update GLTF animation mixer
       if (mixer) {
         mixer.update(delta);
       }
 
-      // Smooth Lerping
-      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.048;
-      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.048;
+      // Smooth Lerping of mouse position
+      mousePos.current.x += (mousePos.current.targetX - mousePos.current.x) * 0.05;
+      mousePos.current.y += (mousePos.current.targetY - mousePos.current.y) * 0.05;
 
       const mx = mousePos.current.x;
       const my = mousePos.current.y;
 
-      // Natural subtle breathing motion
-      const breathingHover = Math.sin(elapsedTime * 1.5) * 0.015;
-      const breathingTilt = Math.sin(elapsedTime * 1.1) * 0.008;
+      // Rotate head bone (spine006) to follow cursor smoothly matching reference
+      if (headBone) {
+        const maxRotation = Math.PI / 6;
+        headBone.rotation.y = THREE.MathUtils.lerp(
+          headBone.rotation.y,
+          mx * maxRotation,
+          0.1
+        );
 
-      if (avatarGroup) {
-        // Character torso subtly turns toward cursor
-        avatarGroup.rotation.y = mx * 0.32 + Math.sin(elapsedTime * 0.5) * 0.012;
-        avatarGroup.rotation.x = -my * 0.1 + breathingTilt;
-        avatarGroup.position.y = breathingHover;
-        avatarGroup.position.x = mx * 0.04;
-
-        // Head bone turns toward cursor
-        if (headBone) {
-          headBone.rotation.y = mx * 0.38;
-          headBone.rotation.x = -my * 0.26;
-        }
+        const targetRotX = -my * 0.4 - 0.2;
+        headBone.rotation.x = THREE.MathUtils.lerp(
+          headBone.rotation.x,
+          targetRotX,
+          0.08
+        );
       }
 
-      // Particles gentle drift
-      if (particlePoints) {
-        particlePoints.rotation.y = elapsedTime * 0.02 + mx * 0.06;
+      // Subtle breathing motion on the character root
+      if (character) {
+        character.position.y = Math.sin(elapsedTime * 1.5) * 0.04;
       }
 
-      // Subtle dynamic camera parallax
-      camera.position.x = mx * 0.12;
-      camera.position.y = 1.42 + my * 0.08;
-      camera.lookAt(0, 1.32, 0);
+      // Smooth camera parallax
+      camera.position.x = mx * 0.4;
+      camera.position.y = 13.1 + my * 0.25;
+      camera.lookAt(0, 12.8, 0);
 
       renderer.render(scene, camera);
     };
@@ -323,9 +274,6 @@ const HeroAvatarCanvas = () => {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      particleGeom.dispose();
-      pMat.dispose();
-      pTex.dispose();
     };
   }, []);
 
@@ -350,21 +298,8 @@ const HeroAvatarCanvas = () => {
         </div>
       )}
 
-      {/* Graceful Fallback */}
-      {loadError && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 p-6">
-          <div className="relative w-64 h-80 rounded-3xl p-1 bg-gradient-to-tr from-cyan-500/30 via-indigo-500/20 to-purple-500/30 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-center">
-            <img 
-              src="/Karthick.jpeg" 
-              alt="Karthick Pandi" 
-              className="w-full h-full object-cover rounded-2xl"
-            />
-          </div>
-        </div>
-      )}
-
       {/* Atmospheric Rim Glow behind character */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[580px] bg-cyan-500/[0.14] dark:bg-cyan-400/[0.16] rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[460px] h-[560px] bg-cyan-500/[0.14] dark:bg-cyan-400/[0.16] rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-purple-600/[0.1] rounded-full blur-[110px] pointer-events-none z-0" />
     </div>
   );
