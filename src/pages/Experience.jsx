@@ -21,16 +21,16 @@ const Experience = () => {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.3 }
+      transition: { staggerChildren: 0.25 }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 35 },
     show: { 
       opacity: 1, 
       y: 0, 
-      transition: { type: "spring", stiffness: 80, damping: 16 } 
+      transition: { type: "spring", stiffness: 85, damping: 16 } 
     }
   };
 
@@ -62,7 +62,7 @@ const Experience = () => {
               </div>
               <div>
                 <div className="text-[11px] text-blue-400 uppercase tracking-widest font-black flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" /> GPS NAV ROUTE
+                  <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" /> GPS ROADMAP
                 </div>
                 <div className="text-zinc-100 font-extrabold text-base md:text-lg flex items-center gap-2">
                   <span>HIGHWAY EXP-01</span>
@@ -79,7 +79,7 @@ const Experience = () => {
               </div>
               <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
                 <FiZap className="text-emerald-400" />
-                <span>Status: <strong className="text-emerald-200">Accelerating</strong></span>
+                <span>Status: <strong className="text-emerald-200">Driving Ahead</strong></span>
               </div>
             </div>
           </div>
@@ -88,44 +88,62 @@ const Experience = () => {
         {/* Visual Highway Road Timeline */}
         <div className="relative mt-8">
           {/* Real Highway Road Asphalt Track (Center on Desktop, Left on Mobile) */}
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 -translate-x-1/2 w-14 md:w-16 bg-zinc-800 dark:bg-zinc-900 border-x-4 border-zinc-700 dark:border-zinc-800 rounded-full flex flex-col items-center justify-between py-8 shadow-2xl z-0 pointer-events-none overflow-hidden">
+          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 -translate-x-1/2 w-16 md:w-20 bg-zinc-900 border-x-4 border-zinc-700 rounded-3xl flex flex-col items-center justify-between shadow-2xl z-0 pointer-events-none overflow-hidden">
             {/* White Shoulder Solid Lines */}
-            <div className="absolute left-1 top-0 bottom-0 w-0.5 bg-zinc-500/60" />
-            <div className="absolute right-1 top-0 bottom-0 w-0.5 bg-zinc-500/60" />
+            <div className="absolute left-1.5 top-0 bottom-0 w-1 bg-white/40" />
+            <div className="absolute right-1.5 top-0 bottom-0 w-1 bg-white/40" />
 
-            {/* Yellow Center Dashed Road Markings */}
-            <div className="w-1 h-full border-r-2 border-dashed border-amber-400 flex flex-col justify-between py-2" />
+            {/* Animated Moving Yellow Dashed Center Line */}
+            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1.5 overflow-hidden flex flex-col items-center">
+              <motion.div 
+                animate={{ y: ["-50%", "0%"] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                className="w-full flex flex-col items-center gap-6 py-2"
+                style={{ height: "200%" }}
+              >
+                {[...Array(30)].map((_, i) => (
+                  <div key={i} className="w-1.5 h-10 bg-amber-400 rounded-sm shrink-0 shadow-sm shadow-amber-400/50" />
+                ))}
+              </motion.div>
+            </div>
 
-            {/* Animated Moving Car on the Road */}
+            {/* Car that smoothly drives down the entire length of the roadmap */}
             <motion.div 
               animate={{ 
-                y: ["0%", "300%", "0%"]
+                top: ["2%", "35%", "70%", "94%", "2%"]
               }}
               transition={{ 
-                duration: 9, 
+                duration: 12, 
                 repeat: Infinity, 
-                ease: "easeInOut" 
+                ease: "easeInOut",
+                times: [0, 0.35, 0.7, 0.95, 1]
               }}
-              className="absolute left-1/2 -translate-x-1/2 top-10 w-7 h-11 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/50 flex flex-col items-center justify-between py-1 border border-blue-400 z-10"
+              className="absolute left-1/2 -translate-x-1/2 w-8 h-14 bg-gradient-to-b from-blue-500 to-blue-700 rounded-xl shadow-xl shadow-blue-500/60 flex flex-col items-center justify-between py-1.5 border-2 border-cyan-300 z-10"
             >
-              {/* Headlights */}
+              {/* Headlight Beams */}
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-12 h-10 bg-gradient-to-b from-yellow-300/40 to-transparent blur-[3px] pointer-events-none" />
+              
+              {/* Front Headlights */}
               <div className="flex justify-between w-full px-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-sm shadow-yellow-200" />
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-sm shadow-yellow-200" />
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-md shadow-yellow-200" />
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-md shadow-yellow-200" />
               </div>
-              <FaCarSide className="text-[10px] text-white rotate-90" />
-              {/* Taillights */}
+
+              {/* Windshield & Car Body Icon */}
+              <FaCarSide className="text-xs text-white rotate-90" />
+
+              {/* Rear Taillights */}
               <div className="flex justify-between w-full px-1">
-                <div className="w-1.5 h-1 rounded bg-red-500" />
-                <div className="w-1.5 h-1 rounded bg-red-500" />
+                <div className="w-1.5 h-1 rounded-sm bg-red-500 shadow-sm shadow-red-500" />
+                <div className="w-1.5 h-1 rounded-sm bg-red-500 shadow-sm shadow-red-500" />
               </div>
             </motion.div>
           </div>
 
           {/* Road Start Marker */}
           <div className="flex justify-center md:justify-center mb-12 pl-12 md:pl-0 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500 text-zinc-950 font-black text-xs uppercase tracking-widest shadow-lg shadow-amber-500/30">
-              <FiFlag className="text-sm" /> Career Highway Start // 2025
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500 text-zinc-950 font-black text-xs uppercase tracking-widest shadow-lg shadow-amber-500/30">
+              <FiFlag className="text-sm" /> Highway Origin Checkpoint // 2025
             </div>
           </div>
 
@@ -145,14 +163,14 @@ const Experience = () => {
                   variants={item}
                   className={`flex flex-col md:flex-row items-start ${
                     isEven ? 'md:flex-row-reverse' : ''
-                  } gap-6 md:gap-12 relative`}
+                  } gap-6 md:gap-14 relative`}
                 >
                   {/* Waypoint GPS Landmark Pin on the Road */}
                   <div className="absolute left-6 md:left-1/2 -translate-x-1/2 top-4 z-20 flex flex-col items-center">
                     <div className="relative w-14 h-14 rounded-2xl bg-zinc-900 border-2 border-amber-400 shadow-2xl shadow-amber-400/30 flex flex-col items-center justify-center text-white">
-                      <div className="text-[10px] font-black uppercase text-amber-400 tracking-tighter">STOP</div>
+                      <div className="text-[9px] font-black uppercase text-amber-400 tracking-tighter">STOP</div>
                       <span className="text-white font-black text-sm">0{index + 1}</span>
-                      {/* Pulse sonar */}
+                      {/* Sonar Radar Pulse */}
                       <div className="absolute -inset-1.5 rounded-2xl bg-amber-400/25 animate-ping opacity-75 pointer-events-none" />
                     </div>
                   </div>
@@ -168,7 +186,7 @@ const Experience = () => {
                             <FiNavigation className="rotate-45" /> EXIT #{index + 1}
                           </span>
                           <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                            Production Route
+                            Engineering Station
                           </span>
                         </div>
 
@@ -222,8 +240,8 @@ const Experience = () => {
 
           {/* Road Destination / Next Horizon Pin */}
           <div className="flex justify-center md:justify-center mt-12 pl-12 md:pl-0 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/30 border border-blue-400">
-              <span className="w-2 h-2 rounded-full bg-white animate-ping" /> Next Milestone: Open to Opportunities
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/30 border border-blue-400">
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" /> Destination: Open to Next High-Impact Engineering Roles
             </div>
           </div>
         </div>
