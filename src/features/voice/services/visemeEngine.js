@@ -5,14 +5,14 @@
 
 export const VISEME_SHAPES = {
   rest: { name: 'rest', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },
-  A: { name: 'A', openY: 0.95, scaleX: 1.05, scaleY: 1.35, opacity: 1.0 },        // 'ah', 'car', 'and', 'stack'
-  E: { name: 'E', openY: 0.35, scaleX: 1.35, scaleY: 0.75, opacity: 1.0 },        // 'ee', 'react', 'see', 'web'
-  O: { name: 'O', openY: 0.80, scaleX: 0.80, scaleY: 1.30, opacity: 1.0 },        // 'oh', 'code', 'node', 'know'
-  U: { name: 'U', openY: 0.45, scaleX: 0.65, scaleY: 1.15, opacity: 1.0 },        // 'oo', 'you', 'full', 'who'
-  MBP: { name: 'MBP', openY: 0.03, scaleX: 1.02, scaleY: 0.45, opacity: 0.1 },    // 'pandi', 'built', 'modern'
-  FV: { name: 'FV', openY: 0.25, scaleX: 1.05, scaleY: 0.70, opacity: 0.85 },     // 'full', 'developer', 'for'
-  L: { name: 'L', openY: 0.35, scaleX: 1.12, scaleY: 0.85, opacity: 0.95 },       // 'scalable', 'applications'
-  TH: { name: 'TH', openY: 0.30, scaleX: 1.15, scaleY: 0.80, opacity: 0.90 }      // 'three', 'the', 'with'
+  A: { name: 'A', openY: 0.95, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ah', 'car', 'and', 'stack'
+  E: { name: 'E', openY: 0.60, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'ee', 'react', 'see', 'web'
+  O: { name: 'O', openY: 0.85, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oh', 'code', 'node', 'know'
+  U: { name: 'U', openY: 0.50, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },          // 'oo', 'you', 'full', 'who'
+  MBP: { name: 'MBP', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },      // 'pandi', 'built', 'modern'
+  FV: { name: 'FV', openY: 0.35, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },       // 'full', 'developer', 'for'
+  L: { name: 'L', openY: 0.45, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },         // 'scalable', 'applications'
+  TH: { name: 'TH', openY: 0.40, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 }        // 'three', 'the', 'with'
 };
 
 class VisemeEngine {

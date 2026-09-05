@@ -235,19 +235,14 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         }
       }
 
-      // 2. Real Human Lip-Sync Controller (Single Source of Truth)
+      // 2. Real Viseme-Driven Lip Sync Controller (Single Unified Mouth)
       const currentViseme = visemeEngine.update(0.35);
 
       if (mouthMat && mouthMesh) {
-        if (isSpeakingRef.current && currentViseme.opacity > 0.05) {
+        if (isSpeakingRef.current && currentViseme.openY > 0.12) {
           mouthMesh.visible = true;
-          // Smooth blend replacing the closed mouth seamlessly
-          mouthMat.opacity = Math.min(1.0, currentViseme.opacity * 1.5);
-          
-          // Subtle natural viseme shapes without displacing the face
-          const scaleY = currentViseme.scaleY * (1.0 + currentViseme.openY * 0.15);
-          const scaleX = currentViseme.scaleX;
-          mouthMesh.scale.set(scaleX, scaleY, 1.0);
+          mouthMat.opacity = Math.min(1.0, (currentViseme.openY - 0.12) * 5.0);
+          mouthMesh.scale.set(1.0, 1.0, 1.0);
         } else {
           mouthMesh.visible = false;
           mouthMat.opacity = 0.0;
