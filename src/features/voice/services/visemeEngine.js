@@ -35,36 +35,40 @@ class VisemeEngine {
     this.speechStartTime = performance.now();
     this.isPlaying = true;
 
-    // Parse natural punctuation pauses (commas, periods, colons)
+    // Parse natural punctuation pauses, ignoring internal dots in terms like Node.js or Three.js
     this.pauseRanges = [];
     let currentMs = 0;
-    const rawTokens = text.split(/(\s+|[,.!?;:])/);
+    
+    // Split on whitespace to inspect each word and its trailing punctuation
+    const words = text.trim().split(/\s+/);
 
-    for (let i = 0; i < rawTokens.length; i++) {
-      const tok = rawTokens[i].trim();
-      if (!tok) continue;
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (!word) continue;
 
-      if (tok === ',' || tok === ';' || tok === ':') {
-        const pauseMs = 280 / this.speechRate;
+      const hasComma = word.endsWith(',') || word.endsWith(';') || word.endsWith(':');
+      const hasPeriod = (word.endsWith('.') && !word.toLowerCase().endsWith('.js')) || word.endsWith('!') || word.endsWith('?');
+
+      const clean = word.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const vowels = clean.match(/[aeiouy]/g);
+      const syllables = vowels ? Math.max(1, Math.min(4, vowels.length)) : 1;
+      const wordMs = (160 + syllables * 110) / this.speechRate;
+      currentMs += wordMs;
+
+      if (hasComma) {
+        const pauseMs = 240 / this.speechRate;
         this.pauseRanges.push({
           startMs: currentMs,
           endMs: currentMs + pauseMs
         });
         currentMs += pauseMs;
-      } else if (tok === '.' || tok === '!' || tok === '?') {
-        const pauseMs = 450 / this.speechRate;
+      } else if (hasPeriod) {
+        const pauseMs = 400 / this.speechRate;
         this.pauseRanges.push({
           startMs: currentMs,
           endMs: currentMs + pauseMs
         });
         currentMs += pauseMs;
-      } else {
-        // Approximate syllable duration for each word
-        const clean = tok.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const vowels = clean.match(/[aeiouy]/g);
-        const syllables = vowels ? Math.max(1, Math.min(4, vowels.length)) : 1;
-        const wordMs = (160 + syllables * 110) / this.speechRate;
-        currentMs += wordMs;
       }
     }
   }
