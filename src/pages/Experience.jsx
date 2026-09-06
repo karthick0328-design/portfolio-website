@@ -10,7 +10,6 @@ import {
   FiBriefcase,
   FiZap
 } from 'react-icons/fi';
-import { FaCarSide } from 'react-icons/fa';
 
 const Experience = () => {
   const { experience } = portfolioData;
@@ -19,19 +18,28 @@ const Experience = () => {
   // Track scroll position exclusively within this section
   const { scrollYProgress } = useScroll({
     target: roadmapRef,
-    offset: ["start 65%", "end 75%"]
+    offset: ["start 70%", "end 75%"]
   });
 
-  // Smooth out scroll momentum for realistic suspension & driving motion
+  // Smooth suspension for steady car steering without sliding indefinitely
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 24,
+    stiffness: 140,
+    damping: 28,
     restDelta: 0.001
   });
 
-  // Map scroll strictly: car only moves when user scrolls
-  const carTop = useTransform(smoothProgress, [0, 1], ["2%", "94%"]);
-  const roadFill = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
+  // Step-wise parking milestones: Car drives to Stop 1, PAUSES/STOPS at Stop 1, then drives and PAUSES/STOPS at Stop 2
+  const carTop = useTransform(
+    smoothProgress, 
+    [0, 0.15, 0.45, 0.65, 0.90, 1], 
+    ["3%", "22%", "22%", "68%", "68%", "94%"]
+  );
+  
+  const roadFill = useTransform(
+    smoothProgress, 
+    [0, 0.15, 0.45, 0.65, 0.90, 1], 
+    ["0%", "24%", "24%", "70%", "70%", "100%"]
+  );
 
   const container = {
     hidden: { opacity: 0 },
@@ -77,7 +85,7 @@ const Experience = () => {
             {/* Dynamic Road Illuminated Active Progress Lane */}
             <motion.div 
               style={{ height: roadFill }}
-              className="absolute top-0 left-0 right-0 bg-cyan-500/20 border-b-2 border-cyan-400"
+              className="absolute top-0 left-0 right-0 bg-cyan-500/25 border-b-2 border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.5)]"
             />
 
             {/* Dashed Center Road Line */}
@@ -87,27 +95,35 @@ const Experience = () => {
               ))}
             </div>
 
-            {/* Scroll-Driven Vehicle: Moves ONLY when user scrolls down */}
+            {/* Scroll-Driven Top-Down Cyber Vehicle: Drives only on scroll, firmly stops at Stop 1 & Stop 2 */}
             <motion.div 
               style={{ top: carTop }}
-              className="absolute left-1/2 -translate-x-1/2 w-8 h-14 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-xl shadow-xl shadow-cyan-500/60 flex flex-col items-center justify-between py-1.5 border-2 border-cyan-300 z-10"
+              className="absolute left-1/2 -translate-x-1/2 w-9 h-16 bg-zinc-950 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.6)] flex flex-col items-center justify-between p-1 border-2 border-cyan-400 z-10"
             >
-              {/* Headlight Beams */}
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-10 h-8 bg-gradient-to-b from-yellow-300/40 to-transparent blur-[2px] pointer-events-none" />
-              
-              {/* Front Headlights */}
-              <div className="flex justify-between w-full px-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-sm shadow-yellow-200" />
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-sm shadow-yellow-200" />
+              {/* Forward Road Headlight Projection */}
+              <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-12 h-8 bg-gradient-to-b from-cyan-200/40 via-cyan-400/10 to-transparent blur-[3px] pointer-events-none" />
+
+              {/* Front Projector Headlights */}
+              <div className="w-full flex justify-between px-1 pt-0.5">
+                <div className="w-2 h-1.5 rounded-full bg-cyan-200 shadow-[0_0_6px_#38bdf8]" />
+                <div className="w-2 h-1.5 rounded-full bg-cyan-200 shadow-[0_0_6px_#38bdf8]" />
               </div>
 
-              {/* Windshield & Car Body */}
-              <FaCarSide className="text-xs text-white rotate-90" />
+              {/* Aerodynamic Windshield */}
+              <div className="w-6 h-3 rounded-t-md bg-gradient-to-b from-blue-900 to-cyan-950 border border-cyan-300/40" />
 
-              {/* Rear Taillights */}
-              <div className="flex justify-between w-full px-1">
-                <div className="w-1.5 h-1 rounded-sm bg-red-500 shadow-sm shadow-red-500" />
-                <div className="w-1.5 h-1 rounded-sm bg-red-500 shadow-sm shadow-red-500" />
+              {/* Vehicle Roof with Sensor Dot */}
+              <div className="w-5 h-2 rounded bg-cyan-600/50 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-cyan-300" />
+              </div>
+
+              {/* Rear Windshield */}
+              <div className="w-6 h-2 rounded-b-md bg-zinc-900 border-x border-b border-cyan-500/40" />
+
+              {/* Rear Active LED Brake Lights */}
+              <div className="w-full flex justify-between px-1 pb-0.5">
+                <div className="w-2.5 h-1 rounded-sm bg-red-500 shadow-[0_0_8px_#ef4444]" />
+                <div className="w-2.5 h-1 rounded-sm bg-red-500 shadow-[0_0_8px_#ef4444]" />
               </div>
             </motion.div>
           </div>
@@ -115,7 +131,7 @@ const Experience = () => {
           {/* Road Origin Marker */}
           <div className="flex justify-start md:justify-center mb-12 pl-14 md:pl-0 relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-zinc-900 text-blue-600 dark:text-cyan-400 font-bold text-xs uppercase tracking-wider border border-blue-500/30 shadow-md">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" /> Engineering Milestone Checkpoint // 2025
+              <span className="w-2 h-2 rounded-full bg-cyan-400" /> Engineering Milestone Checkpoint // 2025
             </div>
           </div>
 
@@ -137,13 +153,11 @@ const Experience = () => {
                     isEven ? 'md:flex-row-reverse' : ''
                   } gap-6 md:gap-14 relative`}
                 >
-                  {/* Waypoint Milestone Node Badge on the Line */}
+                  {/* Waypoint Milestone Node Badge on the Road Line */}
                   <div className="absolute left-6 md:left-1/2 -translate-x-1/2 top-4 z-20 flex flex-col items-center">
                     <div className="relative w-12 h-12 rounded-2xl bg-zinc-900 border-2 border-cyan-400 shadow-xl shadow-cyan-400/30 flex flex-col items-center justify-center text-white">
                       <span className="text-cyan-400 font-black text-xs">0{index + 1}</span>
-                      <span className="text-[8px] uppercase tracking-tighter text-zinc-400 font-bold">STOP</span>
-                      {/* Pulse Ring */}
-                      <div className="absolute -inset-1.5 rounded-2xl bg-cyan-400/20 animate-ping opacity-60 pointer-events-none" />
+                      <span className="text-[8px] uppercase tracking-tighter text-zinc-300 font-bold">STOP</span>
                     </div>
                   </div>
 
