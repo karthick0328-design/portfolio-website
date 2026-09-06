@@ -114,23 +114,23 @@ const HeroSection = () => {
       {/* 4. Main Content Overlay: Name at top of head, clear 3D avatar face, role at bottom */}
       <motion.div 
         style={{ y: contentY, opacity: heroOpacity }}
-        className="w-full h-full max-w-7xl mx-auto px-5 sm:px-12 lg:px-16 flex flex-col justify-between pt-20 sm:pt-24 pb-6 sm:pb-8 lg:py-0 relative z-30 pointer-events-none"
+        className="w-full h-full max-w-7xl mx-auto px-5 sm:px-12 lg:px-16 flex flex-col justify-between pt-16 sm:pt-20 pb-6 sm:pb-8 lg:py-0 relative z-30 pointer-events-none"
       >
         {/* Responsive Content Container: Name at Top of Head on mobile */}
-        <div className="w-full flex-grow flex flex-col lg:flex-row items-center lg:items-center justify-between gap-3 sm:gap-4 lg:gap-0 my-auto">
+        <div className="w-full flex-grow flex flex-col lg:flex-row items-center lg:items-center justify-between gap-2 sm:gap-4 lg:gap-0 my-auto">
           
           {/* TOP (Mobile) / LEFT (Desktop): Hello I'm Karthick Pandi at Top of Head */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto z-30 relative pt-2 sm:pt-4 lg:pt-0"
+            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto z-30 relative pt-1 sm:pt-3 lg:pt-0"
           >
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-xs sm:text-sm md:text-base font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1.5 font-bold"
+              className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1 font-bold"
             >
               Hello! I'm
             </motion.p>
@@ -139,7 +139,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
-              className="text-3xl xs:text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight uppercase leading-[0.98] text-zinc-900 dark:text-white"
+              className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight uppercase leading-tight text-zinc-900 dark:text-white"
             >
               <span className="inline lg:block text-zinc-900 dark:text-white mr-2 lg:mr-0">
                 KARTHICK
@@ -151,7 +151,7 @@ const HeroSection = () => {
           </motion.div>
 
           {/* Center Clear Zone for Avatar Head, Face & Lip-Sync */}
-          <div className="flex-grow w-full min-h-[160px] xs:min-h-[200px] sm:min-h-[240px] lg:min-h-0 lg:w-72 xl:w-96 pointer-events-none" />
+          <div className="flex-grow w-full min-h-[200px] xs:min-h-[240px] sm:min-h-[280px] lg:min-h-0 lg:w-72 xl:w-96 pointer-events-none" />
 
           {/* BOTTOM (Mobile) / RIGHT (Desktop): Role & Summary */}
           <motion.div 

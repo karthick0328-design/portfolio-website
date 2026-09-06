@@ -164,11 +164,11 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
       camera.aspect = w / h;
 
       if (w < 640) {
-        camera.fov = 29;
-        camera.position.set(0, 0.45, 19.5);
+        camera.fov = 30;
+        camera.position.set(0, 0.95, 20.0);
       } else if (w < 1024) {
         camera.fov = 26;
-        camera.position.set(0, 0.0, 19.0);
+        camera.position.set(0, 0.2, 19.0);
       } else {
         camera.fov = 24;
         camera.position.set(0, 0, 18.0);
@@ -214,8 +214,9 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
 
       const elapsedTime = clock.getElapsedTime();
 
-      // Subtle breathing hover
-      const breathingHover = Math.sin(elapsedTime * 1.3) * (isMobile ? 0.015 : 0.025);
+      // Subtle breathing hover with dedicated mobile offset to stay under title
+      const baseY = isMobile ? -0.4 : 0.0;
+      const breathingHover = baseY + Math.sin(elapsedTime * 1.3) * (isMobile ? 0.015 : 0.025);
       if (characterGroup) {
         characterGroup.position.y = breathingHover;
       }
