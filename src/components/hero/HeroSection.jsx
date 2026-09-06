@@ -61,7 +61,7 @@ const HeroSection = () => {
   const heroOpacity = useTransform(scrollY, [0, 350], [1, 0.15]);
 
   return (
-    <section id="hero" className="relative w-full min-h-[100svh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-[#f8fafc] dark:bg-[#050507] text-zinc-900 dark:text-white select-none transition-colors duration-500 touch-pan-y">
+    <section id="hero" className="relative w-full h-[100svh] min-h-[600px] flex items-center justify-center overflow-hidden bg-[#f8fafc] dark:bg-[#050507] text-zinc-900 dark:text-white select-none transition-colors duration-500 touch-pan-y">
       
       {/* 1. Ambient Background & Glows (Desktop only for peak mobile performance) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
