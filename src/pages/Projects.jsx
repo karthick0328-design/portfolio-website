@@ -233,7 +233,7 @@ const Projects = () => {
                     <div className="lg:col-span-5 flex flex-col justify-center text-left">
                       {/* Top Header Row with Big Number & Title */}
                       <div className="flex items-start gap-4 md:gap-6">
-                        <span className="text-5xl sm:text-6xl md:text-7xl font-black text-zinc-500/35 tracking-tight select-none leading-none">
+                        <span className={`text-5xl sm:text-6xl md:text-7xl font-black tracking-tight select-none leading-none ${currentProject.numberColor || 'text-zinc-500/35'}`}>
                           {currentProject.number || `0${activeSlideIndex + 1}`}
                         </span>
                         <div className="flex flex-col">
@@ -268,7 +268,7 @@ const Projects = () => {
                             href={currentProject.live}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs md:text-sm shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95"
+                            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white font-semibold text-xs md:text-sm shadow-lg shadow-black/40 transition-all hover:scale-105 active:scale-95`}
                           >
                             <span>Live Preview</span>
                             <FiExternalLink className="text-sm" />
@@ -282,26 +282,26 @@ const Projects = () => {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-zinc-200 hover:text-white font-semibold text-xs md:text-sm border border-white/15 transition-all hover:scale-105 active:scale-95"
                           >
-                            <FiGithub className="text-base text-blue-400" />
+                            <FiGithub className={`text-base ${currentProject.brandColor || 'text-blue-400'}`} />
                             <span>Source Code</span>
                           </a>
                         )}
                       </div>
                     </div>
 
-                    {/* RIGHT COLUMN: Ultra-Sleek Product & UI Mockup Card */}
+                    {/* RIGHT COLUMN: Ultra-Sleek Product & UI Mockup Card with Dynamic Project Color */}
                     <div className="lg:col-span-7">
-                      <div className="relative rounded-2xl md:rounded-3xl border border-white/15 bg-[#0b0f19] shadow-2xl overflow-hidden group/mockup">
-                        {/* Purple / Violet Atmospheric Gradient Background Mesh */}
-                        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-br from-purple-700/30 via-indigo-900/25 to-transparent blur-2xl pointer-events-none" />
+                      <div className={`relative rounded-2xl md:rounded-3xl border ${currentProject.accentBorder || 'border-white/15'} bg-[#0b0f19] shadow-2xl overflow-hidden group/mockup transition-all duration-500`}>
+                        {/* Dynamic Atmospheric Gradient Background Mesh matching project */}
+                        <div className={`absolute top-0 left-0 right-0 h-64 bg-gradient-to-br ${currentProject.glowColor || 'from-purple-700/30 via-indigo-900/25 to-transparent'} blur-2xl pointer-events-none transition-all duration-700`} />
 
                         {/* Top Mockup Browser / App Navigation Bar */}
                         <div className="relative z-10 flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-black/40 backdrop-blur-md text-xs text-zinc-400">
                           {/* Brand / Title Dot */}
                           <div className="flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50 animate-pulse"></span>
+                            <span className={`w-2.5 h-2.5 rounded-full ${currentProject.pillBadge || 'bg-blue-500'} shadow-sm animate-pulse`}></span>
                             <span className="font-bold text-white text-xs tracking-wide">
-                              {currentProject.shortTitle || 'App.ai'}
+                              {currentProject.navBrand || `${currentProject.shortTitle}.app`}
                             </span>
                           </div>
 
@@ -320,7 +320,7 @@ const Projects = () => {
                             href={currentProject.live || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold transition-colors"
+                            className={`px-3 py-1 rounded-md bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white text-[11px] font-semibold transition-all hover:opacity-90`}
                           >
                             Demo
                           </a>
@@ -328,12 +328,18 @@ const Projects = () => {
 
                         {/* Main Mockup Hero Area */}
                         <div className="relative z-10 p-6 md:p-8 flex flex-col items-center text-center">
-                          {/* Main Hero Headline */}
+                          {/* Main Hero Headline with Project Highlight Accent */}
                           <h4 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight max-w-lg leading-snug">
-                            {currentProject.mockupHeadline || (
+                            {currentProject.mockupHighlight ? (
                               <>
-                                Rapidly Create Your <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">AI Caller</span> with {currentProject.shortTitle || currentProject.title}
+                                {currentProject.mockupHeadline.split(currentProject.mockupHighlight)[0]}
+                                <span className={`bg-gradient-to-r ${currentProject.gradient || 'from-purple-400 to-indigo-400'} bg-clip-text text-transparent`}>
+                                  {currentProject.mockupHighlight}
+                                </span>
+                                {currentProject.mockupHeadline.split(currentProject.mockupHighlight)[1]}
                               </>
+                            ) : (
+                              currentProject.mockupHeadline || currentProject.title
                             )}
                           </h4>
 
@@ -373,7 +379,7 @@ const Projects = () => {
                               href={currentProject.live || '#'}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-500/20"
+                              className={`px-4 py-1.5 rounded-lg bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white text-xs font-bold flex items-center gap-1.5 shadow-md`}
                             >
                               <span>Get Started</span>
                               <FiArrowRight className="text-xs" />
@@ -389,7 +395,7 @@ const Projects = () => {
                             </a>
                           </div>
 
-                          {/* Bottom Layered Dashboard Mockup Frame */}
+                          {/* Bottom Layered Dashboard with Real Project Image Showcase */}
                           <div className="w-full mt-6 rounded-t-2xl border-t border-x border-white/15 bg-zinc-950 p-2 sm:p-3 shadow-2xl relative overflow-hidden backdrop-blur-xl">
                             {/* Floating Heart / Notification Pill */}
                             <div className="absolute top-2 left-6 z-20 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center gap-1 shadow-lg shadow-rose-500/30 transform -rotate-3">
@@ -397,60 +403,62 @@ const Projects = () => {
                               <span>20</span>
                             </div>
 
-                            {/* Inner Dashboard Layer */}
-                            <div className="rounded-xl bg-white text-zinc-900 p-3 sm:p-4 border border-zinc-200 shadow-inner flex flex-col gap-2.5 text-left h-36 sm:h-44 overflow-hidden relative">
-                              {/* Dashboard Top Header */}
-                              <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
+                            {/* Inner Dashboard Layer showcasing real project image */}
+                            <div className="rounded-xl bg-zinc-900 border border-white/10 shadow-inner flex flex-col gap-2 text-left h-40 sm:h-48 overflow-hidden relative group/img">
+                              {/* Dashboard Top Header Bar */}
+                              <div className="flex items-center justify-between px-3 pt-2 pb-1.5 border-b border-white/10 bg-black/50 backdrop-blur-sm z-10">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-extrabold text-xs text-emerald-600 flex items-center gap-1">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                                    {currentProject.shortTitle || 'CallHQ'}.ai
+                                  <span className={`font-extrabold text-xs ${currentProject.brandColor || 'text-purple-400'} flex items-center gap-1`}>
+                                    <span className={`w-2 h-2 rounded-full ${currentProject.pillBadge || 'bg-purple-500'} inline-block`}></span>
+                                    {currentProject.navBrand || `${currentProject.shortTitle}.ai`}
                                   </span>
-                                  <span className="text-[11px] text-zinc-500 hidden sm:inline">
-                                    Hi {currentProject.dashboardUser || 'Mark'}, Welcome to {currentProject.shortTitle || 'CallHQ'}.ai Dashboard
+                                  <span className="text-[10px] text-zinc-400 hidden sm:inline truncate max-w-xs">
+                                    Hi {currentProject.dashboardUser || 'Mark'}, Welcome to {currentProject.shortTitle} Dashboard
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 text-[10px] text-zinc-400 border border-zinc-200">
+                                  <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 text-[9px] text-zinc-400 border border-white/10">
                                     <span>🔍</span>
                                     <span>Type people and groups...</span>
                                   </div>
-                                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">
-                                    {currentProject.dashboardUser?.[0] || 'M'}
+                                  <div className={`w-5 h-5 rounded-full bg-gradient-to-tr ${currentProject.gradient || 'from-blue-600 to-indigo-600'} text-white flex items-center justify-center text-[9px] font-bold shadow-sm`}>
+                                    {currentProject.dashboardUser?.[0] || 'K'}
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Dashboard Tabs & Mini Cards */}
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <span className="px-2.5 py-0.5 rounded-md bg-zinc-900 text-white text-[10px] font-semibold">
-                                  Groups
-                                </span>
-                                <span className="px-2.5 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[10px] font-semibold border border-zinc-200">
-                                  New Leads
-                                </span>
+                              {/* Real Image Canvas / Layer */}
+                              <div className="relative w-full h-full overflow-hidden rounded-b-lg">
+                                {currentProject.image ? (
+                                  <>
+                                    <img
+                                      src={currentProject.image}
+                                      alt={currentProject.title}
+                                      className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover/img:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent pointer-events-none" />
+                                  </>
+                                ) : (
+                                  <div className={`w-full h-full bg-gradient-to-br ${currentProject.gradient} flex items-center justify-center text-white font-bold text-sm`}>
+                                    {currentProject.title}
+                                  </div>
+                                )}
+
+                                {/* Overlay Status Bar inside the image */}
+                                <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2">
+                                  <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-white text-[10px] font-semibold border border-white/10">
+                                    {currentProject.category}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+                                    {currentProject.status || 'Live'}
+                                  </span>
+                                </div>
                               </div>
 
-                              {/* Dashboard Metrics / Visual Area */}
-                              <div className="grid grid-cols-3 gap-2 mt-1">
-                                <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-[10px]">
-                                  <div className="text-zinc-400">Total Calls</div>
-                                  <div className="text-zinc-900 font-bold text-xs">1,420+</div>
-                                </div>
-                                <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-[10px]">
-                                  <div className="text-zinc-400">Conversion</div>
-                                  <div className="text-emerald-600 font-bold text-xs">94.2%</div>
-                                </div>
-                                <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-[10px]">
-                                  <div className="text-zinc-400">Avg Latency</div>
-                                  <div className="text-blue-600 font-bold text-xs">140ms</div>
-                                </div>
-                              </div>
-
-                              {/* Floating Support AI Widget Bubble */}
+                              {/* Floating Support AI Widget Bubble matching project theme */}
                               <div className="absolute bottom-2 right-2 sm:right-3 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-zinc-900 text-[10px] sm:text-[11px] font-bold shadow-xl border border-zinc-200 hover:scale-105 transition-transform cursor-pointer">
                                 <span>Have a quick question?</span>
-                                <span className="text-purple-600 flex items-center gap-1">
+                                <span className={`${currentProject.bubbleColor || 'text-purple-600'} flex items-center gap-1 font-extrabold`}>
                                   Talk with {currentProject.supportAgent || 'Priya'} <FiMessageSquare className="text-xs" />
                                 </span>
                               </div>
