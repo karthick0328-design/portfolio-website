@@ -6,7 +6,6 @@ import { portfolioData } from '../data/portfolioData';
 import { 
   FiSearch, 
   FiGithub, 
-  FiExternalLink, 
   FiArrowRight, 
   FiChevronLeft, 
   FiChevronRight, 
@@ -263,27 +262,16 @@ const Projects = () => {
 
                       {/* Action Links Bar */}
                       <div className="flex flex-wrap items-center gap-3 mt-8">
-                        {currentProject.live && currentProject.live !== '#' && (
-                          <a
-                            href={currentProject.live}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white font-semibold text-xs md:text-sm shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95`}
-                          >
-                            <span>Live Preview</span>
-                            <FiExternalLink className="text-sm" />
-                          </a>
-                        )}
-
                         {currentProject.github && currentProject.github !== '#' && (
                           <a
                             href={currentProject.github}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-white/10 hover:bg-zinc-100 dark:hover:bg-white/15 text-zinc-800 dark:text-zinc-200 font-semibold text-xs md:text-sm border border-zinc-200 dark:border-white/15 shadow-sm transition-all hover:scale-105 active:scale-95"
+                            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-xs md:text-sm shadow-md transition-all hover:scale-105 active:scale-95 group/btn"
                           >
-                            <FiGithub className={`text-base ${currentProject.brandColor || 'text-blue-500 dark:text-blue-400'}`} />
-                            <span>Source Code</span>
+                            <FiGithub className="text-base" />
+                            <span>View Source Code</span>
+                            <FiArrowRight className="text-xs group-hover/btn:translate-x-1 transition-transform" />
                           </a>
                         )}
                       </div>
@@ -293,7 +281,7 @@ const Projects = () => {
                     <div className="lg:col-span-7">
                       <div className={`relative rounded-2xl md:rounded-3xl border ${currentProject.accentBorder || 'border-zinc-200 dark:border-white/15'} bg-white dark:bg-[#0b0f19] shadow-2xl overflow-hidden group/mockup transition-all duration-500`}>
                         {/* Dynamic Atmospheric Gradient Background Mesh matching project */}
-                        <div className={`absolute top-0 left-0 right-0 h-64 bg-gradient-to-br ${currentProject.glowColor || 'from-purple-700/30 via-indigo-900/25 to-transparent'} blur-2xl pointer-events-none transition-all duration-700`} />
+                        <div className={`absolute top-0 left-0 right-0 h-72 bg-gradient-to-br ${currentProject.glowColor || 'from-purple-700/30 via-indigo-900/25 to-transparent'} blur-2xl pointer-events-none transition-all duration-700`} />
 
                         {/* Top Mockup Browser / App Navigation Bar */}
                         <div className="relative z-10 flex items-center justify-between px-5 py-3.5 border-b border-zinc-200 dark:border-white/10 bg-zinc-100/90 dark:bg-black/40 backdrop-blur-md text-xs text-zinc-600 dark:text-zinc-400">
@@ -315,14 +303,15 @@ const Projects = () => {
                             <span className="hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer">Docs</span>
                           </div>
 
-                          {/* Login / Action Pill */}
+                          {/* Code Repository Action Pill */}
                           <a
-                            href={currentProject.live || '#'}
+                            href={currentProject.github || 'https://github.com/karthick0328-design'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`px-3 py-1 rounded-md bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white text-[11px] font-semibold transition-all hover:opacity-90 shadow-sm`}
+                            className={`px-3 py-1 rounded-md bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white text-[11px] font-semibold transition-all hover:opacity-90 shadow-sm flex items-center gap-1`}
                           >
-                            Demo
+                            <FiGithub className="text-[10px]" />
+                            <span>Code</span>
                           </a>
                         </div>
 
@@ -344,7 +333,7 @@ const Projects = () => {
                           </h4>
 
                           {/* Feature Badges / Highlights */}
-                          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-5 text-xs text-zinc-700 dark:text-zinc-300">
+                          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-4 text-xs text-zinc-700 dark:text-zinc-300">
                             {currentProject.mockupPills ? (
                               currentProject.mockupPills.map((pill, idx) => (
                                 <span key={idx} className="flex items-center gap-1.5 font-medium">
@@ -368,56 +357,34 @@ const Projects = () => {
                           </div>
 
                           {/* Guarantees / Status Pill */}
-                          <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-300/90">
+                          <div className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-300/90">
                             <span>💡</span>
-                            <span>{currentProject.badgeText || "Free Interactive Web Speech Engine"}</span>
+                            <span>{currentProject.badgeText || "High Speed Engine - Zero Watermark"}</span>
                           </div>
 
-                          {/* Mock Action Buttons */}
-                          <div className="flex items-center justify-center gap-3 mt-5">
-                            <a
-                              href={currentProject.live || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`px-4 py-1.5 rounded-lg bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white text-xs font-bold flex items-center gap-1.5 shadow-md`}
-                            >
-                              <span>Get Started</span>
-                              <FiArrowRight className="text-xs" />
-                            </a>
-                            <a
-                              href={currentProject.github || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-white/10 dark:hover:bg-white/15 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-1.5 border border-zinc-200 dark:border-white/10"
-                            >
-                              <span>View Docs</span>
-                              <FiExternalLink className="text-[10px]" />
-                            </a>
-                          </div>
-
-                          {/* Bottom Layered Dashboard with Real Project Image Showcase */}
-                          <div className="w-full mt-6 rounded-t-2xl border-t border-x border-zinc-200 dark:border-white/15 bg-zinc-100/90 dark:bg-zinc-950 p-2 sm:p-3 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+                          {/* Bottom Layered Dashboard with Real Project Image Fully Covering Space */}
+                          <div className="w-full mt-6 rounded-2xl border border-zinc-200 dark:border-white/15 bg-zinc-100/90 dark:bg-zinc-950 p-2.5 sm:p-3.5 shadow-2xl relative overflow-hidden backdrop-blur-xl">
                             {/* Floating Heart / Notification Pill */}
-                            <div className="absolute top-2 left-6 z-20 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center gap-1 shadow-lg shadow-rose-500/30 transform -rotate-3">
+                            <div className="absolute top-2.5 left-5 z-20 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center gap-1 shadow-lg shadow-rose-500/30 transform -rotate-3">
                               <span>❤️</span>
                               <span>20</span>
                             </div>
 
-                            {/* Inner Dashboard Layer showcasing real project image */}
-                            <div className="rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-inner flex flex-col gap-2 text-left h-40 sm:h-48 overflow-hidden relative group/img">
+                            {/* Inner Dashboard Layer showcasing real project image with expansive full coverage */}
+                            <div className="rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-inner flex flex-col gap-2 text-left h-64 sm:h-72 md:h-80 overflow-hidden relative group/img">
                               {/* Dashboard Top Header Bar */}
-                              <div className="flex items-center justify-between px-3 pt-2 pb-1.5 border-b border-zinc-200 dark:border-white/10 bg-white/80 dark:bg-black/50 backdrop-blur-sm z-10">
+                              <div className="flex items-center justify-between px-3 pt-2.5 pb-2 border-b border-zinc-200 dark:border-white/10 bg-white/90 dark:bg-black/60 backdrop-blur-md z-10">
                                 <div className="flex items-center gap-2">
                                   <span className={`font-extrabold text-xs ${currentProject.brandColor || 'text-purple-600 dark:text-purple-400'} flex items-center gap-1`}>
                                     <span className={`w-2 h-2 rounded-full ${currentProject.pillBadge || 'bg-purple-500'} inline-block`}></span>
-                                    {currentProject.navBrand || `${currentProject.shortTitle}.ai`}
+                                    {currentProject.navBrand || `${currentProject.shortTitle}.app`}
                                   </span>
                                   <span className="text-[10px] text-zinc-500 dark:text-zinc-400 hidden sm:inline truncate max-w-xs">
                                     Hi {currentProject.dashboardUser || 'Karthick'}, Welcome to {currentProject.shortTitle} Dashboard
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/5 text-[9px] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-white/10">
+                                  <div className="hidden md:flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/5 text-[9px] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-white/10">
                                     <span>🔍</span>
                                     <span>Type people and groups...</span>
                                   </div>
@@ -427,7 +394,7 @@ const Projects = () => {
                                 </div>
                               </div>
 
-                              {/* Real Image Canvas / Layer */}
+                              {/* Real Image Canvas / Layer covering the full space */}
                               <div className="relative w-full h-full overflow-hidden rounded-b-lg">
                                 {currentProject.image ? (
                                   <>
@@ -436,7 +403,7 @@ const Projects = () => {
                                       alt={currentProject.title}
                                       className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover/img:scale-105"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent pointer-events-none" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-transparent pointer-events-none" />
                                   </>
                                 ) : (
                                   <div className={`w-full h-full bg-gradient-to-br ${currentProject.gradient} flex items-center justify-center text-white font-bold text-sm`}>
@@ -445,18 +412,18 @@ const Projects = () => {
                                 )}
 
                                 {/* Overlay Status Bar inside the image */}
-                                <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2">
-                                  <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-white text-[10px] font-semibold border border-white/10">
+                                <div className="absolute bottom-2.5 left-3 z-10 flex items-center gap-2">
+                                  <span className="px-2.5 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-white text-[10px] font-semibold border border-white/10 shadow-sm">
                                     {currentProject.category}
                                   </span>
-                                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+                                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-[10px] font-semibold border border-emerald-500/30 shadow-sm">
                                     {currentProject.status || 'Live'}
                                   </span>
                                 </div>
                               </div>
 
                               {/* Floating Support AI Widget Bubble matching project theme */}
-                              <div className="absolute bottom-2 right-2 sm:right-3 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-[10px] sm:text-[11px] font-bold shadow-xl border border-zinc-200 dark:border-zinc-700 hover:scale-105 transition-transform cursor-pointer">
+                              <div className="absolute bottom-2.5 right-2.5 sm:right-3.5 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-[10px] sm:text-[11px] font-bold shadow-xl border border-zinc-200 dark:border-zinc-700 hover:scale-105 transition-transform cursor-pointer">
                                 <span>Have a quick question?</span>
                                 <span className={`${currentProject.bubbleColor || 'text-purple-600 dark:text-purple-400'} flex items-center gap-1 font-extrabold`}>
                                   Talk with {currentProject.supportAgent || 'Voice AI'} <FiMessageSquare className="text-xs" />
