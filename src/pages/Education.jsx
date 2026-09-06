@@ -4,14 +4,12 @@ import SectionHeading from '../components/SectionHeading';
 import { portfolioData } from '../data/portfolioData';
 import { 
   FiNavigation, 
-  FiCompass, 
   FiClock, 
   FiCheckCircle,
   FiFlag,
-  FiAward,
   FiBookOpen
 } from 'react-icons/fi';
-import { FaCarSide, FaRoad, FaUniversity } from 'react-icons/fa';
+import { FaCarSide, FaUniversity } from 'react-icons/fa';
 
 const Education = () => {
   const { education } = portfolioData;
@@ -59,45 +57,9 @@ const Education = () => {
 
       <div className="container mx-auto px-4 sm:px-6 md:px-12 relative z-10 max-w-5xl">
         <SectionHeading 
-          title="Education & Academic Road Map" 
-          subtitle="A navigational GPS roadmap of academic milestones, degrees, and core computer science foundations." 
+          title="Education" 
+          subtitle="My academic background & qualifications" 
         />
-
-        {/* GPS Navigation Route Bar / Cockpit HUD */}
-        <div className="mt-10 mb-16 p-5 md:p-6 rounded-3xl bg-zinc-900 text-white shadow-2xl border border-purple-500/30 relative overflow-hidden">
-          {/* Subtle Road Texture in HUD */}
-          <div className="absolute inset-0 bg-[radial-gradient(#a855f7_1px,transparent_1px)] [background-size:16px_16px] opacity-15 pointer-events-none" />
-          
-          <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
-            {/* GPS Route Header */}
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-purple-600/30 border border-purple-500/50 text-purple-400 shadow-lg shadow-purple-500/20">
-                <FiCompass className="text-2xl animate-spin" style={{ animationDuration: '16s' }} />
-              </div>
-              <div>
-                <div className="text-[11px] text-purple-400 uppercase tracking-widest font-black flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping" /> GPS ROADMAP
-                </div>
-                <div className="text-zinc-100 font-extrabold text-base md:text-lg flex items-center gap-2">
-                  <span>HIGHWAY EDU-01</span>
-                  <span className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono border border-zinc-700">9.9252° N, 78.1198° E</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Road Telemetry Counters */}
-            <div className="flex flex-wrap items-center gap-3 text-xs">
-              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-zinc-800/90 text-zinc-200 border border-zinc-700/80 shadow-sm font-medium">
-                <FaRoad className="text-purple-400 text-sm" />
-                <span>Route: <strong className="text-white">Computer Science Foundation</strong></span>
-              </div>
-              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                <FiAward className="text-emerald-400" />
-                <span>Status: <strong className="text-emerald-200">MCA + B.Sc CS Completed</strong></span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Visual Highway Road Timeline */}
         <div className="relative mt-8">
