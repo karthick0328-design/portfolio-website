@@ -150,21 +150,21 @@ const HeroSection = () => {
             </motion.h1>
           </motion.div>
 
-          {/* Center Clear Zone for Avatar Head & Face */}
-          <div className="flex-grow w-full min-h-[130px] xs:min-h-[150px] sm:min-h-[180px] lg:min-h-0 lg:w-72 xl:w-96 pointer-events-none" />
+          {/* Center Clear Zone: Leaves entire Face, Eyes, Nose & Lip-Sync mouth completely unobstructed */}
+          <div className="w-full h-[240px] xs:h-[270px] sm:h-[300px] lg:h-0 lg:w-72 xl:w-96 pointer-events-none flex-shrink-0" />
 
-          {/* BOTTOM (Mobile: Chest Position) / RIGHT (Desktop): Role & Summary */}
+          {/* BOTTOM (Mobile: Positioned over Avatar Chest) / RIGHT (Desktop): Role & Summary */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-[320px] sm:max-w-[360px] z-30 relative pb-1 sm:pb-3 lg:pb-0"
+            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-[320px] sm:max-w-[360px] z-30 relative pb-2 sm:pb-4 lg:pb-0"
           >
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.6 }}
-              className="text-xs sm:text-sm md:text-base font-bold text-cyan-600 dark:text-cyan-400 tracking-wide mb-0.5"
+              className="text-xs sm:text-sm md:text-base font-extrabold text-cyan-600 dark:text-cyan-400 tracking-wide mb-0.5"
             >
               Full Stack &
             </motion.p>
@@ -173,7 +173,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.7 }}
-              className="text-2xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white uppercase leading-[0.95] tracking-tight mb-2"
+              className="text-2xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white uppercase leading-[0.95] tracking-tight mb-2 drop-shadow-sm"
             >
               DEVELOPER
             </motion.h2>
@@ -182,7 +182,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55, duration: 0.7 }}
-              className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal"
+              className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium drop-shadow-sm"
             >
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
             </motion.p>
