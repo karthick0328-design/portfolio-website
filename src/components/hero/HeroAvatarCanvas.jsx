@@ -253,11 +253,11 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
 
       // 2. Real Viseme-Driven Lip Sync Controller (only update when speaking)
       if (isSpeakingRef.current) {
-        const currentViseme = visemeEngine.update(0.20);
+        const currentViseme = visemeEngine.update(0.24);
         if (mouthMat && mouthMesh) {
-          if (currentViseme.openY > 0.08) {
+          if (currentViseme.openY > 0.10) {
             mouthMesh.visible = true;
-            mouthMat.opacity = Math.min(1.0, currentViseme.opacity * Math.min(1.0, (currentViseme.openY - 0.08) * 3.5));
+            mouthMat.opacity = Math.min(1.0, Math.max(0.0, (currentViseme.openY - 0.10) * 2.2));
           } else {
             mouthMesh.visible = false;
             mouthMat.opacity = 0.0;
