@@ -1,17 +1,17 @@
 /**
  * Real-time Speech-to-Viseme Natural Lip-Sync Engine
  * Synchronizes 3D avatar mouth movements in continuous real-time with Web Speech audio.
- * Features organic multi-harmonic syllable modulation, natural comma/period breath pauses,
- * and guaranteed end-to-end synchronization for any sentence length or technical vocabulary.
+ * Uses a calm, natural human speech cadence (~2.3 Hz), smooth muscular easing,
+ * and guaranteed end-to-end synchronization.
  */
 
 export const VISEME_SHAPES = {
   rest: { name: 'rest', openY: 0.0, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 },
-  SMILE: { name: 'SMILE', openY: 0.28, scaleX: 1.0, scaleY: 1.0, opacity: 0.8 },
-  A: { name: 'A', openY: 0.90, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },
-  E: { name: 'E', openY: 0.55, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },
-  O: { name: 'O', openY: 0.80, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },
-  U: { name: 'U', openY: 0.45, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 }
+  SMILE: { name: 'SMILE', openY: 0.25, scaleX: 1.0, scaleY: 1.0, opacity: 0.8 },
+  A: { name: 'A', openY: 0.85, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },
+  E: { name: 'E', openY: 0.50, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },
+  O: { name: 'O', openY: 0.75, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 },
+  U: { name: 'U', openY: 0.40, scaleX: 1.0, scaleY: 1.0, opacity: 1.0 }
 };
 
 class VisemeEngine {
@@ -31,7 +31,7 @@ class VisemeEngine {
    */
   startSpeech(text, speechRate = 1.0) {
     if (!text || typeof text !== 'string') return;
-    this.speechRate = Math.max(0.7, Math.min(1.4, speechRate || 1.0));
+    this.speechRate = Math.max(0.7, Math.min(1.3, speechRate || 1.0));
     this.speechStartTime = performance.now();
     this.isPlaying = true;
 
@@ -52,18 +52,18 @@ class VisemeEngine {
       const clean = word.toLowerCase().replace(/[^a-z0-9]/g, '');
       const vowels = clean.match(/[aeiouy]/g);
       const syllables = vowels ? Math.max(1, Math.min(4, vowels.length)) : 1;
-      const wordMs = (160 + syllables * 110) / this.speechRate;
+      const wordMs = (180 + syllables * 130) / this.speechRate;
       currentMs += wordMs;
 
       if (hasComma) {
-        const pauseMs = 240 / this.speechRate;
+        const pauseMs = 300 / this.speechRate;
         this.pauseRanges.push({
           startMs: currentMs,
           endMs: currentMs + pauseMs
         });
         currentMs += pauseMs;
       } else if (hasPeriod) {
-        const pauseMs = 400 / this.speechRate;
+        const pauseMs = 450 / this.speechRate;
         this.pauseRanges.push({
           startMs: currentMs,
           endMs: currentMs + pauseMs
@@ -99,9 +99,9 @@ class VisemeEngine {
 
   /**
    * Called on every animation frame in Three.js renderer (60 FPS)
-   * Calculates continuous organic harmonic mouth movement synchronized with speech audio
+   * Calculates calm, natural, organic human conversational mouth movements
    */
-  update(lerpFactor = 0.24) {
+  update(lerpFactor = 0.14) {
     if (!this.isPlaying) {
       this.targetViseme = VISEME_SHAPES.rest;
     } else {
@@ -113,20 +113,19 @@ class VisemeEngine {
       );
 
       if (inPause) {
-        // Natural slight mouth relaxation during comma/period pause
+        // Natural soft mouth relaxation during comma/period pause
         this.targetViseme = { name: 'pause', openY: 0.05, scaleX: 1.0, scaleY: 1.0, opacity: 0.0 };
       } else {
-        // Multi-frequency harmonic modulation for organic human speech cadence (~4.2 syllables per second)
+        // Calm natural human speech cadence (~2.3 syllables per second)
         const sec = elapsedMs / 1000;
-        const speechFreq = 4.2 * this.speechRate;
+        const speechFreq = 2.3 * this.speechRate;
 
         const primaryWave = Math.sin(sec * speechFreq * Math.PI * 2);
-        const secondaryWave = Math.sin(sec * speechFreq * 2.1 * Math.PI * 2) * 0.35;
-        const tertiaryWave = Math.cos(sec * 1.3 * Math.PI * 2) * 0.15;
+        const secondaryWave = Math.sin(sec * (speechFreq * 0.5) * Math.PI * 2) * 0.20;
 
-        // Wave oscillation between 0.12 (consonant closure) and 0.95 (open vowel)
-        const combined = 0.54 + 0.38 * primaryWave + secondaryWave + tertiaryWave;
-        const openY = Math.max(0.08, Math.min(0.96, combined));
+        // Smooth wave between 0.10 and 0.88
+        const combined = 0.48 + 0.36 * primaryWave + secondaryWave;
+        const openY = Math.max(0.08, Math.min(0.88, combined));
 
         this.targetViseme = {
           name: 'speech',
@@ -138,12 +137,12 @@ class VisemeEngine {
       }
     }
 
-    // Smooth anatomical interpolation for realistic facial muscle movement
+    // Smooth muscular easing for calm natural mouth opening and closing
     const target = this.targetViseme;
     this.currentViseme.openY += (target.openY - this.currentViseme.openY) * lerpFactor;
     this.currentViseme.scaleX += (target.scaleX - this.currentViseme.scaleX) * lerpFactor;
     this.currentViseme.scaleY += (target.scaleY - this.currentViseme.scaleY) * lerpFactor;
-    this.currentViseme.opacity += (target.opacity - this.currentViseme.opacity) * Math.min(1.0, lerpFactor * 1.8);
+    this.currentViseme.opacity += (target.opacity - this.currentViseme.opacity) * Math.min(1.0, lerpFactor * 1.5);
 
     return this.currentViseme;
   }
