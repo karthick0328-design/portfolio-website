@@ -130,14 +130,14 @@ const VoiceAssistantWidget = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {isSpeaking && (
                   <button
                     onClick={stopSpeaking}
-                    className="hidden sm:flex px-2 py-1 text-[11px] font-mono rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-red-500/10 hover:text-red-500 transition-colors items-center gap-1"
+                    className="px-2.5 py-1 text-[11px] font-mono font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 active:scale-95 transition-all flex items-center gap-1 shadow-sm"
                     title="Stop speaking"
                   >
-                    <FiSquare size={10} />
+                    <FiSquare size={10} className="fill-current" />
                     <span>Stop</span>
                   </button>
                 )}
@@ -278,6 +278,10 @@ const VoiceAssistantWidget = () => {
       >
         <button
           onClick={() => {
+            if (isSpeaking) {
+              stopSpeaking();
+              return;
+            }
             scrollToHero();
             if (!isWidgetOpen) {
               setIsWidgetOpen(true);
@@ -286,9 +290,9 @@ const VoiceAssistantWidget = () => {
           }}
           className={`flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-xl backdrop-blur-xl border transition-all duration-300 ${
             isListening
-              ? 'bg-red-500/90 text-white border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]'
+              ? 'bg-red-500 text-white border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]'
               : isSpeaking
-              ? 'bg-cyan-500/90 text-white border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
+              ? 'bg-red-500 text-white border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-600'
               : 'bg-white/90 dark:bg-zinc-900/90 text-zinc-800 dark:text-zinc-100 border-zinc-200/80 dark:border-zinc-800/80 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]'
           }`}
           aria-label="Voice Assistant"
@@ -302,7 +306,7 @@ const VoiceAssistantWidget = () => {
                 <span className="w-1 h-2.5 bg-white animate-pulse" />
               </div>
             ) : isSpeaking ? (
-              <FiVolume2 size={18} className="animate-pulse text-white" />
+              <FiSquare size={16} className="fill-current text-white animate-pulse" />
             ) : (
               <FiMic size={18} className="text-cyan-500 dark:text-cyan-400" />
             )}
@@ -311,7 +315,7 @@ const VoiceAssistantWidget = () => {
           <span className="text-xs font-semibold tracking-wide">
             {isListening ? 'Listening...' :
              isThinking ? 'Thinking...' :
-             isSpeaking ? 'Speaking...' :
+             isSpeaking ? 'Stop Speaking' :
              'Ask Voice AI'}
           </span>
 
