@@ -14,7 +14,6 @@ import {
   FiPause, 
   FiGrid, 
   FiSliders,
-  FiZap,
   FiMessageSquare
 } from 'react-icons/fi';
 
