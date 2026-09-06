@@ -150,15 +150,15 @@ const HeroSection = () => {
             </motion.h1>
           </motion.div>
 
-          {/* Center Clear Zone for Avatar Head, Face & Lip-Sync */}
-          <div className="flex-grow w-full min-h-[200px] xs:min-h-[240px] sm:min-h-[280px] lg:min-h-0 lg:w-72 xl:w-96 pointer-events-none" />
+          {/* Center Clear Zone for Avatar Head & Face */}
+          <div className="flex-grow w-full min-h-[130px] xs:min-h-[150px] sm:min-h-[180px] lg:min-h-0 lg:w-72 xl:w-96 pointer-events-none" />
 
-          {/* BOTTOM (Mobile) / RIGHT (Desktop): Role & Summary */}
+          {/* BOTTOM (Mobile: Chest Position) / RIGHT (Desktop): Role & Summary */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-[320px] sm:max-w-[360px] z-30 relative pb-2 sm:pb-4 lg:pb-0"
+            className="w-full lg:w-auto text-center lg:text-left flex flex-col items-center lg:items-start pointer-events-auto max-w-[320px] sm:max-w-[360px] z-30 relative pb-1 sm:pb-3 lg:pb-0"
           >
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
