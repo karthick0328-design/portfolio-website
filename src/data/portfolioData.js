@@ -60,98 +60,153 @@ export const portfolioData = {
   projects: [
     {
       id: 1,
+      number: "01",
       title: "AI-Voice - Intelligent Speech Platform",
+      shortTitle: "AI-Voice",
+      subtitle: "Voice AI Calling Platform",
       category: "AI & Full Stack",
       featured: true,
       description: "An advanced real-time conversational AI voice platform featuring interactive speech synthesis, speech-to-text recognition, dynamic sound waves, and responsive audio visualizers.",
       technologies: ["React.js", "JavaScript", "Web Speech API", "AI Speech Synthesis", "Tailwind CSS"],
+      toolsAndFeaturesText: "Voice AI, Calling Automation, CRM Integrations, Audio Waveforms",
       features: [
         "Real-time Conversational Voice AI",
         "Reactive Audio Waveform Visualizers",
         "Instant Speech-to-Text Transcription",
         "Natural Voice Synthesis & Playback"
       ],
+      mockupHeadline: "Rapidly Create Your AI Caller with AI-Voice",
+      mockupPills: [
+        { icon: "🔊", text: "Human-like Interaction" },
+        { icon: "📱", text: "Inbound & Outbound Calls" },
+        { icon: "⚡", text: "Trained On Your Data" }
+      ],
+      badgeText: "Free Trial - No Credit Card Required",
       github: "https://github.com/karthick0328-design/AI-Voice",
       live: "https://ai-voice-tau-olive.vercel.app",
       status: "Live & Deployed",
       image: aiVoiceImg,
-      gradient: "from-blue-600 to-indigo-600"
+      gradient: "from-blue-600 via-indigo-600 to-purple-700"
     },
     {
       id: 2,
+      number: "02",
       title: "Jano HD Video Downloader",
+      shortTitle: "Jano HD",
+      subtitle: "High-Performance Stream & Media Extractor",
       category: "Web Applications",
       featured: true,
       description: "A high-performance media downloader and stream extractor application allowing users to download high-definition media streams across multiple platforms with fast format conversion.",
       technologies: ["TypeScript", "Next.js / React", "Tailwind CSS", "Stream APIs"],
+      toolsAndFeaturesText: "HD Video Streams, Format Conversion, Media Extraction, Cloud Speed",
       features: [
         "Multi-Resolution HD Download (1080p/4K)",
         "Instant Media Stream Link Extraction",
         "Fast Video & Audio Format Conversion",
         "Responsive Modern Glass UI Dashboard"
       ],
+      mockupHeadline: "Extract & Convert HD Media Streams at Lightning Speed",
+      mockupPills: [
+        { icon: "🎥", text: "4K & 1080p Ultra HD" },
+        { icon: "⚡", text: "Instant Multi-Stream Extraction" },
+        { icon: "🔄", text: "Lossless Audio/Video Conversion" }
+      ],
+      badgeText: "High Speed Engine - Zero Watermark",
       github: "https://github.com/karthick0328-design/jano-hd-video-downloader",
       live: "https://jano-hd-video-downloader.vercel.app",
       status: "Live & Deployed",
       image: janoDownloaderImg,
-      gradient: "from-cyan-500 to-blue-600"
+      gradient: "from-cyan-500 via-blue-600 to-indigo-700"
     },
     {
       id: 3,
+      number: "03",
       title: "AI Intelligent Digital Marketing Platform",
+      shortTitle: "MarketAI",
+      subtitle: "Automated SEO & Content Marketing Suite",
       category: "AI & Full Stack",
       featured: true,
       description: "A comprehensive digital marketing platform powered by AI to automate SEO, generate Yoast-compliant blog content, and perform automated competitor intelligence analysis.",
       technologies: ["React.js", "Node.js", "MongoDB", "Tailwind CSS", "Python"],
+      toolsAndFeaturesText: "AI Content Engine, Competitor SEO, Real-time Analytics, Spring Boot",
       features: [
         "AI Blog & Content Generation Engine",
         "Automated Competitor SEO Analysis",
         "Analytics Dashboard with Real-time Metrics",
         "JWT Role-Based Secure Authentication"
       ],
+      mockupHeadline: "Automate Growth & SEO with AI-Powered Intelligence",
+      mockupPills: [
+        { icon: "📈", text: "Yoast-Compliant AI Generator" },
+        { icon: "🎯", text: "Competitor Intelligence Tracking" },
+        { icon: "📊", text: "Real-Time Growth Metrics" }
+      ],
+      badgeText: "Enterprise Ready - 40% Productivity Boost",
       github: "https://github.com/karthick0328-design",
       live: "https://karthick-portfolio-six.vercel.app/",
       status: "Production Ready",
       image: marketingImg,
-      gradient: "from-emerald-500 to-teal-600"
+      gradient: "from-emerald-500 via-teal-600 to-cyan-700"
     },
     {
       id: 4,
+      number: "04",
       title: "3D Molecular Visualization System",
+      shortTitle: "Molecule3D",
+      subtitle: "Interactive 3D Molecular Simulation Explorer",
       category: "3D & Creative Tech",
       featured: true,
       description: "An interactive scientific tool for visualizing 3D biological molecules and chemical compounds, rendering real-time atomic bonds and structures for researchers.",
       technologies: ["React.js", "Three.js", "Python", "Node.js", "WebGL"],
+      toolsAndFeaturesText: "Three.js WebGL, 3D Atomic Bonds, Shader Shading, Scientific Data",
       features: [
         "Interactive 3D Atomic & Molecular Models",
         "Real-Time Scientific Data Processing",
         "WebGL Shader & Dynamic Lighting Rendering",
         "Compound Property Inspector"
       ],
+      mockupHeadline: "Explore Complex Biomolecules in Interactive 3D",
+      mockupPills: [
+        { icon: "🧬", text: "Real-Time Atomic Bonds" },
+        { icon: "✨", text: "WebGL Dynamic Lighting" },
+        { icon: "🔬", text: "Scientific PDB Data Parsing" }
+      ],
+      badgeText: "Research Grade - WebGL Accelerated",
       github: "https://github.com/karthick0328-design",
       live: "https://karthick-portfolio-six.vercel.app/",
       status: "Research Tool",
       image: molecularImg,
-      gradient: "from-amber-500 to-orange-600"
+      gradient: "from-amber-500 via-orange-600 to-rose-600"
     },
     {
       id: 5,
+      number: "05",
       title: "Full-Stack E-Commerce & Admin Hub",
+      shortTitle: "NovaShop",
+      subtitle: "Full-Stack E-Commerce Platform & Admin Suite",
       category: "Web Applications",
       featured: true,
       description: "A full-featured scalable e-commerce application featuring real-time cart state management, product filtering, secure authentication, and an administrative control panel.",
       technologies: ["React.js", "Node.js", "Express.js", "MongoDB", "Tailwind CSS"],
+      toolsAndFeaturesText: "Full-Stack Cart, JWT Authentication, Admin Inventory, RESTful APIs",
       features: [
         "Dynamic Cart & Checkout Flow",
         "Secure User & Admin Authentication",
         "Admin Product & Order Management Hub",
         "Optimized Performance & Responsive UX"
       ],
+      mockupHeadline: "Modern Full-Stack Commerce with Real-Time Admin Hub",
+      mockupPills: [
+        { icon: "🛒", text: "Instant Cart & Checkout Flow" },
+        { icon: "🔐", text: "Secure JWT Authentication" },
+        { icon: "📊", text: "Live Inventory & Order Metrics" }
+      ],
+      badgeText: "High Performance - Scalable Architecture",
       github: "https://github.com/karthick0328-design",
       live: "https://karthick-portfolio-six.vercel.app/",
       status: "Full Stack App",
       image: ecommerceImg,
-      gradient: "from-rose-500 to-red-600"
+      gradient: "from-rose-500 via-pink-600 to-purple-700"
     }
   ],
   education: [

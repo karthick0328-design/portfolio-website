@@ -121,17 +121,28 @@ const ProjectCard = ({ project }) => {
           ))}
         </div>
 
-        {/* Action Button Footer */}
-        <div className="pt-2">
+        {/* Action Buttons Footer */}
+        <div className="pt-2 flex items-center gap-2">
+          {project.live && project.live !== '#' && (
+            <a
+              href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all shadow-md shadow-blue-500/20 active:scale-95"
+            >
+              <span>Live Demo</span>
+              <FiArrowRight className="text-xs" />
+            </a>
+          )}
           <a
             href={isGithubRepo ? project.github : 'https://github.com/karthick0328-design'}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl bg-zinc-900 dark:bg-zinc-800 hover:bg-blue-600 dark:hover:bg-blue-600 text-white font-semibold text-xs border border-zinc-800 dark:border-zinc-700 hover:border-blue-500 transition-all duration-300 shadow-md hover:shadow-blue-500/25 active:scale-[0.98] group/btn"
+            className={`${project.live && project.live !== '#' ? 'px-3 py-2.5 rounded-xl' : 'w-full py-3 px-4 rounded-2xl'} flex items-center justify-center gap-2 bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white font-semibold text-xs border border-zinc-800 dark:border-zinc-700 hover:border-blue-500 transition-all duration-300 shadow-md active:scale-95 group/btn`}
+            title="View Source on GitHub"
           >
             <FiGithub className="text-base text-blue-400 group-hover/btn:text-white transition-colors" />
-            <span>View Source Code on GitHub</span>
-            <FiArrowRight className="text-sm group-hover/btn:translate-x-1 transition-transform" />
+            <span>{project.live && project.live !== '#' ? 'Code' : 'View Code'}</span>
           </a>
         </div>
       </div>
