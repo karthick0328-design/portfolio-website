@@ -63,10 +63,10 @@ const HeroSection = () => {
   return (
     <section id="hero" className="relative w-full min-h-[100svh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-[#f8fafc] dark:bg-[#050507] text-zinc-900 dark:text-white select-none transition-colors duration-500 touch-pan-y">
       
-      {/* 1. Ambient Background & Glows */}
+      {/* 1. Ambient Background & Glows (Desktop only for peak mobile performance) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[650px] h-[500px] md:h-[650px] rounded-full bg-cyan-500/[0.10] dark:bg-cyan-500/[0.07] filter blur-[120px] md:blur-[150px] pointer-events-none transition-opacity duration-500" />
-        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[450px] md:w-[550px] h-[450px] md:h-[550px] rounded-full bg-purple-600/[0.08] dark:bg-purple-600/[0.06] filter blur-[120px] md:blur-[160px] pointer-events-none transition-opacity duration-500" />
+        <div className="hidden md:block absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full bg-cyan-500/[0.08] dark:bg-cyan-500/[0.06] filter blur-[150px] pointer-events-none transition-opacity duration-500" />
+        <div className="hidden md:block absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/4 w-[550px] h-[550px] rounded-full bg-purple-600/[0.07] dark:bg-purple-600/[0.05] filter blur-[160px] pointer-events-none transition-opacity duration-500" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(248,250,252,0),#f8fafc)] dark:bg-[radial-gradient(ellipse_75%_75%_at_50%_50%,rgba(0,0,0,0),#050507)] transition-colors duration-500" />
       </div>
 

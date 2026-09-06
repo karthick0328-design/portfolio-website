@@ -42,15 +42,18 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
     const camera = new THREE.PerspectiveCamera(24, aspect, 0.1, 1000);
     camera.position.set(0, 0, 18);
 
-    // 3. WebGL Renderer with Mobile Optimizations
+    // 3. WebGL Renderer with High-Performance Mobile Optimization
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile, // Disable on mobile to prevent GPU hanging
-      powerPreference: isMobile ? 'default' : 'high-performance',
-      precision: isMobile ? 'mediump' : 'highp'
+      antialias: !isMobile, // Disable on mobile to eliminate GPU bottleneck
+      powerPreference: isMobile ? 'low-power' : 'high-performance',
+      precision: isMobile ? 'mediump' : 'highp',
+      depth: false, // 2D planes don't need depth buffer
+      stencil: false
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.75));
+    // Lock pixel ratio on mobile to 1.0 to guarantee 60 FPS and zero frame drops
+    renderer.setPixelRatio(isMobile ? 1.0 : Math.min(window.devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (!isMobile) {
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -185,26 +188,24 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
     let blinkStartTime = 0;
     const blinkDuration = 0.13;
 
-    // 7. Animation Loop with Mobile Throttling & Visibility Detection
-    let animationFrameId;
-    const clock = new THREE.Clock();
+    // 7. Animation Loop with Smart Idle Pausing & Intersection Observer
+    let animationFrameId = null;
+    let isRunning = false;
     let isVisible = true;
-
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
-    });
-    intersectionObserver.observe(container);
-
+    const clock = new THREE.Clock();
     let lastRenderTime = 0;
-    const targetFps = isMobile ? 45 : 60;
+    const targetFps = isMobile ? 40 : 60;
     const frameInterval = 1000 / targetFps;
 
     const animate = (currentTime) => {
+      if (!isVisible) {
+        isRunning = false;
+        return;
+      }
+
       animationFrameId = requestAnimationFrame(animate);
 
-      if (!isVisible) return;
-
-      // Throttle rendering on mobile to prevent main thread blocking
+      // Throttle rendering on mobile to keep CPU/GPU cold and silky smooth
       if (isMobile) {
         const delta = currentTime - lastRenderTime;
         if (delta < frameInterval) return;
@@ -213,11 +214,10 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
 
       const elapsedTime = clock.getElapsedTime();
 
-      // Breathing hover
-      const breathingHover = Math.sin(elapsedTime * 1.3) * 0.025;
+      // Subtle breathing hover
+      const breathingHover = Math.sin(elapsedTime * 1.3) * (isMobile ? 0.015 : 0.025);
       if (characterGroup) {
         characterGroup.position.y = breathingHover;
-        characterGroup.position.x = 0;
       }
 
       // 1. Natural Eye Blinking Controller
@@ -251,7 +251,7 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
         }
       }
 
-      // 2. Real Viseme-Driven Lip Sync Controller (only update when speaking)
+      // 2. Real Viseme-Driven Lip Sync Controller
       if (isSpeakingRef.current) {
         const currentViseme = visemeEngine.update(0.14);
         if (mouthMat && mouthMesh) {
@@ -271,11 +271,32 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
       renderer.render(scene, camera);
     };
 
-    animate(0);
+    // IntersectionObserver: COMPLETELY halts Three.js render loop when scrolled away on mobile!
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible && !isRunning) {
+        isRunning = true;
+        clock.start();
+        lastRenderTime = performance.now();
+        animationFrameId = requestAnimationFrame(animate);
+      } else if (!isVisible && isRunning) {
+        isRunning = false;
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        clock.stop();
+      }
+    }, { threshold: 0.02 });
+
+    intersectionObserver.observe(container);
+
+    isRunning = true;
+    animationFrameId = requestAnimationFrame(animate);
 
     // 8. Cleanup
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
 
@@ -289,7 +310,7 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
   return (
     <div 
       onClick={onToggleSpeak}
-      className="absolute inset-0 w-full h-full flex items-center justify-center select-none z-10 overflow-hidden cursor-pointer touch-pan-y"
+      className="absolute inset-0 w-full h-full flex items-center justify-center select-none z-10 overflow-hidden cursor-pointer pointer-events-auto touch-pan-y"
       title="Click to play real voice introduction"
     >
       {/* 3D Canvas Mounting Point */}

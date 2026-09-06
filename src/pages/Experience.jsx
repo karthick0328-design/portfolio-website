@@ -98,7 +98,7 @@ const Experience = () => {
             {/* Scroll-Driven Top-Down Cyber Vehicle: Drives only on scroll, firmly stops at Stop 1 & Stop 2 */}
             <motion.div 
               style={{ top: carTop }}
-              className="absolute left-1/2 -translate-x-1/2 w-9 h-16 bg-zinc-950 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.6)] flex flex-col items-center justify-between p-1 border-2 border-cyan-400 z-10"
+              className="absolute left-1/2 -translate-x-1/2 w-9 h-16 bg-zinc-950 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.6)] flex flex-col items-center justify-between p-1 border-2 border-cyan-400 z-10 will-change-transform"
             >
               {/* Forward Road Headlight Projection */}
               <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-12 h-8 bg-gradient-to-b from-cyan-200/40 via-cyan-400/10 to-transparent blur-[3px] pointer-events-none" />
