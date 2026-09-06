@@ -12,8 +12,7 @@ import {
   FiPlay, 
   FiPause, 
   FiGrid, 
-  FiSliders,
-  FiMessageSquare
+  FiSliders
 } from 'react-icons/fi';
 
 const categories = [
@@ -94,10 +93,10 @@ const Projects = () => {
 
   return (
     <div id="projects" className="min-h-screen pt-24 pb-28 relative overflow-hidden bg-white dark:bg-[#070a12] text-zinc-900 dark:text-white transition-colors duration-300">
-      {/* Deep Atmospheric Backdrop Gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-purple-200/40 via-indigo-200/30 to-blue-200/20 dark:from-purple-900/15 dark:via-indigo-900/15 dark:to-blue-900/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-0 w-96 h-96 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-10 left-0 w-96 h-96 bg-purple-400/10 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* Deep Atmospheric Backdrop Gradients for Dark Mode */}
+      <div className="hidden dark:block absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-purple-900/15 via-indigo-900/15 to-blue-900/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="hidden dark:block absolute bottom-10 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="hidden dark:block absolute top-10 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 md:px-12 relative z-10">
         {/* Section Header */}
@@ -217,7 +216,7 @@ const Projects = () => {
               )}
 
               {/* Slide Card Container */}
-              <div className="relative min-h-[540px] md:min-h-[500px] w-full rounded-3xl bg-zinc-50/90 dark:bg-[#090D16]/90 border border-zinc-200/90 dark:border-white/10 backdrop-blur-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 md:p-12 overflow-hidden">
+              <div className="relative min-h-[500px] w-full rounded-3xl bg-white dark:bg-[#090D16] border border-zinc-200 dark:border-white/10 shadow-2xl p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden">
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={currentProject.id}
@@ -260,7 +259,7 @@ const Projects = () => {
                         {currentProject.description}
                       </p>
 
-                      {/* Action Links Bar */}
+                      {/* Action Links Bar - GitHub Code Only */}
                       <div className="flex flex-wrap items-center gap-3 mt-8">
                         {currentProject.github && currentProject.github !== '#' && (
                           <a
@@ -277,158 +276,87 @@ const Projects = () => {
                       </div>
                     </div>
 
-                    {/* RIGHT COLUMN: Ultra-Sleek Product & UI Mockup Card with Dynamic Project Color */}
+                    {/* RIGHT COLUMN: Full-Coverage Project Mockup Display Window */}
                     <div className="lg:col-span-7">
-                      <div className={`relative rounded-2xl md:rounded-3xl border ${currentProject.accentBorder || 'border-zinc-200 dark:border-white/15'} bg-white dark:bg-[#0b0f19] shadow-2xl overflow-hidden group/mockup transition-all duration-500`}>
-                        {/* Dynamic Atmospheric Gradient Background Mesh matching project */}
-                        <div className={`absolute top-0 left-0 right-0 h-72 bg-gradient-to-br ${currentProject.glowColor || 'from-purple-700/30 via-indigo-900/25 to-transparent'} blur-2xl pointer-events-none transition-all duration-700`} />
+                      <div className={`relative rounded-2xl md:rounded-3xl border ${currentProject.accentBorder || 'border-zinc-200 dark:border-white/15'} bg-slate-50 dark:bg-[#0b0f19] shadow-2xl overflow-hidden group/mockup transition-all duration-500`}>
+                        
+                        {/* Dynamic Project Ambient Glow Mesh */}
+                        <div className={`absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-br ${currentProject.glowColor || 'from-blue-600/20 via-indigo-600/10 to-transparent'} blur-3xl pointer-events-none transition-all duration-700`} />
 
-                        {/* Top Mockup Browser / App Navigation Bar */}
-                        <div className="relative z-10 flex items-center justify-between px-5 py-3.5 border-b border-zinc-200 dark:border-white/10 bg-zinc-100/90 dark:bg-black/40 backdrop-blur-md text-xs text-zinc-600 dark:text-zinc-400">
-                          {/* Brand / Title Dot */}
+                        {/* Top macOS-style Browser / App Window Bar */}
+                        <div className="relative z-10 flex items-center justify-between px-4 sm:px-5 py-3 border-b border-zinc-200 dark:border-white/10 bg-white/95 dark:bg-black/60 backdrop-blur-md text-xs">
+                          {/* Window Controls (Red, Yellow, Green macOS dots) */}
                           <div className="flex items-center gap-2">
-                            <span className={`w-2.5 h-2.5 rounded-full ${currentProject.pillBadge || 'bg-blue-500'} shadow-sm animate-pulse`}></span>
-                            <span className="font-bold text-zinc-900 dark:text-white text-xs tracking-wide">
-                              {currentProject.navBrand || `${currentProject.shortTitle}.app`}
-                            </span>
+                            <div className="flex items-center gap-1.5 mr-2">
+                              <span className="w-3 h-3 rounded-full bg-rose-500/90 inline-block shadow-sm"></span>
+                              <span className="w-3 h-3 rounded-full bg-amber-500/90 inline-block shadow-sm"></span>
+                              <span className="w-3 h-3 rounded-full bg-emerald-500/90 inline-block shadow-sm"></span>
+                            </div>
+                            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-white/10 text-zinc-700 dark:text-zinc-300 font-mono text-[11px] border border-zinc-200/60 dark:border-white/10">
+                              <span className={`w-2 h-2 rounded-full ${currentProject.pillBadge || 'bg-emerald-500'} animate-pulse`}></span>
+                              <span>{currentProject.navBrand || `${(currentProject.shortTitle || 'project').toLowerCase().replace(/\s+/g, '')}.app`}</span>
+                            </div>
                           </div>
 
-                          {/* Navigation Links */}
-                          <div className="hidden sm:flex items-center gap-4 text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
-                            <span className="text-zinc-900 dark:text-white font-semibold">Home</span>
-                            <span className="hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer">Services</span>
-                            <span className="hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer">Features</span>
-                            <span className="hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer">Integrations</span>
-                            <span className="hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer">Pricing</span>
-                            <span className="hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer">Docs</span>
+                          {/* Center project name for mobile view */}
+                          <div className="flex sm:hidden items-center gap-1.5 font-bold text-zinc-900 dark:text-white text-xs">
+                            <span>{currentProject.shortTitle}</span>
                           </div>
 
-                          {/* Code Repository Action Pill */}
-                          <a
-                            href={currentProject.github || 'https://github.com/karthick0328-design'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`px-3 py-1 rounded-md bg-gradient-to-r ${currentProject.btnGradient || 'from-blue-600 to-indigo-600'} text-white text-[11px] font-semibold transition-all hover:opacity-90 shadow-sm flex items-center gap-1`}
-                          >
-                            <FiGithub className="text-[10px]" />
-                            <span>Code</span>
-                          </a>
+                          {/* Right GitHub Code Action Button */}
+                          {currentProject.github && currentProject.github !== '#' && (
+                            <a
+                              href={currentProject.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[11px] font-bold transition-all shadow-sm flex items-center gap-1.5 hover:scale-105"
+                            >
+                              <FiGithub className="text-xs" />
+                              <span>Code</span>
+                            </a>
+                          )}
                         </div>
 
-                        {/* Main Mockup Hero Area */}
-                        <div className="relative z-10 p-6 md:p-8 flex flex-col items-center text-center">
-                          {/* Main Hero Headline with Project Highlight Accent */}
-                          <h4 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight max-w-lg leading-snug">
-                            {currentProject.mockupHighlight ? (
-                              <>
-                                {currentProject.mockupHeadline.split(currentProject.mockupHighlight)[0]}
-                                <span className={`bg-gradient-to-r ${currentProject.gradient || 'from-purple-500 to-indigo-500'} bg-clip-text text-transparent`}>
-                                  {currentProject.mockupHighlight}
-                                </span>
-                                {currentProject.mockupHeadline.split(currentProject.mockupHighlight)[1]}
-                              </>
-                            ) : (
-                              currentProject.mockupHeadline || currentProject.title
-                            )}
-                          </h4>
+                        {/* Full Cover Project Image Display Area */}
+                        <div className="relative w-full h-72 sm:h-80 md:h-96 lg:h-[420px] bg-zinc-100 dark:bg-zinc-950 overflow-hidden group/img">
+                          {currentProject.image ? (
+                            <>
+                              <img
+                                src={currentProject.image}
+                                alt={currentProject.title}
+                                className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover/img:scale-105"
+                              />
+                              {/* Bottom gradient to keep overlay tags distinct */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
+                            </>
+                          ) : (
+                            <div className={`w-full h-full bg-gradient-to-br ${currentProject.gradient} flex items-center justify-center text-white font-bold text-lg`}>
+                              {currentProject.title}
+                            </div>
+                          )}
 
-                          {/* Feature Badges / Highlights */}
-                          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-4 text-xs text-zinc-700 dark:text-zinc-300">
-                            {currentProject.mockupPills ? (
-                              currentProject.mockupPills.map((pill, idx) => (
-                                <span key={idx} className="flex items-center gap-1.5 font-medium">
-                                  <span>{pill.icon}</span>
-                                  <span>{pill.text}</span>
-                                </span>
-                              ))
-                            ) : (
-                              <>
-                                <span className="flex items-center gap-1.5 font-medium">
-                                  <span>🔊</span> Human-like Interaction
-                                </span>
-                                <span className="flex items-center gap-1.5 font-medium">
-                                  <span>🎙️</span> Real-time Audio
-                                </span>
-                                <span className="flex items-center gap-1.5 font-medium">
-                                  <span>⚡</span> Interactive Waves
-                                </span>
-                              </>
-                            )}
-                          </div>
-
-                          {/* Guarantees / Status Pill */}
-                          <div className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-300/90">
-                            <span>💡</span>
-                            <span>{currentProject.badgeText || "High Speed Engine - Zero Watermark"}</span>
-                          </div>
-
-                          {/* Bottom Layered Dashboard with Real Project Image Fully Covering Space */}
-                          <div className="w-full mt-6 rounded-2xl border border-zinc-200 dark:border-white/15 bg-zinc-100/90 dark:bg-zinc-950 p-2.5 sm:p-3.5 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-                            {/* Floating Heart / Notification Pill */}
-                            <div className="absolute top-2.5 left-5 z-20 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center gap-1 shadow-lg shadow-rose-500/30 transform -rotate-3">
-                              <span>❤️</span>
-                              <span>20</span>
+                          {/* Floating Category & Tech Tags over Image */}
+                          <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+                            <div className="flex items-center gap-2">
+                              <span className="px-3 py-1 rounded-lg bg-black/80 backdrop-blur-md text-white text-xs font-semibold border border-white/20 shadow-lg">
+                                {currentProject.category}
+                              </span>
+                              <span className="px-3 py-1 rounded-lg bg-emerald-500/30 backdrop-blur-md text-emerald-200 text-xs font-semibold border border-emerald-400/40 shadow-lg flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                {currentProject.status || 'Active Project'}
+                              </span>
                             </div>
 
-                            {/* Inner Dashboard Layer showcasing real project image with expansive full coverage */}
-                            <div className="rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-inner flex flex-col gap-2 text-left h-64 sm:h-72 md:h-80 overflow-hidden relative group/img">
-                              {/* Dashboard Top Header Bar */}
-                              <div className="flex items-center justify-between px-3 pt-2.5 pb-2 border-b border-zinc-200 dark:border-white/10 bg-white/90 dark:bg-black/60 backdrop-blur-md z-10">
-                                <div className="flex items-center gap-2">
-                                  <span className={`font-extrabold text-xs ${currentProject.brandColor || 'text-purple-600 dark:text-purple-400'} flex items-center gap-1`}>
-                                    <span className={`w-2 h-2 rounded-full ${currentProject.pillBadge || 'bg-purple-500'} inline-block`}></span>
-                                    {currentProject.navBrand || `${currentProject.shortTitle}.app`}
-                                  </span>
-                                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 hidden sm:inline truncate max-w-xs">
-                                    Hi {currentProject.dashboardUser || 'Karthick'}, Welcome to {currentProject.shortTitle} Dashboard
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="hidden md:flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/5 text-[9px] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-white/10">
-                                    <span>🔍</span>
-                                    <span>Type people and groups...</span>
-                                  </div>
-                                  <div className={`w-5 h-5 rounded-full bg-gradient-to-tr ${currentProject.gradient || 'from-blue-600 to-indigo-600'} text-white flex items-center justify-center text-[9px] font-bold shadow-sm`}>
-                                    {currentProject.dashboardUser?.[0] || 'K'}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Real Image Canvas / Layer covering the full space */}
-                              <div className="relative w-full h-full overflow-hidden rounded-b-lg">
-                                {currentProject.image ? (
-                                  <>
-                                    <img
-                                      src={currentProject.image}
-                                      alt={currentProject.title}
-                                      className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover/img:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-transparent pointer-events-none" />
-                                  </>
-                                ) : (
-                                  <div className={`w-full h-full bg-gradient-to-br ${currentProject.gradient} flex items-center justify-center text-white font-bold text-sm`}>
-                                    {currentProject.title}
-                                  </div>
-                                )}
-
-                                {/* Overlay Status Bar inside the image */}
-                                <div className="absolute bottom-2.5 left-3 z-10 flex items-center gap-2">
-                                  <span className="px-2.5 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-white text-[10px] font-semibold border border-white/10 shadow-sm">
-                                    {currentProject.category}
-                                  </span>
-                                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-[10px] font-semibold border border-emerald-500/30 shadow-sm">
-                                    {currentProject.status || 'Live'}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Floating Support AI Widget Bubble matching project theme */}
-                              <div className="absolute bottom-2.5 right-2.5 sm:right-3.5 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-[10px] sm:text-[11px] font-bold shadow-xl border border-zinc-200 dark:border-zinc-700 hover:scale-105 transition-transform cursor-pointer">
-                                <span>Have a quick question?</span>
-                                <span className={`${currentProject.bubbleColor || 'text-purple-600 dark:text-purple-400'} flex items-center gap-1 font-extrabold`}>
-                                  Talk with {currentProject.supportAgent || 'Voice AI'} <FiMessageSquare className="text-xs" />
+                            {/* Tech Stack Pills */}
+                            <div className="hidden sm:flex items-center gap-1.5">
+                              {currentProject.technologies?.slice(0, 3).map((tech, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2.5 py-0.5 rounded-md bg-white/20 dark:bg-black/60 backdrop-blur-md text-white text-[10px] font-medium border border-white/20 shadow-sm"
+                                >
+                                  {tech}
                                 </span>
-                              </div>
+                              ))}
                             </div>
                           </div>
                         </div>
