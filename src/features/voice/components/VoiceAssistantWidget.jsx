@@ -5,10 +5,11 @@ import { useVoiceAssistant } from '../context/VoiceAssistantContext';
 
 const SUGGESTIONS = [
   "Tell me about Karthick",
+  "What is your education?",
+  "Tell me about your experience",
   "What 3D projects has he built?",
   "What technologies does he use?",
-  "Why should I hire Karthick?",
-  "Is he available for work?"
+  "How can I contact him?"
 ];
 
 const VoiceAssistantWidget = () => {

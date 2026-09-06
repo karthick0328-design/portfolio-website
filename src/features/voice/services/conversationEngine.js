@@ -209,20 +209,20 @@ class ConversationEngine {
   handleExperience(query) {
     this.context.lastTopic = 'experience';
 
-    if (query.includes('ponnaiya')) {
-      return "At Ponnaiya's Code and Genome, Karthick worked as a Full Stack Developer, building full-stack platforms and the 3D Molecular Visualization system with real-time dynamic rendering.";
-    }
-
     if (query.includes('geosoft')) {
-      return "At Geosoft Technologies, Karthick served as a Fullstack Developer Intern where he built AI-driven SEO tools that reduced manual analyst workload by 40% and improved page load times by 25%.";
+      return "At Geosoft Technologies in Madurai, Karthick worked as a Fullstack Developer Intern where he built AI-driven SEO tools, automating workflows and achieving 25% faster page loads.";
     }
 
-    return "Karthick's professional background includes working as a Full Stack Developer at Ponnaiya's Code and Genome, and developing AI-powered SEO tools during his internship at Geosoft Technologies.";
+    if (query.includes('ponnaiya')) {
+      return "At Ponnaiya's Code and Genome, Karthick served as a Full Stack Developer, building full-stack platforms and the 3D Molecular Visualization system with real-time dynamic rendering.";
+    }
+
+    return "Karthick's career journey began as a Fullstack Developer Intern at Geosoft Technologies in Madurai, followed by his role as Full Stack Developer at Ponnaiya's Code and Genome, where he engineered high-performance web apps and 3D visualization systems.";
   }
 
   handleEducation() {
     this.context.lastTopic = 'education';
-    return "Karthick holds a Master of Computer Applications (MCA) from KLN College of Engineering (2023 to 2025) and a Bachelor of Computer Science from The American College (2020 to 2023).";
+    return "Karthick completed his Bachelor of Computer Science at The American College (2020 to 2023), and earned his Master of Computer Applications (MCA) from KLN College of Engineering (2023 to 2025).";
   }
 
   handleHiring(query) {

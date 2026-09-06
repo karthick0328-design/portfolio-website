@@ -49,38 +49,12 @@ const HeroSection = () => {
     }
   };
 
-  // Safe non-blocking auto-speech trigger upon visiting
+  // Clean up any speech on unmount
   useEffect(() => {
-    let hasSpoken = false;
-
-    const triggerAutoSpeech = () => {
-      if (hasSpoken) return;
-      hasSpoken = true;
-      speakIntro();
-    };
-
-    // Auto-play intro with smooth delay (non-blocking for mobile)
-    const timer = setTimeout(() => {
-      triggerAutoSpeech();
-    }, 1200);
-
-    // Fallback: Click or touch listener for mobile autoplay permissions (passive: true to prevent hanging)
-    const handleFirstGesture = () => {
-      triggerAutoSpeech();
-      window.removeEventListener('click', handleFirstGesture);
-      window.removeEventListener('touchstart', handleFirstGesture);
-    };
-
-    window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
-    window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
-
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener('click', handleFirstGesture);
-      window.removeEventListener('touchstart', handleFirstGesture);
       speechSynthesisService.stop();
     };
-  }, [speakIntro]);
+  }, []);
 
   // Subtle parallax effect on scroll (smooth transform)
   const contentY = useTransform(scrollY, [0, 400], [0, 30]);

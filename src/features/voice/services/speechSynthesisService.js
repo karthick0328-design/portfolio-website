@@ -111,12 +111,25 @@ class SpeechSynthesisService {
     // Cancel any ongoing speech
     this.stop();
 
+    // Chrome audio engine unpause fix
+    if (this.synth.paused) {
+      try {
+        this.synth.resume();
+      } catch (e) {
+        // ignore
+      }
+    }
+
     if (this.voices.length === 0) {
       this._loadVoices();
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
     this.currentUtterance = utterance;
+    // Prevent Chromium garbage-collection bug from cutting off audio mid-speech
+    if (typeof window !== 'undefined') {
+      window.__activeSpeechUtterance = utterance;
+    }
 
     const voice = this.preferredVoice || this._selectBestVoice();
     if (voice) {
@@ -124,7 +137,7 @@ class SpeechSynthesisService {
     }
 
     utterance.rate = 1.0;
-    utterance.pitch = 0.95; // Grounded, natural male voice resonance
+    utterance.pitch = 0.95;
     utterance.volume = 1.0;
 
     utterance.onstart = () => {
@@ -147,6 +160,9 @@ class SpeechSynthesisService {
     const cleanup = () => {
       this.isSpeaking = false;
       this.currentUtterance = null;
+      if (typeof window !== 'undefined') {
+        window.__activeSpeechUtterance = null;
+      }
       visemeEngine.stopSpeech();
       if (options.onAudioLevel) {
         options.onAudioLevel(0);
@@ -160,13 +176,17 @@ class SpeechSynthesisService {
 
     utterance.onerror = (err) => {
       cleanup();
-      console.warn('SpeechSynthesis error:', err);
+      console.warn('SpeechSynthesis event:', err);
       if (options.onError) options.onError(err);
       if (options.onEnd) options.onEnd();
     };
 
     try {
       this.synth.speak(utterance);
+      // Double check resume in case browser blocked autoplay
+      if (this.synth.paused) {
+        this.synth.resume();
+      }
     } catch (err) {
       cleanup();
       console.warn('SpeechSynthesis speak failed:', err);
@@ -187,6 +207,9 @@ class SpeechSynthesisService {
     }
     this.isSpeaking = false;
     this.currentUtterance = null;
+    if (typeof window !== 'undefined') {
+      window.__activeSpeechUtterance = null;
+    }
     visemeEngine.stopSpeech();
   }
 }

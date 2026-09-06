@@ -67,13 +67,13 @@ export const VoiceAssistantProvider = ({ children }) => {
     setInterimTranscript('');
     setErrorMessage('');
     setStatus('thinking');
+    setIsWidgetOpen(true);
 
-    // Simulate natural thinking pause for conversational realism (250-450ms)
     setTimeout(() => {
       const generatedResponse = conversationEngine.generateResponse(cleanQuery);
       setHistory(prev => [...prev, { query: cleanQuery, reply: generatedResponse, timestamp: Date.now() }]);
       speakText(generatedResponse);
-    }, 320);
+    }, 280);
   }, [speakText]);
 
   /**
@@ -103,8 +103,9 @@ export const VoiceAssistantProvider = ({ children }) => {
         setInterimTranscript('');
         askQuestion(finalText);
       },
-      onEnd: () => {
-        if (statusRef.current === 'listening') {
+      onEnd: (hasFinalResult) => {
+        // If no speech result was obtained, return to idle
+        if (!hasFinalResult) {
           setStatus('idle');
         }
       },
