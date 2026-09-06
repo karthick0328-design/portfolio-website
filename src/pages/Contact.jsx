@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import toast from 'react-hot-toast';
 import SectionHeading from '../components/SectionHeading';
-import { FiSend, FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
+import { FiSend, FiGithub, FiLinkedin, FiMail, FiMapPin, FiCheckCircle, FiShield } from 'react-icons/fi';
 import MagneticButton from '../components/ui/MagneticButton';
 import { portfolioData } from '../data/portfolioData';
 
@@ -34,104 +34,112 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-24 relative overflow-hidden">
-      {/* Background Decorators */}
-      <div className="hidden md:block absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
-      
-      <div className="container mx-auto px-6 md:px-12 relative z-10">
+    <div id="contact" className="min-h-screen pt-24 pb-24 relative overflow-hidden bg-zinc-50/50 dark:bg-zinc-950/50">
+      {/* Background Glows */}
+      <div className="hidden md:block absolute top-10 right-10 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="hidden md:block absolute bottom-10 left-10 w-[450px] h-[450px] bg-purple-500/10 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Topographic Road Map Grid Overlay */}
+      <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
+
+      <div className="container mx-auto px-4 sm:px-6 md:px-12 relative z-10 max-w-5xl">
         <SectionHeading title="Let's Connect" subtitle="Have a question or want to work together?" />
         
-        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-16 mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 mt-12 items-start">
           
+          {/* Left Column: Contact Information */}
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-            className="w-full lg:w-5/12"
+            transition={{ duration: 0.6, type: "spring", stiffness: 90 }}
+            className="w-full lg:col-span-5"
           >
-            <div className="glass-card p-10 h-full border border-zinc-200 dark:border-white/10 bg-white/40 dark:bg-zinc-900/40 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div className="rounded-3xl p-6 sm:p-8 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
-              <h3 className="text-3xl font-bold mb-8 text-zinc-900 dark:text-white">Get in Touch</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 mb-10 text-lg leading-relaxed">
+              <h3 className="text-2xl sm:text-3xl font-black mb-4 text-zinc-900 dark:text-white tracking-tight">
+                Get in Touch
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 mb-8 text-sm sm:text-base leading-relaxed">
                 I'm currently open to new opportunities. Whether you have a question, a project idea, or just want to say hi, I'll try my best to get back to you!
               </p>
               
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
-                    <FiMail size={20} />
+              <div className="space-y-6">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                    <FiMail size={19} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wider mb-1">Email</p>
-                    <a href={`mailto:${portfolioData.personalInfo.email}`} className="text-base sm:text-lg font-medium text-zinc-900 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors break-all">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-0.5">Email</p>
+                    <a href={`mailto:${portfolioData.personalInfo.email}`} className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors break-all">
                       {portfolioData.personalInfo.email}
                     </a>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                    <FiMapPin size={19} />
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wider mb-1">Location</p>
-                    <p className="text-lg font-medium text-zinc-900 dark:text-white">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-0.5">Location</p>
+                    <p className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-white">
                       {portfolioData.personalInfo.location}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <FiCheckCircle size={19} />
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wider mb-1">Availability</p>
-                    <p className="text-lg font-medium text-zinc-900 dark:text-white">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-0.5">Availability</p>
+                    <p className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-white">
                       {portfolioData.personalInfo.availability}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800">
-                 <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wider mb-6">Connect</p>
-                 <div className="flex space-x-4">
-                   <a href={portfolioData.personalInfo.github} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all">
-                     <FiGithub size={20} />
+              <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                 <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-4">Connect</p>
+                 <div className="flex space-x-3">
+                   <a href={portfolioData.personalInfo.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all shadow-sm">
+                     <FiGithub size={18} />
                    </a>
-                   <a href={portfolioData.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-blue-500 hover:text-white transition-all">
-                     <FiLinkedin size={20} />
+                   <a href={portfolioData.personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                     <FiLinkedin size={18} />
                    </a>
                  </div>
               </div>
             </div>
           </motion.div>
 
+          {/* Right Column: Contact Form */}
           <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 100 }}
-            className="w-full lg:w-7/12"
+            transition={{ duration: 0.6, delay: 0.15, type: "spring", stiffness: 90 }}
+            className="w-full lg:col-span-7"
           >
-            <div className="glass-card p-10 h-full border border-zinc-200 dark:border-white/10 bg-white/40 dark:bg-zinc-900/40 relative">
+            <div className="rounded-3xl p-6 sm:p-8 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl relative">
               
-              <form ref={formRef} onSubmit={handleSubmit} className="space-y-8 relative z-10">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 relative z-10">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="relative group">
                     <input 
                       type="text" 
                       name="user_name" 
                       id="user_name" 
                       required
-                      className="peer w-full px-0 py-3 bg-transparent border-0 border-b-2 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white focus:ring-0 focus:border-blue-500 transition-colors placeholder-transparent"
+                      className="peer w-full px-0 py-2.5 bg-transparent border-0 border-b-2 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white focus:ring-0 focus:border-blue-500 transition-colors placeholder-transparent text-sm sm:text-base"
                       placeholder="Name"
                     />
-                    <label htmlFor="user_name" className="absolute left-0 -top-3.5 text-sm text-zinc-500 dark:text-zinc-400 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-blue-500">
+                    <label htmlFor="user_name" className="absolute left-0 -top-3 text-xs text-zinc-500 dark:text-zinc-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-focus:-top-3 peer-focus:text-xs peer-focus:text-blue-500 font-medium">
                       Your Name
                     </label>
                   </div>
@@ -141,10 +149,10 @@ const Contact = () => {
                       name="user_email" 
                       id="user_email" 
                       required
-                      className="peer w-full px-0 py-3 bg-transparent border-0 border-b-2 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white focus:ring-0 focus:border-blue-500 transition-colors placeholder-transparent"
+                      className="peer w-full px-0 py-2.5 bg-transparent border-0 border-b-2 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white focus:ring-0 focus:border-blue-500 transition-colors placeholder-transparent text-sm sm:text-base"
                       placeholder="Email"
                     />
-                    <label htmlFor="user_email" className="absolute left-0 -top-3.5 text-sm text-zinc-500 dark:text-zinc-400 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-blue-500">
+                    <label htmlFor="user_email" className="absolute left-0 -top-3 text-xs text-zinc-500 dark:text-zinc-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-focus:-top-3 peer-focus:text-xs peer-focus:text-blue-500 font-medium">
                       Your Email
                     </label>
                   </div>
@@ -156,32 +164,40 @@ const Contact = () => {
                     name="subject" 
                     id="subject" 
                     required
-                    className="peer w-full px-0 py-3 bg-transparent border-0 border-b-2 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white focus:ring-0 focus:border-blue-500 transition-colors placeholder-transparent"
+                    className="peer w-full px-0 py-2.5 bg-transparent border-0 border-b-2 border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white focus:ring-0 focus:border-blue-500 transition-colors placeholder-transparent text-sm sm:text-base"
                     placeholder="Subject"
                   />
-                  <label htmlFor="subject" className="absolute left-0 -top-3.5 text-sm text-zinc-500 dark:text-zinc-400 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-blue-500">
+                  <label htmlFor="subject" className="absolute left-0 -top-3 text-xs text-zinc-500 dark:text-zinc-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-focus:-top-3 peer-focus:text-xs peer-focus:text-blue-500 font-medium">
                     Subject
                   </label>
                 </div>
 
-                <div className="relative group pt-4">
+                <div className="relative group pt-2">
                   <textarea 
                     name="message" 
                     id="message" 
-                    rows="4"
+                    rows="5"
                     required
-                    className="peer w-full px-4 py-4 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 border border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 text-zinc-900 dark:text-white focus:ring-0 transition-all resize-none placeholder-zinc-400 dark:placeholder-zinc-500"
+                    className="peer w-full px-4 py-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 text-zinc-900 dark:text-white focus:ring-0 transition-all resize-none placeholder-zinc-400 dark:placeholder-zinc-500 text-sm sm:text-base leading-relaxed"
                     placeholder="How can I help you?"
-                  ></textarea>
+                  />
                 </div>
 
-                <MagneticButton 
-                  disabled={isSubmitting}
-                  className={`w-full py-4 rounded-xl bg-blue-600 text-white font-bold tracking-wide flex items-center justify-center gap-2 transition-all hover:bg-blue-700 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                >
-                  <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
-                  {!isSubmitting && <FiSend size={18} />}
-                </MagneticButton>
+                <div className="pt-2">
+                  <MagneticButton 
+                    disabled={isSubmitting}
+                    className={`w-full py-4 rounded-2xl bg-blue-600 text-white font-bold tracking-wide flex items-center justify-center gap-2 transition-all hover:bg-blue-700 shadow-lg shadow-blue-500/25 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  >
+                    <span>{isSubmitting ? 'Sending Message...' : 'Send Message'}</span>
+                    {!isSubmitting && <FiSend size={18} />}
+                  </MagneticButton>
+                  
+                  {/* Subtle helper info beneath the button */}
+                  <div className="flex items-center justify-center gap-2 mt-4 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                    <FiShield className="text-blue-500 shrink-0" size={13} />
+                    <span>Your message is confidential. Responses typically sent within 24 hours.</span>
+                  </div>
+                </div>
                 
               </form>
             </div>
