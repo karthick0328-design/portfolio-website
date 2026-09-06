@@ -31,6 +31,8 @@ const Projects = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [viewMode, setViewMode] = useState('showcase'); // 'showcase' | 'grid'
   const [direction, setDirection] = useState(1);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -73,6 +75,27 @@ const Projects = () => {
   const goToSlide = (index) => {
     setDirection(index > activeSlideIndex ? 1 : -1);
     setActiveSlideIndex(index);
+  };
+
+  // Mobile Touch Swipe Handlers
+  const minSwipeDistance = 50;
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
   };
 
   // Autoplay slider (every 4.5 seconds)
@@ -189,15 +212,18 @@ const Projects = () => {
         {filteredProjects.length > 0 ? (
           viewMode === 'showcase' ? (
             <div
-              className="relative w-full my-6 select-none"
+              className="relative w-full my-6 select-none touch-pan-y"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
             >
               {/* Outer Left Circular Navigation Button */}
               {totalSlides > 1 && (
                 <button
                   onClick={prevSlide}
-                  className="absolute -left-3 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 rounded-full bg-white/95 hover:bg-white dark:bg-zinc-900/90 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-white/15 backdrop-blur-xl shadow-xl dark:shadow-2xl flex items-center justify-center transition-all duration-300 active:scale-90 hover:scale-105 group"
+                  className="hidden sm:flex absolute -left-3 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 rounded-full bg-white/95 hover:bg-white dark:bg-zinc-900/90 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-white/15 backdrop-blur-xl shadow-xl dark:shadow-2xl items-center justify-center transition-all duration-300 active:scale-90 hover:scale-105 group"
                   aria-label="Previous project"
                 >
                   <FiChevronLeft className="text-xl group-hover:-translate-x-0.5 transition-transform" />
@@ -208,7 +234,7 @@ const Projects = () => {
               {totalSlides > 1 && (
                 <button
                   onClick={nextSlide}
-                  className="absolute -right-3 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 rounded-full bg-white/95 hover:bg-white dark:bg-zinc-900/90 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-white/15 backdrop-blur-xl shadow-xl dark:shadow-2xl flex items-center justify-center transition-all duration-300 active:scale-90 hover:scale-105 group"
+                  className="hidden sm:flex absolute -right-3 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-13 md:h-13 rounded-full bg-white/95 hover:bg-white dark:bg-zinc-900/90 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-white/15 backdrop-blur-xl shadow-xl dark:shadow-2xl items-center justify-center transition-all duration-300 active:scale-90 hover:scale-105 group"
                   aria-label="Next project"
                 >
                   <FiChevronRight className="text-xl group-hover:translate-x-0.5 transition-transform" />
@@ -216,7 +242,7 @@ const Projects = () => {
               )}
 
               {/* Slide Card Container */}
-              <div className="relative min-h-[500px] w-full rounded-3xl bg-white dark:bg-[#090D16] border border-zinc-200 dark:border-white/10 shadow-2xl p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden">
+              <div className="relative min-h-[480px] w-full rounded-3xl bg-white dark:bg-[#090D16] border border-zinc-200 dark:border-white/10 shadow-xl dark:shadow-2xl p-5 sm:p-8 md:p-10 lg:p-12 overflow-hidden">
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={currentProject.id}
@@ -318,7 +344,7 @@ const Projects = () => {
                         </div>
 
                         {/* Full Cover Project Image Display Area */}
-                        <div className="relative w-full h-72 sm:h-80 md:h-96 lg:h-[420px] bg-zinc-100 dark:bg-zinc-950 overflow-hidden group/img">
+                        <div className="relative w-full h-60 sm:h-72 md:h-80 lg:h-[420px] bg-zinc-100 dark:bg-zinc-950 overflow-hidden group/img">
                           {currentProject.image ? (
                             <>
                               <img
