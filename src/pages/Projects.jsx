@@ -390,8 +390,8 @@ const Projects = () => {
                             </a>
                           </div>
 
-                          {/* Bottom Layered Dashboard / Screenshot Preview Frame */}
-                          <div className="w-full mt-6 rounded-t-2xl border-t border-x border-white/15 bg-zinc-900/90 p-3 sm:p-4 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+                          {/* Bottom Layered Dashboard Mockup Frame */}
+                          <div className="w-full mt-6 rounded-t-2xl border-t border-x border-white/15 bg-zinc-950 p-2 sm:p-3 shadow-2xl relative overflow-hidden backdrop-blur-xl">
                             {/* Floating Heart / Notification Pill */}
                             <div className="absolute top-2 left-6 z-20 px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center gap-1 shadow-lg shadow-rose-500/30 transform -rotate-3">
                               <span>❤️</span>
@@ -399,49 +399,62 @@ const Projects = () => {
                             </div>
 
                             {/* Inner Dashboard Layer */}
-                            {currentProject.image ? (
-                              <div className="relative rounded-xl overflow-hidden h-36 sm:h-44 w-full border border-white/10">
-                                <img
-                                  src={currentProject.image}
-                                  alt={currentProject.title}
-                                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover/mockup:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent pointer-events-none" />
-                              </div>
-                            ) : (
-                              <div className="rounded-xl bg-zinc-950/80 p-4 border border-white/5 flex flex-col gap-2.5 text-left h-36 sm:h-44 justify-center">
-                                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                                  <span className="text-xs font-bold text-white flex items-center gap-2">
-                                    <FiZap className="text-blue-400" />
-                                    <span>Welcome to {currentProject.shortTitle} Dashboard</span>
+                            <div className="rounded-xl bg-white text-zinc-900 p-3 sm:p-4 border border-zinc-200 shadow-inner flex flex-col gap-2.5 text-left h-36 sm:h-44 overflow-hidden relative">
+                              {/* Dashboard Top Header */}
+                              <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-extrabold text-xs text-emerald-600 flex items-center gap-1">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                                    {currentProject.shortTitle || 'CallHQ'}.ai
                                   </span>
-                                  <span className="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                    Active System
+                                  <span className="text-[11px] text-zinc-500 hidden sm:inline">
+                                    Hi {currentProject.dashboardUser || 'Mark'}, Welcome to {currentProject.shortTitle || 'CallHQ'}.ai Dashboard
                                   </span>
                                 </div>
-                                <div className="grid grid-cols-3 gap-2 mt-1">
-                                  <div className="p-2 rounded-lg bg-white/5 border border-white/5 text-[10px]">
-                                    <div className="text-zinc-500">Latency</div>
-                                    <div className="text-white font-bold">&lt; 150ms</div>
+                                <div className="flex items-center gap-2">
+                                  <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 text-[10px] text-zinc-400 border border-zinc-200">
+                                    <span>🔍</span>
+                                    <span>Type people and groups...</span>
                                   </div>
-                                  <div className="p-2 rounded-lg bg-white/5 border border-white/5 text-[10px]">
-                                    <div className="text-zinc-500">Accuracy</div>
-                                    <div className="text-emerald-400 font-bold">99.8%</div>
-                                  </div>
-                                  <div className="p-2 rounded-lg bg-white/5 border border-white/5 text-[10px]">
-                                    <div className="text-zinc-500">Uptime</div>
-                                    <div className="text-blue-400 font-bold">99.99%</div>
+                                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">
+                                    {currentProject.dashboardUser?.[0] || 'M'}
                                   </div>
                                 </div>
                               </div>
-                            )}
 
-                            {/* Floating Support AI Widget Bubble */}
-                            <div className="absolute bottom-3 right-3 sm:right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-zinc-900 text-[11px] font-bold shadow-xl border border-zinc-200">
-                              <span>Have a quick question?</span>
-                              <span className="text-blue-600 flex items-center gap-1">
-                                Talk with AI <FiMessageSquare className="text-xs" />
-                              </span>
+                              {/* Dashboard Tabs & Mini Cards */}
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="px-2.5 py-0.5 rounded-md bg-zinc-900 text-white text-[10px] font-semibold">
+                                  Groups
+                                </span>
+                                <span className="px-2.5 py-0.5 rounded-md bg-zinc-100 text-zinc-600 text-[10px] font-semibold border border-zinc-200">
+                                  New Leads
+                                </span>
+                              </div>
+
+                              {/* Dashboard Metrics / Visual Area */}
+                              <div className="grid grid-cols-3 gap-2 mt-1">
+                                <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-[10px]">
+                                  <div className="text-zinc-400">Total Calls</div>
+                                  <div className="text-zinc-900 font-bold text-xs">1,420+</div>
+                                </div>
+                                <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-[10px]">
+                                  <div className="text-zinc-400">Conversion</div>
+                                  <div className="text-emerald-600 font-bold text-xs">94.2%</div>
+                                </div>
+                                <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-[10px]">
+                                  <div className="text-zinc-400">Avg Latency</div>
+                                  <div className="text-blue-600 font-bold text-xs">140ms</div>
+                                </div>
+                              </div>
+
+                              {/* Floating Support AI Widget Bubble */}
+                              <div className="absolute bottom-2 right-2 sm:right-3 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-zinc-900 text-[10px] sm:text-[11px] font-bold shadow-xl border border-zinc-200 hover:scale-105 transition-transform cursor-pointer">
+                                <span>Have a quick question?</span>
+                                <span className="text-purple-600 flex items-center gap-1">
+                                  Talk with {currentProject.supportAgent || 'Priya'} <FiMessageSquare className="text-xs" />
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>

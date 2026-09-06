@@ -61,27 +61,29 @@ export const portfolioData = {
     {
       id: 1,
       number: "01",
-      title: "AI-Voice - Intelligent Speech Platform",
-      shortTitle: "AI-Voice",
+      title: "CallHQ - Voice AI Calling Platform",
+      shortTitle: "CallHQ",
       subtitle: "Voice AI Calling Platform",
       category: "AI & Full Stack",
       featured: true,
       description: "An advanced real-time conversational AI voice platform featuring interactive speech synthesis, speech-to-text recognition, dynamic sound waves, and responsive audio visualizers.",
       technologies: ["React.js", "JavaScript", "Web Speech API", "AI Speech Synthesis", "Tailwind CSS"],
-      toolsAndFeaturesText: "Voice AI, Calling Automation, CRM Integrations, Audio Waveforms",
+      toolsAndFeaturesText: "Voice AI, Calling Automation, CRM Integrations",
       features: [
         "Real-time Conversational Voice AI",
         "Reactive Audio Waveform Visualizers",
         "Instant Speech-to-Text Transcription",
         "Natural Voice Synthesis & Playback"
       ],
-      mockupHeadline: "Rapidly Create Your AI Caller with AI-Voice",
+      mockupHeadline: "Rapidly Create Your AI Caller with CallHQ.ai",
       mockupPills: [
         { icon: "🔊", text: "Human-like Interaction" },
         { icon: "📱", text: "Inbound & Outbound Calls" },
         { icon: "⚡", text: "Trained On Your Data" }
       ],
       badgeText: "Free Trial - No Credit Card Required",
+      dashboardUser: "Mark",
+      supportAgent: "Priya",
       github: "https://github.com/karthick0328-design/AI-Voice",
       live: "https://ai-voice-tau-olive.vercel.app",
       status: "Live & Deployed",
