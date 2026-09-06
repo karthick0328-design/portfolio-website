@@ -113,7 +113,7 @@ const HeroSection = () => {
 
       {/* 4. Main Content Overlay */}
       {/* ==================== MOBILE HERO OVERLAY (lg:hidden) ==================== */}
-      <div className="absolute inset-0 w-full h-full flex lg:hidden flex-col justify-between items-center max-w-md mx-auto px-6 pt-24 pb-8 z-30 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full flex lg:hidden flex-col justify-between items-center max-w-md mx-auto px-6 pt-20 pb-20 z-30 pointer-events-none">
         {/* Top: Name above avatar head */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -145,8 +145,8 @@ const HeroSection = () => {
           </motion.h1>
         </motion.div>
 
-        {/* Bottom: Full Stack Developer directly over avatar chest / white shirt */}
-        <div className="flex flex-col items-center w-full pointer-events-auto gap-4">
+        {/* Bottom: Full Stack Developer directly at the bottom / lower chest of 3D avatar */}
+        <div className="flex flex-col items-center w-full pointer-events-auto gap-3">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -182,7 +182,7 @@ const HeroSection = () => {
           </motion.div>
 
           {/* Mobile Bottom Bar */}
-          <div className="w-full flex items-center justify-between pt-1">
+          <div className="w-full flex items-center justify-between px-2">
             <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
               <a href={personalInfo.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-cyan-600 dark:hover:text-cyan-400">
                 <FiGithub size={18} />

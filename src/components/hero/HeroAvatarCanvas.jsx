@@ -164,11 +164,11 @@ const HeroAvatarCanvas = ({ isSpeaking = false, audioLevel = 0, onToggleSpeak })
       camera.aspect = w / h;
 
       if (w < 640) {
-        camera.fov = 28;
-        camera.position.set(0, 0.2, 19.5);
+        camera.fov = 27;
+        camera.position.set(0, -0.6, 17.8);
       } else if (w < 1024) {
         camera.fov = 26;
-        camera.position.set(0, 0.2, 19.0);
+        camera.position.set(0, -0.2, 18.5);
       } else {
         camera.fov = 24;
         camera.position.set(0, 0, 18.0);
