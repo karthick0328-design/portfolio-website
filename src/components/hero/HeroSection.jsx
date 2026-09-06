@@ -111,50 +111,47 @@ const HeroSection = () => {
         <div className="w-[1px] h-12 bg-gradient-to-b from-zinc-300 via-zinc-400 to-transparent dark:from-zinc-500 dark:via-zinc-600 dark:to-transparent" />
       </motion.div>
 
-      {/* 4. Main Content Overlay: Name at top of head, clear 3D avatar face, role at bottom */}
-      <motion.div 
-        style={{ y: contentY, opacity: heroOpacity }}
-        className="w-full h-full max-w-7xl mx-auto px-5 sm:px-12 lg:px-16 flex flex-col justify-between pt-16 sm:pt-20 pb-6 sm:pb-8 lg:py-0 relative z-30 pointer-events-none"
-      >
-        {/* ==================== MOBILE LAYOUT (lg:hidden) ==================== */}
-        <div className="flex lg:hidden flex-col justify-between items-center w-full min-h-[calc(100svh-6rem)] pt-14 pb-14 text-center">
-          {/* Top: Name above avatar head */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
+      {/* 4. Main Content Overlay */}
+      {/* ==================== MOBILE HERO OVERLAY (lg:hidden) ==================== */}
+      <div className="flex lg:hidden flex-col justify-between items-center w-full h-full max-w-md mx-auto px-6 pt-20 pb-6 relative z-30 pointer-events-none">
+        {/* Top: Name above avatar head */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center flex flex-col items-center pointer-events-auto"
+        >
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center pointer-events-auto z-30"
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="text-xs font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1 font-bold"
           >
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-xs font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1 font-bold"
-            >
-              Hello! I'm
-            </motion.p>
+            Hello! I'm
+          </motion.p>
 
-            <motion.h1 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-              className="text-3xl xs:text-4xl font-black tracking-tight uppercase leading-tight text-zinc-900 dark:text-white"
-            >
-              <span className="text-zinc-900 dark:text-white mr-2">
-                KARTHICK
-              </span>
-              <span className="bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-500 dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-400 bg-clip-text text-transparent">
-                PANDI
-              </span>
-            </motion.h1>
-          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.7 }}
+            className="text-3xl xs:text-4xl font-black tracking-tight uppercase leading-tight text-zinc-900 dark:text-white"
+          >
+            <span className="text-zinc-900 dark:text-white mr-2">
+              KARTHICK
+            </span>
+            <span className="bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-500 dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-400 bg-clip-text text-transparent">
+              PANDI
+            </span>
+          </motion.h1>
+        </motion.div>
 
-          {/* Bottom: Full Stack Developer directly over avatar chest / white shirt */}
+        {/* Bottom: Full Stack Developer directly over avatar chest / white shirt */}
+        <div className="flex flex-col items-center w-full pointer-events-auto gap-4">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center pointer-events-auto max-w-[320px] xs:max-w-[350px] z-30 mt-auto"
+            className="text-center flex flex-col items-center max-w-[340px]"
           >
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
@@ -183,10 +180,38 @@ const HeroSection = () => {
               Building modern, scalable, and interactive web applications with React, Next.js, Node.js, Python, Three.js, and AI technologies.
             </motion.p>
           </motion.div>
-        </div>
 
-        {/* ==================== DESKTOP LAYOUT (hidden lg:flex) ==================== */}
-        <div className="hidden lg:flex items-center justify-between w-full my-auto">
+          {/* Mobile Bottom Bar */}
+          <div className="w-full flex items-center justify-between pt-1">
+            <div className="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
+              <a href={personalInfo.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-cyan-600 dark:hover:text-cyan-400">
+                <FiGithub size={18} />
+              </a>
+              <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:text-cyan-600 dark:hover:text-cyan-400">
+                <FiLinkedin size={18} />
+              </a>
+              <a href={`mailto:${personalInfo.email}`} aria-label="Email" className="hover:text-purple-600 dark:hover:text-purple-400">
+                <FiMail size={18} />
+              </a>
+            </div>
+
+            <Link 
+              to="/resume" 
+              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-zinc-700 hover:text-cyan-600 dark:text-zinc-300 dark:hover:text-cyan-400 transition-colors duration-300"
+            >
+              <span>RESUME</span>
+              <FiArrowUpRight className="text-cyan-600 dark:text-cyan-400" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== DESKTOP HERO OVERLAY (hidden lg:flex) ==================== */}
+      <motion.div 
+        style={{ y: contentY, opacity: heroOpacity }}
+        className="hidden lg:flex w-full h-full max-w-7xl mx-auto px-12 lg:px-16 flex-col justify-between py-0 relative z-30 pointer-events-none"
+      >
+        <div className="flex items-center justify-between w-full my-auto">
           {/* LEFT: Name */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
@@ -254,27 +279,14 @@ const HeroSection = () => {
           </motion.div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="w-full pb-3 sm:pb-6 flex items-center justify-between pointer-events-auto">
-          {/* Mobile Social Links */}
-          <div className="flex md:hidden items-center gap-4 text-zinc-600 dark:text-zinc-400">
-            <a href={personalInfo.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-cyan-600 dark:hover:text-cyan-400">
-              <FiGithub size={18} />
-            </a>
-            <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:text-cyan-600 dark:hover:text-cyan-400">
-              <FiLinkedin size={18} />
-            </a>
-            <a href={`mailto:${personalInfo.email}`} aria-label="Email" className="hover:text-purple-600 dark:hover:text-purple-400">
-              <FiMail size={18} />
-            </a>
-          </div>
-
+        {/* Desktop Bottom Bar */}
+        <div className="w-full pb-6 flex items-center justify-between pointer-events-auto">
           {/* Center Scroll Prompt */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.6 }}
-            className="hidden sm:flex flex-col items-center gap-1.5 mx-auto pointer-events-none"
+            className="flex flex-col items-center gap-1.5 mx-auto pointer-events-none"
           >
             <span className="text-[9px] font-mono tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500">
               SCROLL
@@ -291,7 +303,7 @@ const HeroSection = () => {
           >
             <Link 
               to="/resume" 
-              className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono uppercase tracking-widest text-zinc-700 hover:text-cyan-600 dark:text-zinc-300 dark:hover:text-cyan-400 transition-colors duration-300"
+              className="group inline-flex items-center gap-1.5 text-sm font-mono uppercase tracking-widest text-zinc-700 hover:text-cyan-600 dark:text-zinc-300 dark:hover:text-cyan-400 transition-colors duration-300"
             >
               <span className="relative pb-0.5">
                 RESUME
@@ -301,7 +313,6 @@ const HeroSection = () => {
             </Link>
           </motion.div>
         </div>
-
       </motion.div>
     </section>
   );
