@@ -7,6 +7,7 @@ class SpeechSynthesisService {
     this.currentUtterance = null;
     this.isSpeaking = false;
     this.preferredVoice = null;
+    this.keepAliveTimer = null;
 
     if (this.synth) {
       this._loadVoices();
@@ -144,6 +145,19 @@ class SpeechSynthesisService {
       this.isSpeaking = true;
       visemeEngine.startSpeech(text, utterance.rate || 1.0);
       if (options.onStart) options.onStart();
+
+      // Chromium long sentence keepalive: prevents synthesis from freezing after 10-15 seconds
+      if (this.keepAliveTimer) clearInterval(this.keepAliveTimer);
+      this.keepAliveTimer = setInterval(() => {
+        if (this.synth && this.isSpeaking) {
+          try {
+            this.synth.pause();
+            this.synth.resume();
+          } catch (e) {
+            // ignore
+          }
+        }
+      }, 7000);
     };
 
     utterance.onboundary = (event) => {
@@ -158,6 +172,10 @@ class SpeechSynthesisService {
     };
 
     const cleanup = () => {
+      if (this.keepAliveTimer) {
+        clearInterval(this.keepAliveTimer);
+        this.keepAliveTimer = null;
+      }
       this.isSpeaking = false;
       this.currentUtterance = null;
       if (typeof window !== 'undefined') {
@@ -198,6 +216,10 @@ class SpeechSynthesisService {
    * Stop current speech immediately
    */
   stop() {
+    if (this.keepAliveTimer) {
+      clearInterval(this.keepAliveTimer);
+      this.keepAliveTimer = null;
+    }
     if (this.synth) {
       try {
         this.synth.cancel();
