@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import SectionHeading from '../components/SectionHeading';
 import { portfolioData } from '../data/portfolioData';
 import { 
@@ -8,10 +8,28 @@ import {
   FiBookOpen,
   FiAward
 } from 'react-icons/fi';
-import { FaGraduationCap, FaUniversity } from 'react-icons/fa';
+import { FaGraduationCap, FaUniversity, FaCarSide } from 'react-icons/fa';
 
 const Education = () => {
   const { education } = portfolioData;
+  const roadmapRef = useRef(null);
+
+  // Track scroll position exclusively within this section
+  const { scrollYProgress } = useScroll({
+    target: roadmapRef,
+    offset: ["start 65%", "end 75%"]
+  });
+
+  // Smooth out scroll momentum for realistic suspension & driving motion
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 24,
+    restDelta: 0.001
+  });
+
+  // Map scroll strictly: car only moves when user scrolls
+  const carTop = useTransform(smoothProgress, [0, 1], ["2%", "94%"]);
+  const roadFill = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -60,26 +78,51 @@ const Education = () => {
           subtitle="My academic background & qualifications" 
         />
 
-        {/* Modern Sleek Tech Roadmap Timeline */}
-        <div className="relative mt-12">
-          {/* Vertical Glowing Cyber Milestone Spine */}
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 -translate-x-1/2 w-1 bg-gradient-to-b from-purple-500 via-indigo-500 to-purple-600 rounded-full z-0 pointer-events-none">
-            {/* Ambient Line Glow */}
-            <div className="absolute inset-0 w-full h-full bg-purple-500/40 blur-[4px]" />
-            
-            {/* Traveling Kinetic Light Tracer Packet */}
+        {/* Scroll-Driven Interactive Road Map Timeline */}
+        <div ref={roadmapRef} className="relative mt-12">
+          
+          {/* Asphalt Highway Road Track */}
+          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 -translate-x-1/2 w-14 md:w-16 bg-zinc-900 border-x-2 border-zinc-700/80 rounded-2xl flex flex-col items-center shadow-xl z-0 pointer-events-none overflow-hidden">
+            {/* White Shoulder Lines */}
+            <div className="absolute left-1 top-0 bottom-0 w-0.5 bg-white/30" />
+            <div className="absolute right-1 top-0 bottom-0 w-0.5 bg-white/30" />
+
+            {/* Dynamic Road Illuminated Active Progress Lane */}
             <motion.div 
-              animate={{ 
-                top: ["0%", "45%", "85%", "100%", "0%"]
-              }}
-              transition={{ 
-                duration: 8, 
-                repeat: Infinity, 
-                ease: "easeInOut",
-                times: [0, 0.45, 0.85, 0.98, 1]
-              }}
-              className="absolute left-1/2 -translate-x-1/2 w-3.5 h-12 -mt-6 bg-gradient-to-b from-transparent via-white to-purple-400 rounded-full shadow-[0_0_16px_rgba(168,85,247,0.9)]"
+              style={{ height: roadFill }}
+              className="absolute top-0 left-0 right-0 bg-purple-600/20 border-b-2 border-purple-400"
             />
+
+            {/* Dashed Center Road Line */}
+            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 flex flex-col items-center gap-4 py-2">
+              {[...Array(25)].map((_, i) => (
+                <div key={i} className="w-1 h-8 bg-amber-400/80 rounded-sm shrink-0" />
+              ))}
+            </div>
+
+            {/* Scroll-Driven Vehicle: Moves ONLY when user scrolls down */}
+            <motion.div 
+              style={{ top: carTop }}
+              className="absolute left-1/2 -translate-x-1/2 w-8 h-14 bg-gradient-to-b from-purple-500 to-indigo-700 rounded-xl shadow-xl shadow-purple-500/60 flex flex-col items-center justify-between py-1.5 border-2 border-purple-300 z-10"
+            >
+              {/* Headlight Beams */}
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-10 h-8 bg-gradient-to-b from-yellow-300/40 to-transparent blur-[2px] pointer-events-none" />
+              
+              {/* Front Headlights */}
+              <div className="flex justify-between w-full px-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-sm shadow-yellow-200" />
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-sm shadow-yellow-200" />
+              </div>
+
+              {/* Windshield & Car Body */}
+              <FaCarSide className="text-xs text-white rotate-90" />
+
+              {/* Rear Taillights */}
+              <div className="flex justify-between w-full px-1">
+                <div className="w-1.5 h-1 rounded-sm bg-red-500 shadow-sm shadow-red-500" />
+                <div className="w-1.5 h-1 rounded-sm bg-red-500 shadow-sm shadow-red-500" />
+              </div>
+            </motion.div>
           </div>
 
           {/* Road Origin Marker */}
