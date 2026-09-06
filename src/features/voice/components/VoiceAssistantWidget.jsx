@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FiMic, FiMicOff, FiSquare, FiX, FiMessageSquare, FiVolume2, FiCornerDownLeft } from 'react-icons/fi';
 import { useVoiceAssistant } from '../context/VoiceAssistantContext';
 
@@ -13,6 +14,9 @@ const SUGGESTIONS = [
 ];
 
 const VoiceAssistantWidget = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     isListening,
     isThinking,
@@ -31,6 +35,30 @@ const VoiceAssistantWidget = () => {
   const [textInput, setTextInput] = useState('');
   const inputRef = useRef(null);
 
+  /**
+   * Smoothly scroll or navigate directly to the 3D Hero avatar section
+   */
+  const scrollToHero = useCallback(() => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const heroElem = document.getElementById('hero');
+        if (heroElem) {
+          heroElem.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 150);
+    } else {
+      const heroElem = document.getElementById('hero');
+      if (heroElem) {
+        heroElem.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [location.pathname, navigate]);
+
   // Auto-expand widget when voice activates
   useEffect(() => {
     if (isListening || isThinking || isSpeaking) {
@@ -41,11 +69,13 @@ const VoiceAssistantWidget = () => {
   const handleTextSubmit = (e) => {
     e.preventDefault();
     if (!textInput.trim()) return;
+    scrollToHero();
     askQuestion(textInput.trim());
     setTextInput('');
   };
 
   const handleSuggestionClick = (query) => {
+    scrollToHero();
     askQuestion(query);
   };
 
@@ -240,6 +270,7 @@ const VoiceAssistantWidget = () => {
       >
         <button
           onClick={() => {
+            scrollToHero();
             if (!isWidgetOpen) {
               setIsWidgetOpen(true);
             }
@@ -285,7 +316,10 @@ const VoiceAssistantWidget = () => {
         {/* Small Toggle Chat Panel Button if closed */}
         {!isWidgetOpen && (
           <button
-            onClick={() => setIsWidgetOpen(true)}
+            onClick={() => {
+              scrollToHero();
+              setIsWidgetOpen(true);
+            }}
             className="p-2.5 rounded-full bg-white/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:text-cyan-500 transition-colors"
             title="Open Voice Chat Panel"
             aria-label="Open Voice Chat Panel"
