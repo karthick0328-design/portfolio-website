@@ -29,17 +29,6 @@ export const portfolioData = {
   experience: [
     {
       id: 1,
-      company: "Ponnaiya's code and genome pvt ltd",
-      role: "Full Stack Developer",
-      duration: "July 2025 - July 2026",
-      description: "Developed a full-stack e-commerce platform and 3D Molecular Visualization System, integrating RESTful APIs and real-time rendering.",
-      achievements: [
-        "Improved application performance and user experience through optimized frontend and backend development.",
-        "Enabled researchers to explore biological compounds and molecular interactions through dynamic 3D models."
-      ]
-    },
-    {
-      id: 2,
       company: "Geosoft Technologies, Madurai, India",
       role: "Fullstack Developer (Intern)",
       duration: "Jan 2025 - Jun 2025",
@@ -48,6 +37,17 @@ export const portfolioData = {
         "Yielded 40% less manual work and boosted SEO analyst productivity.",
         "Designed responsive interfaces with ReactJS and TailwindCSS, achieving 25% faster page loads.",
         "Integrated Java backend (Spring Boot) for data handling and OpenAI/Google Analytics APIs."
+      ]
+    },
+    {
+      id: 2,
+      company: "Ponnaiya's code and genome pvt ltd",
+      role: "Full Stack Developer",
+      duration: "July 2025 - July 2026",
+      description: "Developed a full-stack e-commerce platform and 3D Molecular Visualization System, integrating RESTful APIs and real-time rendering.",
+      achievements: [
+        "Improved application performance and user experience through optimized frontend and backend development.",
+        "Enabled researchers to explore biological compounds and molecular interactions through dynamic 3D models."
       ]
     }
   ],
@@ -86,15 +86,15 @@ export const portfolioData = {
   education: [
     {
       id: 1,
-      degree: "Master of Computer Applications",
-      institution: "KLN College of Engineering",
-      year: "2023 - 2025"
-    },
-    {
-      id: 2,
       degree: "Bachelor of Computer Science",
       institution: "The American College",
       year: "2020 - 2023"
+    },
+    {
+      id: 2,
+      degree: "Master of Computer Applications",
+      institution: "KLN College of Engineering",
+      year: "2023 - 2025"
     }
   ],
   caseStudies: [

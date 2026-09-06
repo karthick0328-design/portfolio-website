@@ -52,29 +52,29 @@ export const portfolioKnowledge = {
 
   workHistory: [
     {
-      company: "Ponnaiya's code and genome pvt ltd",
-      role: "Full Stack Developer",
-      period: "July 2025 - July 2026",
-      keyWork: "Developed full-stack web applications including an e-commerce platform and 3D Molecular Visualization System, enabling researchers to explore biological compounds through dynamic 3D models."
-    },
-    {
       company: "Geosoft Technologies, Madurai",
       role: "Fullstack Developer (Intern)",
       period: "Jan 2025 - Jun 2025",
       keyWork: "Led development of AI-driven SEO tools automating Yoast-compliant blog posts and competitor analysis. Resulted in 40% reduction in manual effort and 25% faster page loads with ReactJS and TailwindCSS."
+    },
+    {
+      company: "Ponnaiya's code and genome pvt ltd",
+      role: "Full Stack Developer",
+      period: "July 2025 - July 2026",
+      keyWork: "Developed full-stack web applications including an e-commerce platform and 3D Molecular Visualization System, enabling researchers to explore biological compounds through dynamic 3D models."
     }
   ],
 
   educationSummary: [
     {
-      degree: "Master of Computer Applications (MCA)",
-      institution: "KLN College of Engineering",
-      years: "2023 - 2025"
-    },
-    {
       degree: "Bachelor of Computer Science (B.Sc)",
       institution: "The American College",
       years: "2020 - 2023"
+    },
+    {
+      degree: "Master of Computer Applications (MCA)",
+      institution: "KLN College of Engineering",
+      years: "2023 - 2025"
     }
   ]
 };
