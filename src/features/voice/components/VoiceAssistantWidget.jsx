@@ -39,23 +39,28 @@ const VoiceAssistantWidget = () => {
    * Smoothly scroll or navigate directly to the 3D Hero avatar section
    */
   const scrollToHero = useCallback(() => {
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        const heroElem = document.getElementById('hero');
-        if (heroElem) {
-          heroElem.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 150);
-    } else {
+    const doScroll = () => {
       const heroElem = document.getElementById('hero');
       if (heroElem) {
-        heroElem.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        heroElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+        document.body.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (e) {
+        window.scrollTo(0, 0);
+      }
+    };
+
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(doScroll, 60);
+      setTimeout(doScroll, 180);
+      setTimeout(doScroll, 350);
+    } else {
+      doScroll();
+      setTimeout(doScroll, 80);
     }
   }, [location.pathname, navigate]);
 
@@ -246,7 +251,10 @@ const VoiceAssistantWidget = () => {
                 )}
                 <button
                   type="button"
-                  onClick={toggleListening}
+                  onClick={() => {
+                    scrollToHero();
+                    toggleListening();
+                  }}
                   className={`p-2 rounded-xl transition-all ${
                     isListening
                       ? 'bg-red-500 text-white shadow-[0_0_12px_rgba(239,68,68,0.5)] animate-pulse'
