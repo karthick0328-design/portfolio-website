@@ -134,7 +134,7 @@ const VoiceAssistantWidget = () => {
                 {isSpeaking && (
                   <button
                     onClick={stopSpeaking}
-                    className="px-2 py-1 text-[11px] font-mono rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-red-500/10 hover:text-red-500 transition-colors flex items-center gap-1"
+                    className="hidden sm:flex px-2 py-1 text-[11px] font-mono rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-red-500/10 hover:text-red-500 transition-colors items-center gap-1"
                     title="Stop speaking"
                   >
                     <FiSquare size={10} />
