@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { FiMic, FiMicOff, FiSquare, FiX, FiMessageSquare, FiVolume2, FiCornerDownLeft } from 'react-icons/fi';
+import { FiMic, FiMicOff, FiX, FiMessageSquare, FiVolume2, FiCornerDownLeft } from 'react-icons/fi';
 import { useVoiceAssistant } from '../context/VoiceAssistantContext';
 
 const SUGGESTIONS = [
@@ -14,9 +13,6 @@ const SUGGESTIONS = [
 ];
 
 const VoiceAssistantWidget = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const {
     isListening,
     isThinking,
@@ -35,35 +31,6 @@ const VoiceAssistantWidget = () => {
   const [textInput, setTextInput] = useState('');
   const inputRef = useRef(null);
 
-  /**
-   * Smoothly scroll or navigate directly to the 3D Hero avatar section
-   */
-  const scrollToHero = useCallback(() => {
-    const doScroll = () => {
-      const heroElem = document.getElementById('hero');
-      if (heroElem) {
-        heroElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      try {
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-        document.body.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (e) {
-        window.scrollTo(0, 0);
-      }
-    };
-
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(doScroll, 60);
-      setTimeout(doScroll, 180);
-      setTimeout(doScroll, 350);
-    } else {
-      doScroll();
-      setTimeout(doScroll, 80);
-    }
-  }, [location.pathname, navigate]);
-
   // Auto-expand widget when voice activates
   useEffect(() => {
     if (isListening || isThinking || isSpeaking) {
@@ -74,13 +41,11 @@ const VoiceAssistantWidget = () => {
   const handleTextSubmit = (e) => {
     e.preventDefault();
     if (!textInput.trim()) return;
-    scrollToHero();
     askQuestion(textInput.trim());
     setTextInput('');
   };
 
   const handleSuggestionClick = (query) => {
-    scrollToHero();
     askQuestion(query);
   };
 
@@ -131,18 +96,11 @@ const VoiceAssistantWidget = () => {
               </div>
 
               <div className="flex items-center gap-1.5">
-                {isSpeaking && (
-                  <button
-                    onClick={stopSpeaking}
-                    className="px-2.5 py-1 text-[11px] font-mono font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 active:scale-95 transition-all flex items-center gap-1 shadow-sm"
-                    title="Stop speaking"
-                  >
-                    <FiSquare size={10} className="fill-current" />
-                    <span>Stop</span>
-                  </button>
-                )}
                 <button
-                  onClick={() => setIsWidgetOpen(false)}
+                  onClick={() => {
+                    stopSpeaking();
+                    setIsWidgetOpen(false);
+                  }}
                   className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                   aria-label="Minimize"
                 >
@@ -252,7 +210,6 @@ const VoiceAssistantWidget = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    scrollToHero();
                     toggleListening();
                   }}
                   className={`p-2 rounded-xl transition-all ${
@@ -282,18 +239,15 @@ const VoiceAssistantWidget = () => {
               stopSpeaking();
               return;
             }
-            scrollToHero();
             if (!isWidgetOpen) {
               setIsWidgetOpen(true);
             }
             toggleListening();
           }}
-          className={`flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-xl backdrop-blur-xl border transition-all duration-300 ${
+          className={`flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full shadow-xl backdrop-blur-xl border transition-all duration-300 ${
             isListening
               ? 'bg-red-500 text-white border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]'
-              : isSpeaking
-              ? 'bg-red-500 text-white border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-600'
-              : 'bg-white/90 dark:bg-zinc-900/90 text-zinc-800 dark:text-zinc-100 border-zinc-200/80 dark:border-zinc-800/80 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]'
+              : 'bg-white/95 dark:bg-zinc-900/95 text-zinc-800 dark:text-zinc-100 border-zinc-200/80 dark:border-zinc-800/80 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]'
           }`}
           aria-label="Voice Assistant"
         >
@@ -306,20 +260,21 @@ const VoiceAssistantWidget = () => {
                 <span className="w-1 h-2.5 bg-white animate-pulse" />
               </div>
             ) : isSpeaking ? (
-              <FiSquare size={16} className="fill-current text-white animate-pulse" />
+              <div className="flex items-center gap-0.5 text-cyan-500 dark:text-cyan-400">
+                <span className="w-1 h-3 bg-cyan-500 animate-pulse" />
+                <span className="w-1 h-4 bg-cyan-500 animate-bounce" />
+                <span className="w-1 h-2 bg-cyan-500 animate-pulse" />
+              </div>
             ) : (
-              <FiMic size={18} className="text-cyan-500 dark:text-cyan-400" />
+              <FiMic size={16} className="text-cyan-500 dark:text-cyan-400" />
             )}
           </div>
 
           <span className="text-xs font-semibold tracking-wide">
-            {isListening ? 'Listening...' :
-             isThinking ? 'Thinking...' :
-             isSpeaking ? 'Stop Speaking' :
-             'Ask Voice AI'}
+            {isListening ? 'Listening...' : 'Ask Voice AI'}
           </span>
 
-          {/* Unread / Ready indicator dot */}
+          {/* Ready indicator dot */}
           {!isListening && !isSpeaking && !isThinking && (
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping opacity-75" />
           )}
@@ -328,11 +283,8 @@ const VoiceAssistantWidget = () => {
         {/* Small Toggle Chat Panel Button if closed */}
         {!isWidgetOpen && (
           <button
-            onClick={() => {
-              scrollToHero();
-              setIsWidgetOpen(true);
-            }}
-            className="p-2.5 rounded-full bg-white/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:text-cyan-500 transition-colors"
+            onClick={() => setIsWidgetOpen(true)}
+            className="p-2 sm:p-2.5 rounded-full bg-white/95 dark:bg-zinc-900/95 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:text-cyan-500 transition-colors"
             title="Open Voice Chat Panel"
             aria-label="Open Voice Chat Panel"
           >
