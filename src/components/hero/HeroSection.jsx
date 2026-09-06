@@ -124,13 +124,13 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full lg:w-auto text-left flex flex-col items-start pointer-events-auto z-30 relative pt-2 sm:pt-4 lg:pt-0"
+            className="w-full lg:w-auto text-left flex flex-col items-start pointer-events-auto z-30 relative pt-4 sm:pt-6 lg:pt-0"
           >
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-1 font-bold"
+              className="text-xs sm:text-sm md:text-base font-mono tracking-[0.25em] uppercase text-zinc-500 dark:text-zinc-400 mb-2 font-bold"
             >
               Hello! I'm
             </motion.p>
@@ -139,12 +139,12 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
-              className="text-3xl xs:text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight uppercase leading-[0.95] text-zinc-900 dark:text-white"
+              className="text-3xl xs:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight uppercase leading-[1.05] text-zinc-900 dark:text-white"
             >
               <span className="block text-zinc-900 dark:text-white">
                 KARTHICK
               </span>
-              <span className="block bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-500 dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-400 bg-clip-text text-transparent mt-0.5">
+              <span className="block bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-500 dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-400 bg-clip-text text-transparent mt-1">
                 PANDI
               </span>
             </motion.h1>
