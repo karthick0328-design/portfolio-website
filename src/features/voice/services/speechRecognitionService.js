@@ -1,7 +1,7 @@
 /**
  * Speech Recognition Service
  * Browser-native Web Speech API wrapper with clean instance lifecycle,
- * interim streaming, and robust cross-browser error handling.
+ * mobile speech fallback, interim streaming, and robust cross-browser error handling.
  */
 
 class SpeechRecognitionService {
@@ -9,6 +9,7 @@ class SpeechRecognitionService {
     this.recognition = null;
     this.isListening = false;
     this.hasFinalResult = false;
+    this.lastCapturedText = '';
     this.callbacks = {};
   }
 
@@ -29,6 +30,7 @@ class SpeechRecognitionService {
   start(callbacks = {}) {
     this.callbacks = callbacks;
     this.hasFinalResult = false;
+    this.lastCapturedText = '';
 
     if (!this.isSupported()) {
       if (callbacks.onError) {
@@ -67,6 +69,11 @@ class SpeechRecognitionService {
           }
         }
 
+        const currentText = finalTranscript || interimTranscript;
+        if (currentText && currentText.trim()) {
+          this.lastCapturedText = currentText.trim();
+        }
+
         if (interimTranscript && this.callbacks.onInterim) {
           this.callbacks.onInterim(interimTranscript);
         }
@@ -82,6 +89,14 @@ class SpeechRecognitionService {
       this.recognition.onerror = (event) => {
         this.isListening = false;
         if (event.error === 'no-speech') {
+          // If we had captured words before no-speech fired, process them
+          if (!this.hasFinalResult && this.lastCapturedText) {
+            this.hasFinalResult = true;
+            if (this.callbacks.onResult) {
+              this.callbacks.onResult(this.lastCapturedText);
+            }
+            return;
+          }
           if (this.callbacks.onError) this.callbacks.onError('No speech detected. Please tap the mic and try again.');
         } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           if (this.callbacks.onError) this.callbacks.onError('Microphone permission needed. Please allow microphone access in your browser.');
@@ -92,6 +107,13 @@ class SpeechRecognitionService {
 
       this.recognition.onend = () => {
         this.isListening = false;
+        // Mobile fallback: Android/iOS browsers sometimes end before isFinal is set
+        if (!this.hasFinalResult && this.lastCapturedText) {
+          this.hasFinalResult = true;
+          if (this.callbacks.onResult) {
+            this.callbacks.onResult(this.lastCapturedText);
+          }
+        }
         if (this.callbacks.onEnd) {
           this.callbacks.onEnd(this.hasFinalResult);
         }

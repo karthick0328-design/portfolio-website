@@ -66,15 +66,31 @@ export const VoiceAssistantProvider = ({ children }) => {
     setTranscript(cleanQuery);
     setInterimTranscript('');
     setErrorMessage('');
-    setStatus('thinking');
     setIsWidgetOpen(true);
 
-    setTimeout(() => {
-      const generatedResponse = conversationEngine.generateResponse(cleanQuery);
-      setHistory(prev => [...prev, { query: cleanQuery, reply: generatedResponse, timestamp: Date.now() }]);
-      speakText(generatedResponse);
-    }, 280);
-  }, [speakText]);
+    // Synchronously generate and speak to preserve mobile user gesture context
+    const generatedResponse = conversationEngine.generateResponse(cleanQuery);
+    setHistory(prev => [...prev, { query: cleanQuery, reply: generatedResponse, timestamp: Date.now() }]);
+    setStatus('speaking');
+    setResponse(generatedResponse);
+
+    speechSynthesisService.speak(generatedResponse, {
+      onStart: () => {
+        setStatus('speaking');
+      },
+      onAudioLevel: (level) => {
+        setAudioLevel(level);
+      },
+      onEnd: () => {
+        setStatus('idle');
+        setAudioLevel(0);
+      },
+      onError: () => {
+        setStatus('idle');
+        setAudioLevel(0);
+      }
+    });
+  }, []);
 
   /**
    * Start listening for microphone speech
@@ -179,6 +195,7 @@ export const VoiceAssistantProvider = ({ children }) => {
     isWidgetOpen,
     setIsWidgetOpen,
     isSupported,
+    speakText,
     startListening,
     stopListening,
     stopSpeaking,
