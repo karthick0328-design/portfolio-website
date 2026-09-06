@@ -113,7 +113,7 @@ const HeroSection = () => {
 
       {/* 4. Main Content Overlay */}
       {/* ==================== MOBILE HERO OVERLAY (lg:hidden) ==================== */}
-      <div className="flex lg:hidden flex-col justify-between items-center w-full h-full max-w-md mx-auto px-6 pt-20 pb-6 relative z-30 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full flex lg:hidden flex-col justify-between items-center max-w-md mx-auto px-6 pt-24 pb-8 z-30 pointer-events-none">
         {/* Top: Name above avatar head */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
